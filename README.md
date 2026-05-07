@@ -11,7 +11,7 @@
 
 ## 文件下载
 
-- `NEXUS-AI原型链接.docx`
+- `AIPM-Design原型链接.docx`
 - `岛游智选/岛游智选产品文档.md`
 - `岛游智选/旅行规划 Agent小青 实现方案.md`
 - `岛游智选/LOGO.png`
@@ -19,7 +19,7 @@
 
 ## 目录说明
 
-`NEXUS-AI原型链接.docx`
+`AIPM-Design原型链接.docx`
 
 `岛游智选/`
 
