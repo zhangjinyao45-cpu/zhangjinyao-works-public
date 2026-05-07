@@ -1,0 +1,4450 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>岛游智选｜青岛旅行与美食智能规划</title>
+  <style>
+    :root {
+      --sea: #0f8b8d;
+      --sea-dark: #0b5f63;
+      --brick: #b64a36;
+      --community-accent: #238f97;
+      --community-accent-deep: #1e7f86;
+      --community-accent-soft: rgba(35,143,151,.12);
+      --gold: #d79c31;
+      --pine: #27594d;
+      --ink: #1d2a2e;
+      --muted: #66777a;
+      --shell: #f7f2e9;
+      --paper: #fffdf8;
+      --line: rgba(29, 42, 46, .13);
+      --shadow: 0 18px 45px rgba(24, 50, 54, .14);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--shell);
+      letter-spacing: 0;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 72px;
+      padding: 12px clamp(16px, 4vw, 48px);
+      background: rgba(255,253,248,.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 168px;
+      color: var(--sea-dark);
+      font-weight: 800;
+    }
+    .brand-logo {
+      width: auto;
+      height: 48px;
+      max-width: 100%;
+      object-fit: contain;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 1;
+    }
+    button, .chip {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      color: var(--ink);
+      transition: .18s ease;
+    }
+    .nav button { padding: 9px 12px; font-size: 14px; }
+    .nav button.active, .nav button:hover, .chip.active {
+      background: var(--sea);
+      color: white;
+      border-color: var(--sea);
+    }
+    .solid-btn {
+      padding: 10px 14px;
+      background: var(--brick);
+      color: white;
+      border-color: var(--brick);
+      font-weight: 700;
+    }
+    .ghost-btn { padding: 10px 14px; background: rgba(255,255,255,.78); }
+    .icon-btn { width: 40px; height: 40px; display: grid; place-items: center; font-weight: 800; }
+    .icon-btn.active { background: var(--gold); border-color: var(--gold); color: white; }
+    .solid-btn:hover, .ghost-btn:hover, .icon-btn:hover { transform: translateY(-1px); }
+
+    main { padding-bottom: 56px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .section {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 0;
+    }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .section-head h2 { margin: 0; font-size: clamp(24px, 3vw, 36px); }
+    .section-head p { margin: 8px 0 0; color: var(--muted); line-height: 1.65; }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(7,32,36,.08), rgba(7,32,36,.82)),
+        #143237;
+    }
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #143237;
+    }
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(7,32,36,.08), rgba(7,32,36,.82)),
+        linear-gradient(90deg, rgba(7,32,36,.35), rgba(7,32,36,.03) 54%, rgba(7,32,36,.38));
+    }
+    .hero-slide {
+      position: absolute;
+      inset: -4%;
+      background: var(--bg) center/cover no-repeat;
+      opacity: 0;
+      transform: scale(1.04) translateX(0);
+      animation: coastReel 28s infinite;
+    }
+    .hero-slide:nth-child(2) { animation-delay: 7s; }
+    .hero-slide:nth-child(3) { animation-delay: 14s; }
+    .hero-slide:nth-child(4) { animation-delay: 21s; }
+    @keyframes coastReel {
+      0% { opacity: 0; transform: scale(1.04) translateX(0); }
+      8% { opacity: 1; }
+      28% { opacity: 1; transform: scale(1.12) translateX(-1.8%); }
+      36% { opacity: 0; transform: scale(1.14) translateX(-2.4%); }
+      100% { opacity: 0; transform: scale(1.04) translateX(0); }
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 88px 0 38px;
+      color: white;
+    }
+    .hero h1 {
+      margin: 0 0 16px;
+      font-size: clamp(42px, 8vw, 92px);
+      line-height: .96;
+      letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 720px;
+      margin: 0 0 26px;
+      font-size: clamp(16px, 2.1vw, 22px);
+      line-height: 1.7;
+      color: rgba(255,255,255,.9);
+    }
+    .hero-panel {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 16px;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,.92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      padding: 0 10px;
+      outline: none;
+      color: var(--ink);
+    }
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      color: var(--ink);
+    }
+    .stat {
+      min-height: 72px;
+      padding: 12px;
+      background: rgba(255,255,255,.92);
+      border-radius: var(--radius);
+    }
+    .stat strong { display: block; font-size: 22px; color: var(--sea-dark); }
+    .stat span { font-size: 12px; color: var(--muted); }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+    .chip { padding: 8px 11px; font-size: 14px; }
+    .card-grid, .expert-grid, .diary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .community-toolbar {
+      position: sticky;
+      top: 72px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      background: rgba(247,242,233,.9);
+      backdrop-filter: blur(12px);
+    }
+    .xhs-community {
+      display: grid;
+      grid-template-columns: 168px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+    .xhs-side {
+      position: sticky;
+      top: 96px;
+      display: grid;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(29, 42, 46, .1);
+      border-radius: 20px;
+      background: rgba(255,255,255,.76);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 28px rgba(31, 42, 47, .06);
+    }
+    .xhs-side button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid rgba(29, 42, 46, .06);
+      border-radius: 18px;
+      background: rgba(255,255,255,.94);
+      text-align: left;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+      box-shadow: 0 4px 14px rgba(31, 42, 47, .03);
+    }
+    .xhs-side button.active, .xhs-side button:hover {
+      background: var(--community-accent-soft);
+      color: var(--community-accent);
+      border-color: rgba(35,143,151,.18);
+    }
+    .xhs-side .primary {
+      justify-content: flex-start;
+      background: var(--community-accent);
+      border-color: var(--community-accent);
+      color: white;
+      box-shadow: 0 10px 22px rgba(35,143,151,.18);
+    }
+    .xhs-side .soft {
+      background: rgba(255,255,255,.94);
+    }
+    .xhs-main { min-width: 0; }
+    .community-head {
+      align-items: start;
+    }
+    .community-head-search {
+      flex: 0 1 620px;
+      width: min(620px, 100%);
+      align-self: start;
+      padding-top: 4px;
+    }
+    .xhs-top {
+      position: sticky;
+      top: 72px;
+      z-index: 12;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(29,42,46,.08);
+      border-radius: 20px;
+      background: rgba(255,253,248,.9);
+      box-shadow: 0 12px 28px rgba(42,61,64,.05);
+      backdrop-filter: blur(14px);
+    }
+    .xhs-searchbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 620px;
+      margin: 0 0 10px;
+      padding: 7px;
+      border: 1px solid rgba(29,42,46,.1);
+      border-radius: 999px;
+      background: white;
+      box-shadow: 0 8px 24px rgba(42,61,64,.06);
+    }
+    .xhs-searchbar input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      padding: 8px 12px;
+      background: transparent;
+    }
+    .xhs-searchbar button {
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--community-accent);
+      border-color: var(--community-accent);
+      color: white;
+    }
+    .xhs-channel-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+      max-width: none;
+      margin: 0;
+    }
+    .xhs-channel-row::-webkit-scrollbar { display: none; }
+    .xhs-channel {
+      flex: 0 0 auto;
+      border: 0;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .xhs-channel.active {
+      background: var(--community-accent);
+      color: white;
+    }
+    .community-search {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      min-width: 0;
+    }
+    .community-search input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      padding: 10px 14px;
+      outline: none;
+    }
+    .diary-grid.xhs-feed {
+      display: block;
+      columns: 4 248px;
+      column-gap: 18px;
+    }
+    .xhs-card {
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(29,42,46,.09);
+      border-radius: 18px;
+      box-shadow: 0 12px 26px rgba(42,61,64,.06);
+      break-inside: avoid;
+      transition: .18s ease;
+    }
+    .xhs-card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(42,61,64,.1); }
+    .xhs-cover {
+      position: relative;
+      background: #d8e2df;
+    }
+    .xhs-cover.ratio-4-5 { aspect-ratio: 4 / 5; }
+    .xhs-cover.ratio-3-4 { aspect-ratio: 3 / 4; }
+    .xhs-cover.ratio-wide { aspect-ratio: 4 / 3; }
+    .xhs-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .xhs-badge {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: white;
+      background: rgba(29,42,46,.52);
+      backdrop-filter: blur(8px);
+      font-size: 11px;
+    }
+    .xhs-body { padding: 12px 13px 12px; }
+    .xhs-title {
+      margin: 0 0 10px;
+      font-size: 15px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .xhs-author, .xhs-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .author-mini {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .author-mini span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mini-avatar {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      color: white;
+      background: linear-gradient(135deg, var(--sea), var(--community-accent));
+      font-size: 12px;
+      font-weight: 800;
+      overflow: hidden;
+    }
+    .mini-avatar img,
+    .xhs-detail-avatar img,
+    .comment-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .xhs-actions { margin-top: 6px; }
+    .mini-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(102, 119, 122, .92);
+      font-size: 12px;
+    }
+    .mini-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    .xhs-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      vertical-align: -4px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .mini-action.active-like { color: var(--community-accent); }
+    .mini-action.active-like .xhs-icon { fill: var(--community-accent); stroke: var(--community-accent); }
+    .mini-action.active-save { color: #d79c31; }
+    .mini-action.active-save .xhs-icon { fill: #d79c31; stroke: #d79c31; }
+    .xhs-detail {
+      display: grid;
+      grid-template-columns: minmax(420px, 50%) minmax(420px, 50%);
+      height: min(82vh, 760px);
+      min-height: 620px;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .xhs-detail-media {
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      overflow: hidden;
+      background: #f4efe6;
+      border-right: 1px solid var(--line);
+      min-width: 0;
+      min-height: 0;
+    }
+    .xhs-detail-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      background: #f4efe6;
+    }
+    .xhs-gallery-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,.72);
+      color: var(--ink);
+      font-size: 26px;
+      line-height: 1;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      backdrop-filter: blur(10px);
+    }
+    .xhs-gallery-btn.prev { left: 18px; }
+    .xhs-gallery-btn.next { right: 18px; }
+    .xhs-gallery-count {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 3;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: white;
+      background: rgba(0,0,0,.42);
+      font-weight: 800;
+    }
+    .xhs-gallery-dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+    }
+    .xhs-gallery-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 1px 4px rgba(0,0,0,.18);
+    }
+    .xhs-gallery-dots span.active { background: white; }
+    .xhs-detail-side {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 0;
+      min-width: 0;
+      background: white;
+    }
+    .xhs-detail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .xhs-detail-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      flex: 1;
+    }
+    .xhs-detail-avatar {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e7eceb;
+      border: 1px solid rgba(31, 42, 47, .08);
+    }
+    .xhs-detail-author strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 16px;
+    }
+    .xhs-detail-author span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .xhs-detail-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    .xhs-follow-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 30px;
+      background: var(--community-accent);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 12px 24px rgba(35,143,151,.18);
+    }
+    .xhs-close-btn {
+      background: var(--community-accent);
+      color: white;
+      box-shadow: 0 12px 24px rgba(35,143,151,.18);
+    }
+    .xhs-detail-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px 24px 18px;
+    }
+    .xhs-detail-title {
+      margin: 0 0 16px;
+      font-size: 30px;
+      line-height: 1.28;
+      letter-spacing: -.02em;
+    }
+    .xhs-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .xhs-detail-text {
+      color: #394548;
+      line-height: 1.9;
+      white-space: pre-line;
+      font-size: 17px;
+    }
+    .xhs-detail-text p {
+      margin: 0 0 14px;
+    }
+    .xhs-topic-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 18px;
+    }
+    .xhs-topic {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--community-accent-deep);
+      background: var(--community-accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .xhs-detail-comments {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .xhs-detail-comments h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+    .xhs-detail-actions {
+      padding: 14px 24px 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(16px);
+    }
+    .xhs-action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .xhs-action-group { display: flex; gap: 20px; align-items: center; }
+    .xhs-action-btn {
+      border: 0;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px;
+      color: var(--ink);
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .xhs-action-btn .xhs-icon { width: 28px; height: 28px; }
+    .xhs-action-btn.active-like { color: var(--community-accent); }
+    .xhs-action-btn.active-like .xhs-icon { fill: var(--community-accent); stroke: var(--community-accent); }
+    .xhs-action-btn.active-save { color: #d79c31; }
+    .xhs-action-btn.active-save .xhs-icon { fill: #d79c31; stroke: #d79c31; }
+    .comment-form .solid-btn {
+      background: var(--community-accent);
+      border-color: var(--community-accent);
+      color: white;
+      box-shadow: 0 10px 20px rgba(35,143,151,.16);
+    }
+    .routes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .place-card, .route-card, .expert-card, .diary-card, .panel {
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(42,61,64,.08);
+    }
+    .place-card img, .diary-card img {
+      width: 100%;
+      height: 184px;
+      object-fit: cover;
+      background:
+        linear-gradient(135deg, rgba(15,139,141,.16), rgba(215,156,49,.16)),
+        #d8e2df;
+    }
+    .card-body, .expert-card, .route-card { padding: 14px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: rgba(15,139,141,.1);
+      color: var(--sea-dark);
+    }
+    .tag.brick { background: rgba(182,74,54,.12); color: var(--brick); }
+    .tag.gold { background: rgba(215,156,49,.16); color: #7b540f; }
+    .card-body h3, .route-card h3, .expert-card h3 { margin: 0 0 8px; font-size: 19px; }
+    .card-body p, .route-card p, .expert-card p, .diary-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .map-layout, .planner-layout {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 16px;
+    }
+    .side-panel { padding: 16px; }
+    .layer-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    .layer-toggle.active { background: rgba(15,139,141,.1); border-color: rgba(15,139,141,.45); }
+    .view-modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
+    .route-search {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.68);
+    }
+    .route-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .route-tabs button.active {
+      background: rgba(15,139,141,.12);
+      border-color: rgba(15,139,141,.5);
+      color: var(--sea-dark);
+      font-weight: 800;
+    }
+    .route-result {
+      display: grid;
+      gap: 10px;
+      margin: 10px 0 16px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .route-summary {
+      border: 1px solid rgba(15,139,141,.24);
+      border-radius: var(--radius);
+      background: rgba(15,139,141,.08);
+      padding: 12px;
+    }
+    .route-summary strong { display: block; color: var(--sea-dark); font-size: 18px; margin-bottom: 4px; }
+    .route-summary span { color: var(--muted); font-size: 13px; }
+    .route-steps {
+      display: grid;
+      gap: 8px;
+      counter-reset: route-step;
+    }
+    .route-step {
+      position: relative;
+      display: block;
+      align-items: start;
+      padding: 10px 10px 10px 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      line-height: 1.5;
+      color: #425053;
+      font-size: 13px;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+    .route-step::before {
+      counter-increment: route-step;
+      content: counter(route-step);
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--sea);
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .route-step.transit-plan::before { background: var(--brick); }
+    .route-step strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .map-canvas {
+      position: relative;
+      min-height: 640px;
+      background: #d8e2df;
+    }
+    #baiduMap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .map-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,253,248,.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+    .map-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(15,139,141,.18), rgba(215,156,49,.14)),
+        linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,.5) 1px, transparent 1px);
+      background-size: auto, 64px 64px, 64px 64px;
+    }
+    .map-fallback.show { display: grid; }
+    .place-list { display: grid; gap: 8px; max-height: 330px; overflow: auto; padding-right: 4px; }
+    .list-item {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      text-align: left;
+    }
+    .list-item strong { display: block; margin-bottom: 4px; }
+    .list-item span { color: var(--muted); font-size: 13px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: 13px; color: var(--muted); }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      padding: 10px;
+      outline: none;
+    }
+    .field textarea { min-height: 84px; resize: vertical; }
+    .wide { grid-column: 1 / -1; }
+    .result-panel { padding: 18px; min-height: 560px; }
+    .planner-layout {
+      grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .planner-panel {
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+    .planner-groups {
+      display: grid;
+      gap: 16px;
+    }
+    .planner-group {
+      position: relative;
+      padding: 20px 16px 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(102,169,176,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,251,251,.96));
+      box-shadow: 0 12px 24px rgba(70, 133, 139, .08);
+      display: grid;
+      gap: 12px;
+    }
+    .planner-group::before {
+      content: "";
+      position: absolute;
+      left: 24px;
+      top: -1px;
+      width: 84px;
+      height: 7px;
+      border-radius: 0 0 999px 999px;
+      background: linear-gradient(90deg, #2f98a5, #d8f3f6);
+    }
+    .planner-group h4 {
+      margin: 0;
+      color: #1d2a2e;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .planner-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .planner-field {
+      display: grid;
+      gap: 8px;
+    }
+    .planner-field label {
+      font-size: 13px;
+      color: #2d8790;
+      font-weight: 800;
+    }
+    .planner-field input,
+    .planner-field textarea {
+      width: 100%;
+      border: 1px solid rgba(189,205,209,.86);
+      border-radius: 22px;
+      background: rgba(255,255,255,.98);
+      padding: 14px 18px;
+      outline: none;
+      font-size: 16px;
+      color: #223137;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 6px 14px rgba(69, 111, 117, .05);
+    }
+    .planner-field textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.65;
+      border-radius: 20px;
+    }
+    .planner-picked {
+      display: none;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(216,243,246,.5);
+      border: 1px solid rgba(119,197,205,.36);
+    }
+    .planner-picked.show {
+      display: grid;
+      gap: 10px;
+    }
+    .planner-picked-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .planner-picked-head strong {
+      font-size: 13px;
+      color: #1f7480;
+    }
+    .planner-picked-clear {
+      border: 0;
+      background: transparent;
+      color: #6c7d80;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0;
+    }
+    .planner-picked-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .planner-picked-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(119,197,205,.42);
+      background: rgba(255,255,255,.92);
+      color: #1f7480;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .planner-picked-chip button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .planner-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .planner-choice {
+      min-width: 86px;
+      min-height: 52px;
+      border: 1px solid rgba(211,219,220,.96);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fffefc, #fbf8f1);
+      color: #4e5e62;
+      padding: 10px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 8px 16px rgba(69, 111, 117, .04);
+    }
+    .planner-choice.active {
+      border-color: rgba(119,197,205,.9);
+      background: linear-gradient(180deg, #d8f3f6, #caedf1);
+      color: #1f7480;
+      box-shadow: 0 10px 18px rgba(80, 168, 178, .12);
+    }
+    .planner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .planner-primary {
+      flex: 1 1 220px;
+      min-height: 52px;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 16px;
+      box-shadow: 0 12px 20px rgba(42, 137, 145, .18);
+    }
+    .planner-reset {
+      border: 0;
+      background: transparent;
+      color: #6c7d80;
+      padding: 10px 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .planner-hidden {
+      display: none !important;
+    }
+    .planner-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 560px;
+      height: 100%;
+      padding: 18px;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(89, 191, 198, .18), transparent 28%),
+        radial-gradient(circle at left 80%, rgba(215,156,49,.08), transparent 22%),
+        linear-gradient(180deg, rgba(252,255,255,.98), rgba(242,249,249,.98));
+      border: 1px solid rgba(102,169,176,.16);
+      box-shadow: 0 16px 30px rgba(70, 133, 139, .08);
+    }
+    .planner-stage.is-empty {
+      min-height: 560px;
+    }
+    .planner-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(15,139,141,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,139,141,.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.16), transparent 70%);
+      pointer-events: none;
+    }
+    .planner-stage > * {
+      position: relative;
+      z-index: 1;
+    }
+    .planner-stage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(102,169,176,.16);
+    }
+    #planResult {
+      flex: 1;
+      min-height: 0;
+    }
+    .planner-stage-head h3 {
+      margin: 0;
+      font-size: 22px;
+      color: #203136;
+    }
+    .planner-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(220,244,247,.92);
+      border: 1px solid rgba(119,197,205,.42);
+      color: #217884;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .planner-status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sea);
+      box-shadow: 0 0 0 5px rgba(15,139,141,.12);
+    }
+    .planner-empty-shell {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .planner-empty-summary,
+    .planner-empty-board,
+    .planner-empty-note {
+      border-radius: 20px;
+      border: 1px solid rgba(102,169,176,.14);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 14px 28px rgba(70, 133, 139, .06);
+    }
+    .planner-empty-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+    }
+    .planner-empty-summary span,
+    .planner-empty-line,
+    .planner-empty-note span {
+      display: block;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(139,220,226,.32), rgba(66,169,177,.42), rgba(139,220,226,.32));
+    }
+    .planner-empty-summary span { height: 48px; }
+    .planner-empty-board {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .planner-empty-line {
+      height: 60px;
+      border-radius: 16px;
+    }
+    .planner-empty-note {
+      padding: 12px;
+    }
+    .planner-empty-note span {
+      height: 68px;
+      border-radius: 16px;
+    }
+    .planner-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .planner-summary-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(102,169,176,.14);
+      box-shadow: 0 14px 26px rgba(70, 133, 139, .06);
+    }
+    .planner-summary-card span {
+      display: block;
+      color: #6c7d80;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .planner-summary-card strong {
+      display: block;
+      font-size: 20px;
+      color: #237c87;
+      line-height: 1.2;
+    }
+    .planner-timeline-board {
+      display: grid;
+      gap: 12px;
+    }
+    .planner-day-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(102,169,176,.14);
+      box-shadow: 0 16px 30px rgba(70, 133, 139, .06);
+    }
+    .planner-day-card h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    .planner-stop {
+      display: grid;
+      grid-template-columns: 78px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(29,42,46,.08);
+    }
+    .planner-stop:first-of-type { border-top: 0; }
+    .planner-stop-time {
+      position: relative;
+      color: var(--sea-dark);
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+    .planner-stop-copy strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+    .planner-stop-copy p {
+      margin: 0;
+      color: #4c5a5d;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    .planner-stop-cost {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(216,243,246,.92);
+      color: #217884;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .planner-why-card {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,250,241,.98), rgba(255,255,255,.98));
+      border: 1px solid rgba(215,156,49,.22);
+    }
+    .planner-why-card h4,
+    .planner-remix h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+    .planner-why-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #5e5140;
+      line-height: 1.65;
+      font-size: 13px;
+    }
+    .planner-remix {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(102,169,176,.14);
+    }
+    .planner-experts {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(102,169,176,.14);
+      box-shadow: 0 14px 30px rgba(70, 133, 139, .05);
+    }
+    .planner-experts h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .planner-experts p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    .planner-expert-list {
+      display: grid;
+      gap: 10px;
+    }
+    .planner-expert-card {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(102,169,176,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,251,251,.96));
+    }
+    .planner-expert-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e7eceb;
+      box-shadow: 0 10px 18px rgba(31,42,47,.08);
+    }
+    .planner-expert-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .planner-expert-copy strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .planner-expert-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .planner-expert-copy p {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: #445255;
+      line-height: 1.6;
+    }
+    .planner-expert-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .planner-expert-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(216,243,246,.92);
+      color: #217884;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .planner-expert-link {
+      align-self: center;
+      border-radius: 14px;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .expert-card.is-focused {
+      border-color: rgba(182,74,54,.38);
+      box-shadow: 0 0 0 4px rgba(182,74,54,.10), 0 20px 40px rgba(42,61,64,.14);
+      transform: translateY(-2px);
+    }
+    .planner-remix-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .planner-remix-actions .chip {
+      background: rgba(255,255,255,.92);
+      border-color: rgba(29,42,46,.08);
+    }
+    .planner-result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .empty-state {
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(29,42,46,.2);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.45);
+    }
+    .timeline { display: grid; gap: 12px; }
+    .day-block { border: 1px solid var(--line); border-radius: var(--radius); background: white; padding: 14px; }
+    .stop {
+      display: grid;
+      grid-template-columns: 74px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+    .stop:first-of-type { border-top: 0; }
+    .time { color: var(--sea-dark); font-weight: 800; }
+    .cost-boxes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+    .cost-box { background: rgba(15,139,141,.08); padding: 12px; border-radius: var(--radius); }
+    .cost-box strong { display: block; font-size: 20px; color: var(--sea-dark); }
+    .notice {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--gold);
+      background: rgba(215,156,49,.12);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: #6c4b12;
+      line-height: 1.6;
+    }
+    .avatar {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: linear-gradient(135deg, var(--sea), var(--gold));
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .expert-card {
+      padding: 0;
+    }
+    .expert-media {
+      position: relative;
+      min-height: 430px;
+      background: #f5ead8;
+      overflow: hidden;
+    }
+    .expert-photo {
+      width: 100%;
+      height: 430px;
+      object-fit: contain;
+      object-position: center;
+      background: #f5ead8;
+    }
+    .expert-card .expert-content {
+      padding: 14px;
+    }
+    .expert-profile {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .expert-profile img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: var(--radius);
+      background: #d8e2df;
+    }
+    .expert-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .expert-detail-box {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: rgba(15,139,141,.08);
+    }
+    .expert-detail-box strong { display: block; color: var(--sea-dark); }
+    .expert-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .booking-panel {
+      display: none;
+      margin: 0 0 16px;
+      padding: 14px;
+      border: 1px solid rgba(15,139,141,.22);
+      border-radius: var(--radius);
+      background: rgba(15,139,141,.08);
+    }
+    .booking-panel.show { display: block; }
+    .booking-panel h3 { margin: 0 0 12px; }
+    .booking-records {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 0;
+    }
+    .booking-record {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+    .booking-record strong { display: block; color: var(--ink); font-size: 15px; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(9,23,26,.55);
+    }
+    #diaryModal {
+      padding: clamp(18px, 4vh, 42px);
+      background: rgba(0,0,0,.32);
+      backdrop-filter: blur(2px);
+    }
+    .modal.open { display: flex; }
+    .modal-card {
+      width: min(780px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      background: var(--paper);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .modal-media { width: 100%; height: 260px; object-fit: cover; }
+    .modal-content { padding: 18px; }
+    .modal-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .close-btn { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--ink); color: white; }
+    .xhs-close-btn {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 50%;
+      background: var(--brick);
+      color: white;
+      font-size: 24px;
+      line-height: 1;
+      box-shadow: 0 12px 24px rgba(182, 74, 54, .26);
+    }
+    .diary-full {
+      display: grid;
+      gap: 14px;
+      line-height: 1.75;
+    }
+    .diary-full h3 { margin: 4px 0 6px; }
+    .diary-full p { margin: 0; color: var(--muted); }
+    .diary-route {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .diary-route li {
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .comment-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .comment-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .comment-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e7eceb;
+    }
+    .comment-item strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .comment-item p { margin: 0; color: #4a5658; line-height: 1.65; }
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 0;
+      align-items: center;
+    }
+    .comment-form input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      outline: none;
+      font-size: 15px;
+      background: #faf8f4;
+    }
+    .comment-form .solid-btn {
+      min-width: 88px;
+      border-radius: 16px;
+      padding-inline: 18px;
+    }
+    .diary-editor {
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .editor-block {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fffefa;
+    }
+    .editor-block h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+    .editor-block p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid rgba(29, 42, 46, .12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      background: white;
+    }
+    .field textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+    .upload-card {
+      display: grid;
+      gap: 12px;
+      justify-items: start;
+    }
+    .upload-preview {
+      width: min(100%, 320px);
+      aspect-ratio: 4 / 5;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(29, 42, 46, .1);
+      background:
+        linear-gradient(180deg, rgba(182,74,54,.06), rgba(182,74,54,.12)),
+        #f5efe7;
+    }
+    .upload-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .upload-trigger {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: white;
+      border: 1px solid rgba(29, 42, 46, .12);
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .upload-trigger input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-tip {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 60;
+      padding: 12px 14px;
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .2s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .topbar { align-items: flex-start; flex-direction: column; gap: 10px; }
+      .nav { width: 100%; }
+      .hero-panel, .map-layout, .planner-layout { grid-template-columns: 1fr; }
+      .planner-stage { min-height: 0; }
+      .card-grid, .expert-grid, .diary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .routes, .quick-stats { grid-template-columns: repeat(2, 1fr); }
+      .planner-summary-grid, .planner-empty-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .diary-grid.xhs-feed { columns: 2 240px; }
+      .community-head { display: block; }
+      .community-head-search { width: 100%; max-width: none; padding-top: 10px; }
+      .xhs-detail { grid-template-columns: 1fr; height: 88vh; min-height: 0; }
+      .xhs-detail-media { border-right: 0; border-bottom: 1px solid var(--line); max-height: 52vh; }
+      .xhs-detail-media img { width: 100%; max-width: none; height: 100%; }
+      .xhs-detail-title { font-size: 26px; }
+      .xhs-community { grid-template-columns: 1fr; }
+      .xhs-side {
+        position: static;
+        display: flex;
+        overflow-x: auto;
+      }
+      .xhs-side button { flex: 0 0 auto; width: auto; }
+    }
+    @media (max-width: 640px) {
+      .search-box { flex-direction: column; }
+      .card-grid, .expert-grid, .diary-grid, .routes, .quick-stats, .form-grid, .cost-boxes { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .stop { grid-template-columns: 1fr; }
+      .planner-grid-2, .planner-summary-grid, .planner-empty-summary { grid-template-columns: 1fr; }
+      .planner-group { padding: 18px 14px 14px; border-radius: 20px; }
+      .planner-group h4 { font-size: 17px; }
+      .planner-choice {
+        min-width: calc(50% - 7px);
+        min-height: 48px;
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      .planner-field input,
+      .planner-field textarea {
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .planner-actions { align-items: stretch; }
+      .planner-primary { width: 100%; font-size: 15px; }
+      .planner-reset { width: 100%; text-align: center; }
+      .planner-stage-head { display: block; }
+      .planner-status { margin-top: 10px; }
+      .planner-stop { grid-template-columns: 1fr; gap: 8px; }
+      .map-canvas { min-height: 520px; }
+      .section-head { display: block; }
+      .community-toolbar { top: 126px; align-items: stretch; flex-direction: column; }
+      .expert-profile, .expert-detail-grid { grid-template-columns: 1fr; }
+      .diary-grid.xhs-feed { columns: 1; }
+      .xhs-detail-head { align-items: flex-start; }
+      .xhs-detail-head-actions { width: 100%; justify-content: flex-end; }
+      .xhs-follow-btn { padding-inline: 22px; }
+      .xhs-action-group { gap: 12px; }
+      .xhs-detail-title { font-size: 22px; }
+      .xhs-detail-text { font-size: 15px; line-height: 1.8; }
+      .comment-form { flex-wrap: wrap; }
+      .comment-form .solid-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+        <img class="brand-logo" src="LOGO.png" alt="岛游智选">
+    </div>
+    <nav class="nav" aria-label="主导航">
+      <button class="active" data-view="discover">发现</button>
+      <button data-view="map">地图</button>
+      <button data-view="planner">旅程规划</button>
+      <button data-view="experts">陪游达人</button>
+      <button data-view="community">社区</button>
+    </nav>
+    <button class="solid-btn" data-jump="planner">生成行程</button>
+  </header>
+
+  <main>
+    <section class="view active" id="discover">
+      <div class="hero">
+        <div class="hero-media" aria-hidden="true">
+          <video class="hero-video" autoplay muted loop playsinline poster="https://images.pexels.com/photos/30806845/pexels-photo-30806845.jpeg?auto=compress&cs=tinysrgb&w=1800">
+            <source src="https://videos.pexels.com/video-files/30806364/13175949_1920_1080_25fps.mp4" type="video/mp4">
+          </video>
+          <span class="hero-slide" style="--bg:url('https://images.pexels.com/photos/30806845/pexels-photo-30806845.jpeg?auto=compress&cs=tinysrgb&w=1800')"></span>
+          <span class="hero-slide" style="--bg:url('https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1800')"></span>
+          <span class="hero-slide" style="--bg:url('https://images.pexels.com/photos/26873061/pexels-photo-26873061.jpeg?auto=compress&cs=tinysrgb&w=1800')"></span>
+          <span class="hero-slide" style="--bg:url('https://images.pexels.com/photos/5616581/pexels-photo-5616581.jpeg?auto=compress&cs=tinysrgb&w=1800')"></span>
+        </div>
+        <div class="hero-inner">
+          <h1>岛游智选</h1>
+          <div class="hero-panel">
+            <div class="search-box">
+              <input id="searchInput" placeholder="搜索八大关、崂山、海鲜、啤酒博物馆、咖啡街区">
+              <button class="solid-btn" id="searchBtn">搜索</button>
+            </div>
+            <div class="quick-stats">
+              <div class="stat"><strong>128</strong><span>青岛景点</span></div>
+              <div class="stat"><strong>286</strong><span>本地美食</span></div>
+              <div class="stat"><strong>46</strong><span>认证陪游达人</span></div>
+              <div class="stat"><strong>3.8万</strong><span>真实评价</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>今日青岛精选</h2>
+          </div>
+          <button class="ghost-btn" data-jump="map">打开地图</button>
+        </div>
+        <div class="chips" id="filterChips">
+          <button class="chip active" data-filter="all">全部</button>
+          <button class="chip" data-filter="history">历史遗迹</button>
+          <button class="chip" data-filter="nature">自然景观</button>
+          <button class="chip" data-filter="food">当地美食</button>
+          <button class="chip" data-filter="expert">陪游达人精选</button>
+        </div>
+        <div class="card-grid" id="placeGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>预设主题路线</h2>
+          </div>
+        </div>
+        <div class="routes" id="routeCards"></div>
+      </div>
+    </section>
+
+    <section class="view" id="map">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>地图点位</h2>
+          </div>
+        </div>
+        <div class="map-layout">
+          <aside class="panel side-panel">
+            <h3>视图模式</h3>
+            <div class="view-modes">
+              <button class="ghost-btn map-mode active" data-mode="normal">普通</button>
+              <button class="ghost-btn map-mode" data-mode="satellite">卫星</button>
+              <button class="ghost-btn map-mode" data-mode="street">街景</button>
+              <button class="ghost-btn map-mode" data-mode="pano">3D全景</button>
+            </div>
+            <h3>导航路线</h3>
+            <div class="route-search">
+              <div class="field"><label>出发地</label><input id="routeStartInput" value="青岛站" placeholder="例如：青岛站、五四广场、酒店名称"></div>
+              <div class="field"><label>目的地</label><input id="routeEndInput" value="八大关" placeholder="例如：八大关、崂山、营口路海鲜市场"></div>
+              <div class="route-tabs" id="routeModeTabs">
+                <button class="ghost-btn active" data-route-mode="driving">驾车</button>
+                <button class="ghost-btn" data-route-mode="transit">公交/地铁</button>
+                <button class="ghost-btn" data-route-mode="walking">步行</button>
+                <button class="ghost-btn" data-route-mode="riding">骑行</button>
+              </div>
+              <button class="solid-btn" id="searchRouteBtn">查询路线</button>
+            </div>
+            <div class="route-result" id="routeResult">
+              <div class="empty-state" style="min-height:160px">
+                <div><h3>等待查询路线</h3><p>输入起点和目的地后，可查看时间、距离和路线步骤。</p></div>
+              </div>
+            </div>
+            <h3>地图地点</h3>
+            <div class="place-list" id="mapList"></div>
+          </aside>
+          <div class="panel map-canvas" id="mapCanvas">
+            <div id="baiduMap"></div>
+            <div class="map-badge">
+              <strong id="mapModeTitle">青岛市区地图</strong>
+              <span id="mapHint">地图加载中...</span>
+            </div>
+            <div class="map-fallback" id="mapFallback">
+              <div>
+                <h3>地图加载失败</h3>
+                <p>请检查地图服务 AK 的 Referer 白名单、网络连接，或用本地服务地址打开本文件。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="planner">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>小青——你的旅程规划师</h2>
+          </div>
+        </div>
+        <div class="planner-layout">
+          <aside class="planner-panel">
+            <div class="planner-groups">
+              <section class="planner-group">
+                <h4>出行时间</h4>
+                <div class="planner-grid-2">
+                  <div class="planner-field wide">
+                    <label>出发日期</label>
+                    <input id="dateInput" type="date">
+                  </div>
+                  <div class="planner-hidden">
+                    <select id="daysInput"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+                  </div>
+                </div>
+                <div class="planner-choices" data-plan-group="daysInput">
+                  <button class="planner-choice" data-plan-target="daysInput" data-plan-value="1">1天</button>
+                  <button class="planner-choice active" data-plan-target="daysInput" data-plan-value="2">2天</button>
+                  <button class="planner-choice" data-plan-target="daysInput" data-plan-value="3">3天</button>
+                  <button class="planner-choice" data-plan-target="daysInput" data-plan-value="4">4天+</button>
+                </div>
+              </section>
+              <section class="planner-group">
+                <h4>同行关系</h4>
+                <div class="planner-hidden">
+                  <select id="partyInput"><option>独自</option><option selected>情侣/朋友</option><option>亲子</option><option>长辈同行</option></select>
+                </div>
+                <div class="planner-choices" data-plan-group="partyInput">
+                  <button class="planner-choice" data-plan-target="partyInput" data-plan-value="独自">独自</button>
+                  <button class="planner-choice active" data-plan-target="partyInput" data-plan-value="情侣/朋友">情侣/朋友</button>
+                  <button class="planner-choice" data-plan-target="partyInput" data-plan-value="亲子">亲子</button>
+                  <button class="planner-choice" data-plan-target="partyInput" data-plan-value="长辈同行">长辈同行</button>
+                </div>
+                <div class="planner-hidden">
+                  <select id="peopleInput"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5+</option></select>
+                </div>
+                <div class="planner-choices" data-plan-group="peopleInput">
+                  <button class="planner-choice active" data-plan-target="peopleInput" data-plan-value="2">2人</button>
+                  <button class="planner-choice" data-plan-target="peopleInput" data-plan-value="1">1人</button>
+                  <button class="planner-choice" data-plan-target="peopleInput" data-plan-value="3">3人</button>
+                  <button class="planner-choice" data-plan-target="peopleInput" data-plan-value="4">4人+</button>
+                </div>
+              </section>
+              <section class="planner-group">
+                <h4>预算与节奏</h4>
+                <div class="planner-hidden">
+                  <select id="budgetInput"><option>经济</option><option selected>舒适</option><option>豪华</option></select>
+                  <select id="paceInput"><option>轻松</option><option selected>适中</option><option>紧凑</option></select>
+                </div>
+                <div class="planner-field" style="margin-bottom:10px">
+                  <label>预算档位</label>
+                  <div class="planner-choices" data-plan-group="budgetInput">
+                    <button class="planner-choice" data-plan-target="budgetInput" data-plan-value="经济">经济</button>
+                    <button class="planner-choice active" data-plan-target="budgetInput" data-plan-value="舒适">舒适</button>
+                    <button class="planner-choice" data-plan-target="budgetInput" data-plan-value="豪华">豪华</button>
+                  </div>
+                </div>
+                <div class="planner-field">
+                  <label>旅行节奏</label>
+                  <div class="planner-choices" data-plan-group="paceInput">
+                    <button class="planner-choice" data-plan-target="paceInput" data-plan-value="轻松">轻松</button>
+                    <button class="planner-choice active" data-plan-target="paceInput" data-plan-value="适中">适中</button>
+                    <button class="planner-choice" data-plan-target="paceInput" data-plan-value="紧凑">紧凑</button>
+                  </div>
+                </div>
+              </section>
+              <section class="planner-group">
+                <h4>起终点</h4>
+                <div class="planner-grid-2">
+                  <div class="planner-field">
+                    <label>起点</label>
+                    <input id="startInput" value="青岛站">
+                  </div>
+                  <div class="planner-field">
+                    <label>终点</label>
+                    <input id="endInput" value="五四广场">
+                  </div>
+                </div>
+              </section>
+              <section class="planner-group">
+                <h4>兴趣与限制</h4>
+                <div class="planner-picked" id="plannerPicked"></div>
+                <div class="planner-choices" style="margin-bottom:10px">
+                  <button class="planner-choice" data-interest-suggestion="喜欢老城建筑和海边慢走">老城建筑</button>
+                  <button class="planner-choice" data-interest-suggestion="想吃本地海鲜和锅贴，不想踩雷">本地海鲜</button>
+                  <button class="planner-choice" data-interest-suggestion="不想排太久队，希望路线轻松顺路">避开排队</button>
+                </div>
+                <div class="planner-field">
+                  <label>旅行偏好</label>
+                  <textarea id="interestInput">喜欢老城建筑、海景、海鲜，不想排太久队，希望有本地人推荐的小店。</textarea>
+                </div>
+              </section>
+            </div>
+            <div class="planner-actions">
+              <button class="solid-btn planner-primary" id="generatePlan">开始编排行程</button>
+              <button class="planner-reset" id="resetPlan" type="button">重置偏好</button>
+            </div>
+          </aside>
+          <div class="planner-stage">
+            <div class="planner-stage-head">
+              <div>
+                <h3 id="plannerStageTitle">小青正在为你准备旅程</h3>
+              </div>
+              <div class="planner-status">本地顺路规则已接入</div>
+            </div>
+            <div id="planResult"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="experts">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h2>认证陪游达人中心</h2>
+          </div>
+        </div>
+        <div class="booking-panel" id="bookingPanel"></div>
+        <div class="expert-grid" id="expertGrid"></div>
+      </div>
+    </section>
+
+    <section class="view" id="community">
+      <div class="section">
+        <div class="section-head community-head">
+          <div>
+            <h2>真实社区与旅行日记</h2>
+          </div>
+          <div class="community-head-search">
+            <div class="xhs-searchbar">
+              <input id="communitySearchInput" placeholder="搜索青岛攻略、美食店、路线、避坑经验">
+              <button class="solid-btn" id="communitySearchBtn">搜索</button>
+            </div>
+          </div>
+        </div>
+        <div class="xhs-community">
+          <aside class="xhs-side" aria-label="社区导航">
+            <button class="active" data-community-section="recommend">⌂ 推荐</button>
+            <button data-community-section="follow">＋ 关注</button>
+            <button class="primary" id="uploadDiary">✎ 发布</button>
+          </aside>
+          <div class="xhs-main">
+            <div class="xhs-top">
+              <div class="xhs-channel-row" id="communityChips">
+                <button class="xhs-channel active" data-community-filter="all">推荐</button>
+                <button class="xhs-channel" data-community-filter="美食">美食</button>
+                <button class="xhs-channel" data-community-filter="老城">老城</button>
+                <button class="xhs-channel" data-community-filter="崂山">崂山</button>
+                <button class="xhs-channel" data-community-filter="亲子长辈">亲子长辈</button>
+                <button class="xhs-channel" data-community-filter="夜市">夜市</button>
+                <button class="xhs-channel" data-community-filter="摄影">摄影</button>
+                <button class="xhs-channel" data-community-filter="小众">小众</button>
+              </div>
+            </div>
+            <div class="diary-grid xhs-feed" id="diaryGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="section" style="color:var(--muted);font-size:12px;line-height:1.7">
+    </footer>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <img class="modal-media" id="modalImg" alt="" onerror="handleImageError(this)">
+      <div class="modal-content">
+        <div class="modal-head">
+          <div>
+            <div class="meta-row" id="modalTags"></div>
+            <h2 id="modalTitle"></h2>
+          </div>
+          <button class="close-btn" id="closeModal" aria-label="关闭">×</button>
+        </div>
+        <p id="modalDesc"></p>
+        <div class="cost-boxes">
+          <div class="cost-box"><span>评分</span><strong id="modalScore"></strong></div>
+          <div class="cost-box"><span>建议时长</span><strong id="modalTime"></strong></div>
+          <div class="cost-box"><span>人均预算</span><strong id="modalCost"></strong></div>
+          <div class="cost-box"><span>陪游达人可信度</span><strong>认证</strong></div>
+        </div>
+        <div class="notice" id="modalExpert"></div>
+        <div class="card-actions">
+          <button class="solid-btn" id="modalAddPlan">加入旅程路线</button>
+          <button class="ghost-btn" id="modalFavorite">收藏</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="diaryModal">
+    <div class="modal-card" style="width:min(1360px,92vw);max-height:none;overflow:visible;padding:0;border-radius:24px;background:transparent">
+      <div class="xhs-detail" id="diaryModalBody"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="diaryFormModal">
+    <div class="modal-card">
+      <div class="modal-content">
+        <div class="modal-head">
+          <div>
+            <span class="tag">旅行日记</span>
+            <h2 id="diaryFormTitle">发布日记</h2>
+          </div>
+          <button class="close-btn" id="closeDiaryForm" aria-label="关闭">×</button>
+        </div>
+        <form id="diaryForm">
+          <input type="hidden" id="diaryIdInput">
+          <input type="hidden" id="diaryImgInput">
+          <div class="diary-editor">
+            <section class="editor-block">
+              <h3>上传图片</h3>
+              <div class="upload-card">
+                <label class="upload-trigger">
+                  <span>上传图片</span>
+                  <input id="diaryImageFileInput" type="file" accept="image/*">
+                </label>
+              </div>
+            </section>
+            <section class="editor-block">
+              <h3>写标题</h3>
+              <div class="field"><label>标题</label><input id="diaryTitleInput" placeholder="例如：刚整理好一条青岛顺路路线，来给你们避坑" required></div>
+            </section>
+            <section class="editor-block">
+              <h3>写正文内容</h3>
+              <div class="field"><label>正文内容</label><textarea id="diaryContentInput" placeholder="比如：这条路线适合第一次来青岛的人，整体顺路、不容易折返。上午先看海和老城，下午穿插咖啡街区和休息点，晚上把夜市留到最后……" required></textarea></div>
+            </section>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" type="button" id="cancelDiaryForm">取消</button>
+            <button class="solid-btn" type="submit">保存并发布</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="expertModal">
+    <div class="modal-card">
+      <div class="modal-content">
+        <div class="modal-head">
+          <div>
+            <div class="meta-row" id="expertModalTags"></div>
+            <h2 id="expertModalTitle"></h2>
+          </div>
+          <button class="close-btn" id="closeExpertModal" aria-label="关闭">×</button>
+        </div>
+        <div id="expertModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="bookingModal">
+    <div class="modal-card">
+      <div class="modal-content">
+        <div class="modal-head">
+          <div>
+            <span class="tag">陪游预约</span>
+            <h2 id="bookingModalTitle">预约陪游体验</h2>
+          </div>
+          <button class="close-btn" id="closeBookingModal" aria-label="关闭">×</button>
+        </div>
+        <div class="notice" id="bookingSummary"></div>
+        <form id="bookingForm">
+          <input type="hidden" id="bookingExpertId">
+          <div class="form-grid">
+            <div class="field"><label>陪游达人</label><input id="bookingExpertInput" readonly></div>
+            <div class="field"><label>体验项目</label><select id="bookingExperienceInput"></select></div>
+            <div class="field"><label>预约日期</label><input id="bookingDateInput" type="date" required></div>
+            <div class="field"><label>开始时间</label><input id="bookingTimeInput" type="time" value="09:30" required></div>
+            <div class="field"><label>人数</label><select id="bookingPeopleInput"><option>1人</option><option selected>2人</option><option>3人</option><option>4人</option><option>5人以上</option></select></div>
+            <div class="field"><label>联系电话</label><input id="bookingPhoneInput" placeholder="用于确认行程" required></div>
+            <div class="field wide"><label>接送地点 / 备注</label><textarea id="bookingNoteInput" placeholder="例如：青岛站接，想轻松一点，多拍海边照片"></textarea></div>
+          </div>
+          <div class="form-actions">
+            <button class="ghost-btn" type="button" id="cancelBookingForm">取消</button>
+            <button class="solid-btn" type="submit">提交预约意向</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const BAIDU_AK = "ZCYyQZoz3aLm9BNm1qNf0dhUO7wRrTWh";
+    const IMAGE_FALLBACK = "https://images.pexels.com/photos/26873061/pexels-photo-26873061.jpeg?auto=compress&cs=tinysrgb&w=1200";
+
+    function handleImageError(img) {
+      img.onerror = null;
+      img.src = IMAGE_FALLBACK;
+    }
+
+    const places = [
+      {
+        id: "badaguan", name: "八大关历史街区", type: "history", score: 4.8, time: "2.5h", cost: "0-30元",
+        tags: ["德式建筑", "摄影", "陪游达人精选"],
+        desc: "青岛最具代表性的万国建筑街区，适合清晨或傍晚慢走。陪游达人建议从韶关路进入，避开婚纱摄影高峰。",
+        expert: "历史陪游达人周岚：八大关的好看不只在建筑外观，更在街道尺度和树种变化。",
+        image: "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.3543, lat: 36.0520
+      },
+      {
+        id: "laoshan", name: "崂山太清游线", type: "nature", score: 4.7, time: "5h", cost: "90-160元",
+        tags: ["山海景观", "道教文化", "全景"],
+        desc: "山海相接的青岛代表性自然景观。系统会按体力和天气推荐太清、仰口或巨峰路线。",
+        expert: "户外陪游达人韩川：风大时优先太清线，云雾天反而适合拍山海层次。",
+        image: "https://images.pexels.com/photos/11875331/pexels-photo-11875331.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.6172, lat: 36.1914
+      },
+      {
+        id: "beer", name: "青岛啤酒博物馆", type: "history", score: 4.6, time: "2h", cost: "60-120元",
+        tags: ["啤酒文化", "工业遗产", "夜游"],
+        desc: "理解青岛啤酒文化的核心地点，适合与台东夜市、登州路啤酒街组合。",
+        expert: "餐饮陪游达人秦师傅：参观后不要急着离开，周边老店更能吃到市井味。",
+        image: "https://images.pexels.com/photos/7598915/pexels-photo-7598915.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.3452, lat: 36.0832
+      },
+      {
+        id: "seafood", name: "营口路海鲜市场", type: "food", score: 4.5, time: "1.5h", cost: "80-180元",
+        tags: ["海鲜", "本地人精选", "可代加工"],
+        desc: "适合体验青岛海鲜采购和附近加工店。平台提示参考价格，减少踩坑概率。",
+        expert: "美食陪游达人林小满：先问加工费，再买蛤蜊、海蛎子和当季鱼，预算更稳。",
+        image: "https://images.pexels.com/photos/35716852/pexels-photo-35716852.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.3687, lat: 36.0892
+      },
+      {
+        id: "pier", name: "栈桥与老城海岸", type: "history", score: 4.4, time: "1.5h", cost: "0元",
+        tags: ["海岸地标", "老城", "日落"],
+        desc: "青岛经典地标，适合与中山路、天主教堂、大学路咖啡街区串联成半日路线。",
+        expert: "摄影陪游达人陆远：日落前 40 分钟从回澜阁外侧取景，人流会相对分散。",
+        image: "https://images.pexels.com/photos/26873061/pexels-photo-26873061.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.3195, lat: 36.0638
+      },
+      {
+        id: "cafe", name: "大学路咖啡与红墙街区", type: "expert", score: 4.6, time: "2h", cost: "40-100元",
+        tags: ["咖啡", "红墙", "小众"],
+        desc: "老城慢游的轻松段落，适合在密集景点之间安排休息。系统会推荐避开排队店的替代选择。",
+        expert: "文化陪游达人孟西：别只拍网红墙，附近小巷的书店和院落更有青岛气质。",
+        image: "https://images.pexels.com/photos/20167101/pexels-photo-20167101.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        lng: 120.3259, lat: 36.0669
+      }
+    ];
+
+    const routes = [
+      { title: "老城山海一日", tag: "首次到访", text: "栈桥、天主教堂、八大关、五四广场，晚餐安排海鲜市场。", action: "使用此路线" },
+      { title: "青岛美食夜游", tag: "美食核心", text: "啤酒博物馆、登州路、台东夜市、营口路海鲜，预算透明。", action: "生成美食线" },
+      { title: "崂山轻徒步", tag: "自然景观", text: "根据天气和体力选择太清或仰口，返回后安排农家宴。", action: "规划山海线" },
+      { title: "隐藏瑰宝半日", tag: "避开人群", text: "大学路小巷、信号山周边、老城咖啡和本地小馆。", action: "发现小众点" }
+    ];
+
+    const experts = [
+      {
+        id: "zhou-lan",
+        name: "周岚",
+        role: "本地历史学者",
+        area: "老城建筑与德式街区",
+        desc: "擅长把建筑年代、街区故事和步行路线结合成 2 小时微旅行。",
+        initial: "周",
+        image: "周岚.png",
+        rating: "4.9",
+        followers: "1.8万",
+        verified: "青岛老城建筑研究者",
+        bio: "周岚长期研究青岛老城街区、德式建筑和近代城市史，擅长把建筑年代、街区故事、城市迁变和步行路线结合起来。她的路线不追求打卡数量，而是帮助旅行者理解为什么青岛会形成红瓦、绿树、碧海、蓝天的城市气质。",
+        specialties: ["德式建筑解读", "八大关街区故事", "中山路历史", "老城慢行路线"],
+        routes: ["八大关建筑 2 小时微旅行", "中山路到栈桥老城线", "雨天老城室内替代路线"],
+        experiences: [
+          { name: "老城建筑私享导览", price: "298元/人", time: "2小时" },
+          { name: "八大关历史摄影散步", price: "398元/人", time: "3小时" }
+        ],
+        quote: "建筑不是背景，它是青岛城市性格留下来的证据。"
+      },
+      {
+        id: "qin-hai",
+        name: "秦海",
+        role: "鲁菜与海鲜主厨",
+        area: "青岛海鲜、家常菜、啤酒配餐",
+        desc: "提供市场采购、季节海鲜和加工避坑建议，可预约小班烹饪课。",
+        initial: "秦",
+        image: "秦海.png",
+        rating: "4.9",
+        followers: "2.4万",
+        verified: "青岛海鲜与鲁菜主厨",
+        bio: "秦海熟悉青岛本地海鲜市场、季节性鱼鲜和家常鲁菜做法。他的内容重点不是推荐网红店，而是教用户怎么问价、怎么选海鲜、怎么判断加工费，以及如何把啤酒、海鲜和青岛家常菜搭配得更舒服。",
+        specialties: ["海鲜市场采购", "季节海鲜判断", "加工费避坑", "啤酒配餐"],
+        routes: ["营口路海鲜市场采购线", "啤酒博物馆到台东夜食线", "青岛家常菜半日体验"],
+        experiences: [
+          { name: "海鲜市场陪买陪吃", price: "228元/人", time: "2.5小时" },
+          { name: "青岛海鲜小班烹饪课", price: "468元/人", time: "3小时" }
+        ],
+        quote: "会吃海鲜，第一步不是找贵店，是先知道当季什么值得买。"
+      },
+      {
+        id: "lu-yuan",
+        name: "陆远",
+        role: "城市摄影师",
+        area: "海岸日出、老城街拍、崂山云海",
+        desc: "给出不同季节的机位、时间和人流规避方案。",
+        initial: "陆",
+        image: "陆远.png",
+        rating: "4.8",
+        followers: "3.1万",
+        verified: "青岛城市与旅行摄影师",
+        bio: "陆远常年拍摄青岛海岸线、老城街巷、崂山云海和城市夜景。他会根据季节、光线、风向和人流给出拍摄建议，也会为普通旅行者设计不用专业设备也能拍好的城市散步路线。",
+        specialties: ["海岸日出机位", "老城街拍", "崂山云海", "避开人群拍摄"],
+        routes: ["栈桥日出摄影线", "八大关下午光影线", "崂山云海一日拍摄线"],
+        experiences: [
+          { name: "青岛老城街拍陪拍", price: "368元/人", time: "2小时" },
+          { name: "崂山云海摄影工作坊", price: "688元/人", time: "半日" }
+        ],
+        quote: "青岛最好的照片，往往出现在你愿意多等十分钟的时候。"
+      },
+      {
+        id: "han-xiao",
+        name: "韩骁",
+        role: "海岸线陪游领队",
+        area: "自驾接送、海边拍照、夜景兜风",
+        desc: "熟悉青岛沿海一线和老城夜景，可预约车接车送与半日轻陪游。",
+        initial: "韩",
+        image: "韩骁.png",
+        rating: "4.9",
+        followers: "2.7万",
+        verified: "青岛本地陪游达人｜持证驾驶",
+        bio: "韩骁主打轻松省心的青岛城市陪游，适合第一次来青岛、情侣朋友出行或想少走路的人。他熟悉栈桥、八大关、小麦岛、五四广场和奥帆中心的顺路玩法，也会根据天气和人流临时调整路线。可提供车接车送服务，常用车型为特斯拉 Model Y，适合 1-3 人舒适出行；市南、市北、崂山核心区可约定酒店或车站接送。",
+        specialties: ["海岸线自驾", "酒店车接车送", "夜景兜风", "情侣朋友陪游"],
+        routes: ["栈桥到小麦岛海岸兜风线", "八大关老城轻松拍照线", "五四广场到奥帆中心夜景线"],
+        experiences: [
+          { name: "半日海岸线车接车送陪游", price: "598元/组", time: "4小时" },
+          { name: "青岛夜景兜风与拍照陪游", price: "398元/组", time: "2.5小时" }
+        ],
+        quote: "青岛最舒服的玩法，是把海风、路线和停车点都提前安排好。"
+      },
+      {
+        id: "lin-tang",
+        name: "林棠",
+        role: "Citywalk 陪拍陪游达人",
+        area: "老城街拍、咖啡小店、女生友好路线",
+        desc: "擅长设计轻松好拍的老城 Citywalk，适合闺蜜、情侣和独自旅行者。",
+        initial: "林",
+        image: "林棠.png",
+        rating: "4.8",
+        followers: "3.4万",
+        verified: "青岛老城 Citywalk 陪游达人",
+        bio: "林棠长期整理青岛老城拍照点、咖啡小店和适合慢逛的街巷路线。她的陪游重点不是赶景点，而是帮用户找到舒服、有氛围、出片率高的城市片段。她会提前根据穿搭、天气、想要的照片风格推荐路线，也能帮忙拍照、选机位、安排休息点。路线以步行和打车衔接为主，适合不想被行程压得太满的旅行者。",
+        specialties: ["老城 Citywalk", "街拍陪拍", "咖啡店推荐", "女生友好路线"],
+        routes: ["大学路红墙到信号山轻步行", "中山路老城咖啡散步线", "八大关花树季拍照线"],
+        experiences: [
+          { name: "老城 Citywalk 陪拍", price: "328元/人", time: "2小时" },
+          { name: "闺蜜青岛一日轻陪游", price: "688元/组", time: "6小时" }
+        ],
+        quote: "好看的青岛不只在景点，也在你愿意慢下来的一条小巷。"
+      },
+      {
+        id: "su-yan",
+        name: "苏妍",
+        role: "美食与夜生活陪游达人",
+        area: "海鲜夜宵、酒馆微醺、台东夜市",
+        desc: "主打本地小馆、夜市和轻松社交型陪游，可安排接送与夜间路线。",
+        initial: "苏",
+        image: "苏妍.png",
+        rating: "4.9",
+        followers: "2.9万",
+        verified: "青岛美食夜游陪游达人",
+        bio: "苏妍熟悉青岛夜间美食、海鲜加工、精酿酒馆和适合朋友聚会的轻松路线。她会根据预算和口味避开游客感太重的店，安排从晚餐、夜市到海边散步的完整节奏。可提供夜间接送协调服务，自驾车型为 MINI Cooper，适合 1-2 人短途接送；多人出行可协助叫商务车或网约车，优先保证夜间安全和路线顺畅。",
+        specialties: ["海鲜夜宵", "台东夜市", "精酿酒馆", "夜间接送协调"],
+        routes: ["营口路海鲜到台东夜市线", "啤酒博物馆到本地酒馆线", "奥帆中心夜景微醺线"],
+        experiences: [
+          { name: "青岛夜宵美食陪游", price: "298元/人", time: "3小时" },
+          { name: "夜生活微醺路线与接送", price: "498元/组", time: "4小时" }
+        ],
+        quote: "晚上来青岛，别只找热闹，要找到吃得舒服、回得安心的路线。"
+      },
+      {
+        id: "gu-chuan",
+        name: "顾川",
+        role: "崂山户外陪游达人",
+        area: "崂山轻徒步、山海机位、户外安全陪同",
+        desc: "熟悉崂山太清、仰口和海岸徒步线，适合想看山海但不想盲走的新手游客。",
+        initial: "顾",
+        image: "顾川.png",
+        rating: "4.8",
+        followers: "2.1万",
+        verified: "青岛崂山户外陪游达人",
+        bio: "顾川长期带朋友和游客走崂山、仰口、太清宫周边和青岛东部海岸线，擅长根据体力、天气、风向和季节选择不硬核但足够有风景的路线。他会提前提醒装备、补给和返程时间，帮助第一次去崂山的人避开无效绕路和体力透支。服务以轻徒步、山海拍照点、户外安全陪同和路线节奏控制为主，不做高风险攀爬。",
+        specialties: ["崂山轻徒步", "山海机位", "户外安全陪同", "新手友好路线"],
+        routes: ["仰口海岸轻徒步线", "太清宫到海边山海线", "崂山半日低强度观景线"],
+        experiences: [
+          { name: "崂山新手轻徒步陪游", price: "398元/人", time: "4小时" },
+          { name: "山海日落机位陪走", price: "328元/人", time: "3小时" }
+        ],
+        quote: "崂山不用走得很狠，选对路线，山和海会自己慢慢展开。"
+      }
+    ];
+
+    const DEFAULT_DIARIES = [
+      {
+        id: "diary-zhanqiao-taidong",
+        owner: "community",
+        title: "两天一夜不绕路：从栈桥吃到台东",
+        author: "青岛探索者 阿敏",
+        img: "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "2天1夜",
+        budget: "480元/人",
+        tags: ["老城", "海鲜", "首次到访"],
+        text: "路线包含 6 个景点、4 家餐馆，人均 480 元，适合第一次来青岛。",
+        content: "这条路线适合第一次来青岛的人。第一天从栈桥进入老城，不急着打卡所有景点，而是沿着中山路、天主教堂和大学路慢慢走，把海岸、红瓦、咖啡和老街串起来。午餐安排营口路海鲜市场，先问加工费再买海鲜，晚上去台东和啤酒博物馆周边收尾。第二天如果体力够，可以加八大关和五四广场；如果想轻松，就把八大关放到下午慢逛。",
+        route: [
+          { time: "09:00", place: "栈桥", note: "从青岛站步行或打车到栈桥，先看海岸地标。", cost: "0元" },
+          { time: "10:20", place: "中山路与天主教堂", note: "适合拍老城街景，建议避开正门人群。", cost: "0-20元" },
+          { time: "12:10", place: "营口路海鲜市场", note: "先问加工费，贝类和当季鱼更稳。", cost: "120元" },
+          { time: "15:00", place: "大学路咖啡街区", note: "安排休息，适合红墙和小巷慢逛。", cost: "40元" },
+          { time: "18:30", place: "青岛啤酒博物馆与台东", note: "啤酒文化加小吃夜游，结束路线。", cost: "160元" }
+        ],
+        food: ["海鲜加工", "锅贴", "原浆啤酒", "甜沫"],
+        tips: "海鲜市场一定先确认加工费；热门红墙点位排队时，可以转去旁边巷子拍照。",
+        comments: [
+          { author: "小赵", text: "按这个顺序走真的不绕路，台东晚上很热闹。" },
+          { author: "海边橙子", text: "营口路加工费提醒太有用了，建议大家先问清楚。" }
+        ]
+      },
+      {
+        id: "diary-laoshan-family",
+        owner: "community",
+        title: "带爸妈游崂山：轻松版太清路线",
+        author: "认证用户 老吴",
+        img: "https://images.pexels.com/photos/5616581/pexels-photo-5616581.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "1日",
+        budget: "320元/人",
+        tags: ["崂山", "亲子长辈", "轻松"],
+        text: "少爬坡、少排队、午餐选农家宴，回程安排海边散步。",
+        content: "带长辈去崂山不要贪多，太清线比巨峰线更友好。早上早点出发，避开入园高峰，中午安排农家宴，下午不要继续硬爬，回市区后在海边散步就很好。整条路线重点是舒服，不是打卡数量。",
+        route: [
+          { time: "08:00", place: "市区出发", note: "建议打车或包车，减少换乘。", cost: "60元" },
+          { time: "09:20", place: "崂山太清游览区", note: "选择低强度路线，边走边休息。", cost: "90元" },
+          { time: "12:30", place: "崂山农家宴", note: "优先点海菜凉粉、时令鱼和炖鸡。", cost: "120元" },
+          { time: "15:30", place: "返程海边散步", note: "不再增加高强度景点，留出体力。", cost: "0元" }
+        ],
+        food: ["海菜凉粉", "崂山菇炖鸡", "时令鱼"],
+        tips: "崂山天气变化快，带薄外套；长辈同行时不要安排巨峰高强度路线。",
+        comments: [
+          { author: "阿宁", text: "带爸妈走太清线很合适，强度刚刚好。" },
+          { author: "旅行慢慢", text: "农家宴最好提前打电话确认营业。" }
+        ]
+      },
+      {
+        id: "diary-food-day",
+        owner: "community",
+        title: "只为吃：海鲜、锅贴和啤酒的一天",
+        author: "青岛探索者 小满",
+        img: "https://images.pexels.com/photos/3903587/pexels-photo-3903587.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "1日",
+        budget: "260元/人",
+        tags: ["美食", "夜市", "本地小吃"],
+        text: "从市场到夜市，记录价格、排队时间和替代店。",
+        content: "这是一条以吃为主的路线。白天不要吃太满，午餐去海鲜市场体验采购和加工，下午安排咖啡或海边散步消食，晚上把胃口留给啤酒和台东小吃。比起排队网红店，更推荐选择本地人排队短、翻台快的小店。",
+        route: [
+          { time: "11:00", place: "营口路海鲜市场", note: "买贝类、虾和当季鱼，注意加工费。", cost: "130元" },
+          { time: "14:30", place: "大学路咖啡街区", note: "休息和拍照，不安排重口味甜品。", cost: "45元" },
+          { time: "17:30", place: "青岛啤酒博物馆周边", note: "了解啤酒文化，顺路吃小店。", cost: "60元" },
+          { time: "19:30", place: "台东夜市", note: "少量多样，优先锅贴、烤鱿鱼和甜沫。", cost: "80元" }
+        ],
+        food: ["海鲜加工", "锅贴", "烤鱿鱼", "甜沫", "原浆啤酒"],
+        tips: "夜市不要第一家就买太多；海鲜加工费和称重价格分开确认。",
+        comments: [
+          { author: "吃饭认真", text: "甜沫和锅贴这个组合很青岛。" },
+          { author: "小鱼干", text: "夜市确实要少量多样，不然很快吃饱。" }
+        ]
+      },
+      {
+        id: "diary-badaguan-photo",
+        owner: "community",
+        title: "八大关拍照半日：不用排网红机位",
+        author: "摄影陪游达人 小北",
+        img: "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "半日",
+        budget: "80元/人",
+        tags: ["老城", "摄影", "八大关"],
+        text: "避开热门转角，沿树荫和老建筑慢慢拍，下午光线更柔。",
+        content: "八大关最舒服的方式不是排队拍同一面墙，而是选几条安静路慢慢走。下午三点后光线柔和，树影落在路面和墙面上，照片更有层次。建议穿浅色衣服，和红瓦、绿树、石墙更搭。",
+        route: [
+          { time: "14:30", place: "韶关路入口", note: "从人少的一侧进入，先拍街道纵深。", cost: "0元" },
+          { time: "15:20", place: "花石楼外观", note: "不赶时间可入内，外观也足够出片。", cost: "8元" },
+          { time: "16:30", place: "第二海水浴场", note: "最后走到海边，看夕阳和礁石。", cost: "0元" }
+        ],
+        food: ["咖啡", "冰淇淋"],
+        tips: "婚纱摄影多的路口不要硬等，旁边小路更自然。",
+        comments: [
+          { author: "蓝色毛衣", text: "按这个时间去，光线真的很好。" },
+          { author: "木木", text: "第二海水浴场收尾很舒服。" }
+        ]
+      },
+      {
+        id: "diary-beer-night",
+        owner: "community",
+        title: "啤酒博物馆到台东：夜游不踩雷",
+        author: "本地向导 老程",
+        img: "https://images.pexels.com/photos/7598915/pexels-photo-7598915.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "夜游",
+        budget: "220元/人",
+        tags: ["夜市", "美食", "啤酒"],
+        text: "先看啤酒文化，再去台东吃小吃，路线短，晚上氛围足。",
+        content: "晚上安排啤酒博物馆和台东最顺。先参观博物馆，理解青岛啤酒文化，再去台东吃夜市。不要在第一家摊位买太多，最好每人分着吃，才能多试几种。",
+        route: [
+          { time: "17:00", place: "青岛啤酒博物馆", note: "预留 1.5-2 小时，结束后正好进入夜游。", cost: "90元" },
+          { time: "19:10", place: "登州路周边", note: "体验啤酒街氛围，别空腹喝。", cost: "60元" },
+          { time: "20:20", place: "台东夜市", note: "小吃少量多样，最后打车回住处。", cost: "70元" }
+        ],
+        food: ["原浆啤酒", "烤鱿鱼", "锅贴", "烤冷面"],
+        tips: "夜市高峰人多，贵重物品随身放好。",
+        comments: [
+          { author: "Seven", text: "这条夜游很适合朋友一起。" },
+          { author: "不喝酒也快乐", text: "博物馆出来吃点东西再喝更舒服。" }
+        ]
+      },
+      {
+        id: "diary-qingdao-rain",
+        owner: "community",
+        title: "下雨天怎么玩青岛：室内和咖啡线",
+        author: "雨天旅行家",
+        img: "https://images.pexels.com/photos/20167101/pexels-photo-20167101.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "1日",
+        budget: "300元/人",
+        tags: ["老城", "咖啡", "雨天"],
+        text: "雨天不硬上海边，把博物馆、咖啡馆和老城建筑串起来。",
+        content: "青岛下雨时海边风大，不建议硬走海岸线。可以把行程换成博物馆、老城咖啡馆和室内餐厅。雨中的红瓦和街灯很有氛围，但要注意防滑。",
+        route: [
+          { time: "10:00", place: "青岛市博物馆或啤酒博物馆", note: "选择一个室内展馆作为上午主线。", cost: "0-90元" },
+          { time: "13:00", place: "老城餐厅", note: "吃热菜，避开海边大风。", cost: "100元" },
+          { time: "15:00", place: "大学路咖啡馆", note: "雨天适合窗边坐一会儿。", cost: "50元" }
+        ],
+        food: ["热汤面", "咖啡", "锅贴"],
+        tips: "雨天不要安排崂山高强度路线，视野和安全性都不稳定。",
+        comments: [
+          { author: "雨伞忘带", text: "雨天大学路真的很有感觉。" },
+          { author: "山海之间", text: "崂山雨天确实不建议去。" }
+        ]
+      },
+      {
+        id: "diary-parent-child",
+        owner: "community",
+        title: "亲子青岛两日：少走路也能看海",
+        author: "亲子游 小白",
+        img: "https://images.pexels.com/photos/35541844/pexels-photo-35541844.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "2天",
+        budget: "620元/人",
+        tags: ["亲子长辈", "海边", "轻松"],
+        text: "把海边、博物馆和短距离美食安排在一起，孩子不累大人也轻松。",
+        content: "亲子游最怕路线太赶。建议每天只设一个主景点，再加一个轻松活动。上午看海，下午室内，晚上就近吃饭。不要频繁跨区，孩子体力和情绪会更稳。",
+        route: [
+          { time: "09:30", place: "五四广场海边", note: "看海和拍照，活动空间大。", cost: "0元" },
+          { time: "12:00", place: "商场或亲子友好餐厅", note: "就近吃饭，减少排队。", cost: "120元" },
+          { time: "15:00", place: "室内展馆", note: "下午转室内，避开晒和累。", cost: "60元" }
+        ],
+        food: ["蒸海鲜", "儿童套餐", "甜品"],
+        tips: "推车出行时提前看地铁电梯和景点台阶。",
+        comments: [
+          { author: "两个娃的妈", text: "一天一个主景点这个原则太对了。" },
+          { author: "海风吹", text: "亲子游真的不能贪多。" }
+        ]
+      },
+      {
+        id: "diary-laoshan-sunrise",
+        owner: "community",
+        title: "崂山看日出：给早起星人的山海路线",
+        author: "户外小韩",
+        img: "https://images.pexels.com/photos/11875331/pexels-photo-11875331.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "1日",
+        budget: "360元/人",
+        tags: ["崂山", "摄影", "海边"],
+        text: "早起看山海光线，中午吃农家宴，下午回市区休息。",
+        content: "崂山日出需要早起，也需要提前确认天气。不要只看温度，要看云量和能见度。日出后不要继续硬撑太久，中午吃完农家宴就可以返城休息。",
+        route: [
+          { time: "04:50", place: "市区出发", note: "提前约车，带外套和水。", cost: "80元" },
+          { time: "06:00", place: "崂山观景点", note: "等待日出，注意风大。", cost: "90元" },
+          { time: "11:30", place: "农家宴", note: "补充体力后返城。", cost: "120元" }
+        ],
+        food: ["崂山茶", "农家宴", "海菜凉粉"],
+        tips: "天气不好就不要硬去，日出路线高度依赖能见度。",
+        comments: [
+          { author: "早起失败", text: "收藏了，下次一定早起。" },
+          { author: "云海追逐者", text: "看云量这个提醒很专业。" }
+        ]
+      },
+      {
+        id: "diary-coffee-walk",
+        owner: "community",
+        title: "大学路咖啡散步：老城慢游三小时",
+        author: "咖啡地图",
+        img: "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        days: "3小时",
+        budget: "120元/人",
+        tags: ["老城", "咖啡", "小众"],
+        text: "不赶景点，只在大学路附近喝咖啡、拍红墙和逛小巷。",
+        content: "这条路线适合已经去过经典景点的人。大学路附近不需要赶路，找一家咖啡馆坐一会儿，再去小巷和书店走走。真正好看的地方往往不在最拥挤的网红墙旁边。",
+        route: [
+          { time: "14:00", place: "大学路入口", note: "先避开最热闹的拍照点。", cost: "0元" },
+          { time: "14:40", place: "街区咖啡馆", note: "坐窗边看街景，休息 40 分钟。", cost: "45元" },
+          { time: "16:00", place: "小巷与书店", note: "慢慢走，适合拍细节。", cost: "30元" }
+        ],
+        food: ["咖啡", "甜点", "锅贴"],
+        tips: "不要只排网红墙，旁边小巷更安静也更有老城味。",
+        comments: [
+          { author: "拿铁去冰", text: "这个节奏太适合下午了。" },
+          { author: "慢慢走", text: "小巷真的比网红墙好拍。" }
+        ]
+      }
+    ];
+
+    let diaries = loadDiaries();
+
+    const DEFAULT_FOLLOWED_AUTHORS = ["本地向导 老程", "摄影陪游达人 小北"];
+
+    const state = {
+      view: "discover",
+      filter: "all",
+      query: "",
+      favorites: JSON.parse(localStorage.getItem("luyou_favorites") || "[]"),
+      plannerPlaceIds: JSON.parse(localStorage.getItem("luyou_planner_places") || "[]"),
+      layers: { history: true, nature: true, food: true, expert: true },
+      selectedPlace: null,
+      selectedDiary: null,
+      selectedBookingExpert: null,
+      diaryImageIndex: 0,
+      communitySection: "recommend",
+      communityFilter: "all",
+      communityQuery: "",
+      mapMode: "normal",
+      routeMode: "driving"
+    };
+
+    let bookings = JSON.parse(localStorage.getItem("daoyou_bookings") || "[]");
+    let followedAuthors = JSON.parse(localStorage.getItem("luyou_followed_authors") || JSON.stringify(DEFAULT_FOLLOWED_AUTHORS));
+
+    let baiduMap = null;
+    let baiduMarkers = [];
+    let routeOverlay = null;
+    let baiduRouteService = null;
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function showToast(text) {
+      const toast = $("#toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function saveFavorites() {
+      localStorage.setItem("luyou_favorites", JSON.stringify(state.favorites));
+      const favCount = $("#favCount");
+      if (favCount) favCount.textContent = state.favorites.length;
+    }
+
+    function selectedPlannerPlaces() {
+      return state.plannerPlaceIds
+        .map(id => places.find(place => place.id === id))
+        .filter(Boolean);
+    }
+
+    function plannerPlacesHintText() {
+      const names = selectedPlannerPlaces().map(place => place.name);
+      return names.length ? `优先串联这些已加入路线点：${names.join("、")}。` : "";
+    }
+
+    function renderPlannerPicked() {
+      const mount = $("#plannerPicked");
+      if (!mount) return;
+      const selected = selectedPlannerPlaces();
+      mount.classList.toggle("show", selected.length > 0);
+      if (!selected.length) {
+        mount.innerHTML = "";
+        return;
+      }
+      mount.innerHTML = `
+        <div class="planner-picked-head">
+          <strong>已加入路线</strong>
+          <button class="planner-picked-clear" type="button" id="clearPlannerPlaces">清空</button>
+        </div>
+        <div class="planner-picked-list">
+          ${selected.map(place => `
+            <span class="planner-picked-chip">
+              ${place.name}
+              <button type="button" data-remove-plan-place="${place.id}" aria-label="移除 ${place.name}">×</button>
+            </span>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function invalidatePlannerResult() {
+      localStorage.removeItem("luyou_last_plan");
+      renderPlannerEmptyState();
+    }
+
+    function savePlannerPlaces() {
+      localStorage.setItem("luyou_planner_places", JSON.stringify(state.plannerPlaceIds));
+      renderPlannerPicked();
+    }
+
+    function addPlaceToPlanner(id) {
+      const place = places.find(item => item.id === id);
+      if (!place) return { ok: false, reason: "missing" };
+      if (state.plannerPlaceIds.includes(id)) return { ok: false, reason: "exists", place };
+      state.plannerPlaceIds.push(id);
+      savePlannerPlaces();
+      invalidatePlannerResult();
+      return { ok: true, place };
+    }
+
+    function removePlaceFromPlanner(id) {
+      if (!state.plannerPlaceIds.includes(id)) return;
+      state.plannerPlaceIds = state.plannerPlaceIds.filter(item => item !== id);
+      savePlannerPlaces();
+      invalidatePlannerResult();
+    }
+
+    function clearPlannerPlaces() {
+      state.plannerPlaceIds = [];
+      savePlannerPlaces();
+      invalidatePlannerResult();
+    }
+
+    function saveFollowedAuthors() {
+      localStorage.setItem("luyou_followed_authors", JSON.stringify(followedAuthors));
+    }
+
+    function isFollowingAuthor(name = "") {
+      return followedAuthors.includes(name);
+    }
+
+    function toggleFollowAuthor(name = "") {
+      if (!name) return false;
+      if (isFollowingAuthor(name)) followedAuthors = followedAuthors.filter(item => item !== name);
+      else followedAuthors = [name, ...followedAuthors];
+      saveFollowedAuthors();
+      return isFollowingAuthor(name);
+    }
+
+    function renderCommunityHint() {
+      const hint = $("#communityFeedHint");
+      if (hint) hint.textContent = "";
+    }
+
+    function filteredPlaces() {
+      return places.filter((place) => {
+        const matchType = state.filter === "all" || place.type === state.filter || (state.filter === "expert" && place.tags.includes("陪游达人精选"));
+        const text = [place.name, place.desc, place.tags.join("")].join("");
+        const matchQuery = !state.query || text.includes(state.query);
+        return matchType && matchQuery;
+      });
+    }
+
+    function visibleMapPlaces() {
+      return places.filter((place) => state.layers[place.type] || (place.tags.includes("陪游达人精选") && state.layers.expert));
+    }
+
+    function renderPlaces() {
+      const list = filteredPlaces();
+      $("#placeGrid").innerHTML = list.length ? list.map(place => `
+        <article class="place-card">
+          <img src="${place.image}" alt="${place.name}" onerror="handleImageError(this)">
+          <div class="card-body">
+            <div class="meta-row">${place.tags.slice(0,3).map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+            <h3>${place.name}</h3>
+            <p>${place.desc}</p>
+            <div class="meta-row">
+              <span class="tag gold">评分 ${place.score}</span>
+              <span class="tag brick">${place.time}</span>
+              <span class="tag">${place.cost}</span>
+            </div>
+            <div class="card-actions">
+              <button class="solid-btn" data-detail="${place.id}">查看详情</button>
+              <button class="ghost-btn" data-add-plan="${place.id}">加入路线</button>
+            </div>
+          </div>
+        </article>
+      `).join("") : `<div class="empty-state" style="grid-column:1/-1"><div><h3>没有匹配结果</h3><p>换一个关键词或筛选条件试试。</p></div></div>`;
+    }
+
+    function renderRoutes() {
+      $("#routeCards").innerHTML = routes.map(route => `
+        <article class="route-card">
+          <span class="tag brick">${route.tag}</span>
+          <h3>${route.title}</h3>
+          <p>${route.text}</p>
+          <button class="ghost-btn" data-route="${route.title}">${route.action}</button>
+        </article>
+      `).join("");
+    }
+
+    function renderMapList() {
+      $("#mapList").innerHTML = visibleMapPlaces().map(place => `
+        <button class="list-item" data-map-focus="${place.id}">
+          <strong>${place.name}</strong>
+          <span>${place.tags.join(" · ")}｜${place.time}｜${place.cost}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderBaiduMap() {
+      renderMapList();
+      if (!baiduMap || !window.BMapGL) return;
+
+      if (baiduRouteService?.clearResults) baiduRouteService.clearResults();
+      baiduMarkers.forEach(marker => baiduMap.removeOverlay(marker));
+      baiduMarkers = [];
+      if (routeOverlay) {
+        baiduMap.removeOverlay(routeOverlay);
+        routeOverlay = null;
+      }
+
+      const visible = visibleMapPlaces();
+      const points = visible.map(place => new BMapGL.Point(place.lng, place.lat));
+
+      visible.forEach((place) => {
+        const point = new BMapGL.Point(place.lng, place.lat);
+        const marker = new BMapGL.Marker(point);
+        const info = new BMapGL.InfoWindow(`
+          <div style="width:230px;line-height:1.55">
+            <strong>${place.name}</strong>
+            <p style="margin:6px 0;color:#66777a">${place.desc}</p>
+            <span>评分 ${place.score}｜${place.time}｜${place.cost}</span>
+          </div>
+        `, { title: place.name, width: 260 });
+        marker.addEventListener("click", () => {
+          baiduMap.openInfoWindow(info, point);
+          openDetail(place.id);
+        });
+        baiduMap.addOverlay(marker);
+        baiduMarkers.push(marker);
+      });
+
+      if (points.length > 1) {
+        routeOverlay = new BMapGL.Polyline(points, {
+          strokeColor: "#b64a36",
+          strokeWeight: 5,
+          strokeOpacity: 0.85
+        });
+        baiduMap.addOverlay(routeOverlay);
+      }
+    }
+
+    function normalizeQingdaoKeyword(value) {
+      const keyword = value.trim();
+      if (!keyword) return "";
+      if (/青岛|崂山|市南|市北|李沧|城阳|黄岛|胶州|即墨|平度|莱西/.test(keyword)) return keyword;
+      return `青岛市${keyword}`;
+    }
+
+    function stripRouteHtml(value = "") {
+      return String(value)
+        .replace(/<[^>]+>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&gt;/g, ">")
+        .replace(/&lt;/g, "<")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function getRouteSteps(plan, mode = state.routeMode) {
+      const steps = [];
+      if (mode === "transit") {
+        const summary = stripRouteHtml(plan?.getDescription?.(false) || plan?.getDescription?.(true) || "");
+        if (summary) steps.push({ html: `<strong>推荐方案</strong>${summary}`, className: "transit-plan" });
+      }
+      if (mode === "transit" && plan?.getNumLines) {
+        for (let i = 0; i < plan.getNumLines(); i += 1) {
+          const line = plan.getLine(i);
+          const text = stripRouteHtml(line?.getTitle?.() || line?.title || line?.name || "");
+          if (text) steps.push({ html: `<strong>乘车段</strong>${text}` });
+        }
+      }
+      if (!plan?.getNumRoutes) return steps;
+      for (let i = 0; i < plan.getNumRoutes(); i += 1) {
+        const route = plan.getRoute(i);
+        if (!route?.getNumSteps) continue;
+        for (let j = 0; j < route.getNumSteps(); j += 1) {
+          const step = route.getStep(j);
+          const text = stripRouteHtml(
+            step?.getDescription?.(true) ||
+            step?.getInstructions?.() ||
+            step?.getDescription?.() ||
+            step?.description ||
+            ""
+          );
+          if (text) steps.push({ html: mode === "transit" ? `<strong>步行段</strong>${text}` : text });
+        }
+      }
+      return steps;
+    }
+
+    function renderRouteResult({ title, duration, distance, steps, note }) {
+      const normalizedSteps = (steps.length ? steps : ["地图已完成路线绘制，可在地图上查看具体走向。"]).map(step => {
+        if (typeof step === "string") return { html: step, className: "" };
+        return { html: step.html || "", className: step.className || "" };
+      });
+      $("#routeResult").innerHTML = `
+        <div class="route-summary">
+          <strong>${title}</strong>
+          <span>${duration || "时间待估算"} · ${distance || "距离待估算"}</span>
+          ${note ? `<p style="margin:8px 0 0;color:#6c4b12">${note}</p>` : ""}
+        </div>
+        <div class="route-steps">
+          ${normalizedSteps.map(step => `<div class="route-step ${step.className}">${step.html}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    function getRouteClass(mode) {
+      if (!window.BMapGL) return null;
+      return {
+        driving: BMapGL.DrivingRoute,
+        transit: BMapGL.TransitRoute,
+        walking: BMapGL.WalkingRoute,
+        riding: BMapGL.RidingRoute
+      }[mode] || null;
+    }
+
+    function routeModeTitle(mode = state.routeMode) {
+      return {
+        driving: "驾车路线",
+        transit: "公交/地铁路线",
+        walking: "步行路线",
+        riding: "骑行路线"
+      }[mode] || "路线";
+    }
+
+    function formatRouteTime(seconds) {
+      const value = Number(seconds);
+      if (!Number.isFinite(value) || value <= 0) return "";
+      const minutes = Math.round(value / 60);
+      if (minutes < 60) return `约 ${minutes} 分钟`;
+      const hours = Math.floor(minutes / 60);
+      const rest = minutes % 60;
+      return rest ? `约 ${hours} 小时 ${rest} 分钟` : `约 ${hours} 小时`;
+    }
+
+    function formatRouteDistance(meters) {
+      const value = Number(meters);
+      if (!Number.isFinite(value) || value <= 0) return "";
+      if (value < 1000) return `约 ${Math.round(value)} 米`;
+      return `约 ${(value / 1000).toFixed(value >= 10000 ? 1 : 2)} 公里`;
+    }
+
+    function showRouteLoading(modeTitle, start, end) {
+      $("#routeResult").innerHTML = `<div class="empty-state" style="min-height:160px"><div><h3>正在查询${modeTitle}</h3><p>地图正在计算 ${start} 到 ${end} 的路线...</p></div></div>`;
+      $("#mapHint").textContent = `正在规划${modeTitle}：${start} → ${end}`;
+    }
+
+    function resolvePlacePoint(keyword) {
+      return new Promise((resolve, reject) => {
+        let settled = false;
+        let timer = null;
+        const finish = (handler, value) => {
+          if (settled) return;
+          settled = true;
+          if (timer) clearTimeout(timer);
+          handler(value);
+        };
+        const matched = places.find(place => keyword.includes(place.name) || place.name.includes(keyword.replace(/^青岛市/, "")));
+        if (matched) {
+          resolve(new BMapGL.Point(matched.lng, matched.lat));
+          return;
+        }
+        if (!window.BMapGL?.LocalSearch) {
+          reject(new Error("当前地图环境无法解析地点"));
+          return;
+        }
+        const local = new BMapGL.LocalSearch("青岛市", {
+          onSearchComplete(results) {
+            const ok = typeof BMAP_STATUS_SUCCESS === "undefined" || local.getStatus?.() === BMAP_STATUS_SUCCESS;
+            const poi = ok && results?.getPoi ? results.getPoi(0) : null;
+            if (poi?.point) finish(resolve, poi.point);
+            else finish(reject, new Error(`没有找到地点：${keyword}`));
+          }
+        });
+        timer = setTimeout(() => finish(reject, new Error(`地点解析超时：${keyword}`)), 8000);
+        local.search(keyword);
+      });
+    }
+
+    function baiduJsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callback = `__daoyouRoute_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const separator = url.includes("?") ? "&" : "?";
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("百度路线服务响应超时"));
+        }, 12000);
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[callback];
+          script.remove();
+        }
+        window[callback] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("百度路线服务请求失败，请检查 AK 的 Web 服务权限"));
+        };
+        script.src = `${url}${separator}callback=${callback}`;
+        document.body.appendChild(script);
+      });
+    }
+
+    function collectRouteDetails(value, details = { steps: [], paths: [] }) {
+      if (!value || typeof value !== "object") return details;
+      const instruction = value.instructions || value.instruction || value.stepInstruction || value.description;
+      if (instruction) {
+        const text = stripRouteHtml(instruction);
+        if (text && !details.steps.includes(text)) details.steps.push(text);
+      }
+      if (typeof value.path === "string" && value.path.includes(",")) details.paths.push(value.path);
+      Object.keys(value).forEach(key => {
+        const child = value[key];
+        if (Array.isArray(child)) child.forEach(item => collectRouteDetails(item, details));
+        else if (child && typeof child === "object") collectRouteDetails(child, details);
+      });
+      return details;
+    }
+
+    function vehicleTypeLabel(type) {
+      return {
+        0: "公交",
+        1: "地铁/轻轨",
+        2: "机场巴士",
+        3: "有轨电车",
+        4: "机场巴士",
+        5: "旅游线路",
+        6: "夜班车",
+        8: "轮渡",
+        10: "快车",
+        11: "慢车",
+        12: "机场快轨",
+        13: "机场快轨"
+      }[Number(type)] || "公共交通";
+    }
+
+    function stepTypeLabel(type) {
+      return {
+        1: "火车",
+        2: "飞机",
+        3: "公交/地铁",
+        4: "驾车",
+        5: "步行",
+        6: "大巴"
+      }[Number(type)] || "出行";
+    }
+
+    function parseTransitWebRoute(data) {
+      if (!data || Number(data.status) !== 0) {
+        throw new Error(data?.message || data?.msg || `百度公交路线服务返回状态 ${data?.status ?? "未知"}`);
+      }
+      const result = data.result || {};
+      const route = result.routes?.[0];
+      if (!route) throw new Error("没有找到公交/地铁方案");
+
+      const steps = [];
+      const paths = [];
+      const price = Number(route.price);
+      const priceText = Number.isFinite(price) && price > 0 ? `票价约 ${price} 元` : "";
+      const planParts = [];
+      (route.steps || []).forEach((step) => {
+        const vehicle = step.vehicle || {};
+        if (vehicle.name) planParts.push(vehicle.name);
+        else if (Number(step.type) === 5) planParts.push("步行");
+      });
+      if (planParts.length) {
+        steps.push({
+          html: `<strong>推荐方案</strong>${planParts.join(" → ")}`,
+          className: "transit-plan"
+        });
+      }
+
+      (route.steps || []).forEach((step, index) => {
+        if (step.path) paths.push(step.path);
+        const distance = formatRouteDistance(step.distance);
+        const duration = formatRouteTime(step.duration);
+        const instruction = stripRouteHtml(step.instructions || "");
+        const vehicle = step.vehicle || {};
+        if (vehicle.name) {
+          const direction = vehicle.direction_text ? `开往 ${vehicle.direction_text}` : "";
+          const stationRange = [vehicle.start_name, vehicle.end_name].filter(Boolean).join(" → ");
+          const stopText = Number.isFinite(Number(vehicle.stop_num)) ? `${vehicle.stop_num} 站` : "";
+          const firstLast = [vehicle.start_time ? `首班 ${vehicle.start_time}` : "", vehicle.end_time ? `末班 ${vehicle.end_time}` : ""].filter(Boolean).join("｜");
+          steps.push({
+            html: `<strong>${vehicleTypeLabel(vehicle.type)}：${vehicle.name}</strong>${[direction, stationRange, stopText, duration, distance, firstLast].filter(Boolean).join("｜")}`
+          });
+        } else {
+          steps.push({
+            html: `<strong>${stepTypeLabel(step.type)}</strong>${[instruction, duration, distance].filter(Boolean).join("｜")}`
+          });
+        }
+      });
+
+      return {
+        distance: formatRouteDistance(route.distance),
+        duration: formatRouteTime(route.duration),
+        steps,
+        paths,
+        note: ["公交/地铁方案来自百度路线规划服务，已展示步行接驳、乘车线路、方向、站数、耗时和距离。", priceText].filter(Boolean).join(" ")
+      };
+    }
+
+    function parseBaiduWebRoute(data) {
+      if (!data || Number(data.status) !== 0) {
+        throw new Error(data?.message || data?.msg || `百度路线服务返回状态 ${data?.status ?? "未知"}`);
+      }
+      const result = data.result || {};
+      const route = result.routes?.[0] || result.routes?.[0]?.scheme?.[0] || result.route || result;
+      const transitScheme = result.routes?.[0]?.scheme?.[0];
+      const source = transitScheme || route;
+      const details = collectRouteDetails(source);
+      const distance = source.distance || route.distance || result.distance;
+      const duration = source.duration || route.duration || result.duration;
+      return {
+        distance: formatRouteDistance(distance),
+        duration: formatRouteTime(duration),
+        steps: details.steps.slice(0, 12),
+        paths: details.paths
+      };
+    }
+
+    function drawWebRoute(startPoint, endPoint, paths) {
+      baiduMap.clearOverlays();
+      baiduMarkers = [];
+      const startMarker = new BMapGL.Marker(startPoint);
+      const endMarker = new BMapGL.Marker(endPoint);
+      baiduMap.addOverlay(startMarker);
+      baiduMap.addOverlay(endMarker);
+      baiduMarkers.push(startMarker, endMarker);
+
+      const points = [];
+      paths.forEach(path => {
+        path.split(";").forEach(pair => {
+          const [lng, lat] = pair.split(",").map(Number);
+          if (Number.isFinite(lng) && Number.isFinite(lat)) points.push(new BMapGL.Point(lng, lat));
+        });
+      });
+      if (points.length > 1) {
+        routeOverlay = new BMapGL.Polyline(points, {
+          strokeColor: "#0f8b8d",
+          strokeWeight: 6,
+          strokeOpacity: 0.86
+        });
+        baiduMap.addOverlay(routeOverlay);
+        baiduMap.setViewport([startPoint, endPoint, ...points.slice(0, 80)]);
+      } else {
+        baiduMap.setViewport([startPoint, endPoint]);
+      }
+    }
+
+    async function searchRouteByWebApi(start, end, startPoint, endPoint, modeTitle) {
+      const endpoint = {
+        driving: "driving",
+        transit: "transit",
+        walking: "walking",
+        riding: "riding"
+      }[state.routeMode];
+      const origin = `${startPoint.lat.toFixed(6)},${startPoint.lng.toFixed(6)}`;
+      const destination = `${endPoint.lat.toFixed(6)},${endPoint.lng.toFixed(6)}`;
+      const detailParam = state.routeMode === "transit" ? "&steps_info=1" : "";
+      const url = `https://api.map.baidu.com/directionlite/v1/${endpoint}?origin=${origin}&destination=${destination}&ak=${BAIDU_AK}&coord_type=bd09ll&ret_coordtype=bd09ll${detailParam}`;
+      const data = await baiduJsonp(url);
+      const parsed = state.routeMode === "transit" ? parseTransitWebRoute(data) : parseBaiduWebRoute(data);
+      drawWebRoute(startPoint, endPoint, parsed.paths);
+      renderRouteResult({
+        title: `${modeTitle} · ${start} → ${end}`,
+        duration: parsed.duration,
+        distance: parsed.distance,
+        steps: parsed.steps,
+        note: parsed.note || "路线来自百度路线规划服务，地图上已绘制推荐走向。"
+      });
+      $("#mapHint").textContent = `${modeTitle}已生成：${parsed.duration || "时间待估算"} · ${parsed.distance || "距离待估算"}`;
+      showToast("路线已生成");
+    }
+
+    async function searchBaiduRoute() {
+      const start = normalizeQingdaoKeyword($("#routeStartInput").value);
+      const end = normalizeQingdaoKeyword($("#routeEndInput").value);
+      if (!start || !end) {
+        showToast("请填写出发地和目的地");
+        return;
+      }
+      if (!baiduMap || !window.BMapGL) {
+        showToast("地图还在加载，请稍后查询");
+        return;
+      }
+
+      const RouteClass = getRouteClass(state.routeMode);
+      const modeTitle = routeModeTitle();
+      showRouteLoading(modeTitle, start, end);
+
+      let startPoint;
+      let endPoint;
+      try {
+        [startPoint, endPoint] = await Promise.all([resolvePlacePoint(start), resolvePlacePoint(end)]);
+      } catch (error) {
+        renderRouteResult({
+          title: `${modeTitle}查询失败`,
+          duration: "",
+          distance: "",
+          steps: [],
+          note: error.message || "请换一个更明确的青岛地点名称。"
+        });
+        $("#mapHint").textContent = "地点解析失败，请调整地点后重试";
+        showToast("地点解析失败");
+        return;
+      }
+
+      if (!RouteClass) {
+        try {
+          await searchRouteByWebApi(start, end, startPoint, endPoint, modeTitle);
+        } catch (error) {
+          renderRouteResult({
+            title: `${modeTitle}查询失败`,
+            duration: "",
+            distance: "",
+            steps: [],
+            note: `${error.message || "百度路线服务暂不可用"}。请确认 AK 已开通路线规划 Web 服务。`
+          });
+          $("#mapHint").textContent = "路线查询失败，请检查百度路线规划服务权限";
+          showToast("路线查询失败");
+        }
+        return;
+      }
+
+      if (baiduRouteService?.clearResults) baiduRouteService.clearResults();
+      baiduMap.clearOverlays();
+      baiduMarkers = [];
+
+      baiduRouteService = new RouteClass(baiduMap, {
+        renderOptions: { map: baiduMap, autoViewport: true },
+        onSearchComplete(results) {
+          const ok = typeof BMAP_STATUS_SUCCESS === "undefined" || baiduRouteService.getStatus?.() === BMAP_STATUS_SUCCESS;
+          if (!ok || !results?.getPlan || !results.getNumPlans?.()) {
+            renderRouteResult({
+              title: `${modeTitle}查询失败`,
+              duration: "",
+              distance: "",
+              steps: [],
+              note: "请确认起点和目的地在青岛市内，或换一个更明确的地点名称。"
+            });
+            $("#mapHint").textContent = "路线查询失败，请调整地点后重试";
+            renderBaiduMap();
+            return;
+          }
+          const plan = results.getPlan(0);
+          const duration = plan?.getDuration?.(true) || "";
+          const distance = plan?.getDistance?.(true) || "";
+          const steps = getRouteSteps(plan, state.routeMode);
+          renderRouteResult({
+            title: `${modeTitle} · ${start} → ${end}`,
+            duration,
+            distance,
+            steps,
+            note: state.routeMode === "transit" ? "公交/地铁方案会综合地铁、公交和步行接驳，具体班次以地图实时信息为准。" : ""
+          });
+          $("#mapHint").textContent = `${modeTitle}已生成：${duration || "时间待估算"} · ${distance || "距离待估算"}`;
+          showToast("路线已生成");
+        }
+      });
+
+      baiduRouteService.search(startPoint, endPoint);
+    }
+
+    function initBaiduMap() {
+      try {
+        $("#mapFallback").classList.remove("show");
+        baiduMap = new BMapGL.Map("baiduMap");
+        const center = new BMapGL.Point(120.3826, 36.0671);
+        baiduMap.centerAndZoom(center, 12);
+        baiduMap.enableScrollWheelZoom(true);
+        baiduMap.setHeading(0);
+        baiduMap.setTilt(50);
+        baiduMap.addControl(new BMapGL.ZoomControl());
+        baiduMap.addControl(new BMapGL.ScaleControl());
+        baiduMap.addControl(new BMapGL.CityListControl());
+        if (BMapGL.MapTypeControl) baiduMap.addControl(new BMapGL.MapTypeControl());
+        if (BMapGL.PanoramaControl) baiduMap.addControl(new BMapGL.PanoramaControl());
+        $("#mapHint").textContent = "地图已加载，可拖拽、缩放、点击点位";
+        renderBaiduMap();
+      } catch (error) {
+        console.error(error);
+        $("#mapHint").textContent = "地图初始化失败";
+        $("#mapFallback").classList.add("show");
+      }
+    }
+
+    window.onBaiduMapReady = initBaiduMap;
+
+    function loadBaiduMapScript() {
+      if (window.BMapGL) {
+        initBaiduMap();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = `https://api.map.baidu.com/api?v=1.0&type=webgl&ak=${BAIDU_AK}&callback=onBaiduMapReady`;
+      script.onerror = () => {
+        $("#mapHint").textContent = "地图脚本加载失败";
+        $("#mapFallback").classList.add("show");
+      };
+      document.body.appendChild(script);
+    }
+
+    function switchMapMode(mode) {
+      state.mapMode = mode;
+      const title = {
+        normal: "青岛市区地图",
+        satellite: "青岛海岸卫星地图",
+        street: "街景入口",
+        pano: "3D 俯仰视图"
+      }[mode];
+      $("#mapModeTitle").textContent = title;
+
+      if (!baiduMap || !window.BMapGL) {
+        $("#mapHint").textContent = "地图仍在加载，请稍后再切换";
+        return;
+      }
+
+      if (mode === "satellite" && window.BMAP_SATELLITE_MAP) {
+        baiduMap.setMapType(BMAP_SATELLITE_MAP);
+        $("#mapHint").textContent = "已切换为卫星底图";
+      } else {
+        baiduMap.setMapType(BMAP_NORMAL_MAP);
+      }
+
+      if (mode === "normal") {
+        baiduMap.setTilt(50);
+        $("#mapHint").textContent = "地图可拖拽、缩放、点击点位";
+      }
+      if (mode === "street") {
+        $("#mapHint").textContent = "请使用地图左侧全景控件进入街景；若不可见，请在控制台开通全景权限";
+        baiduMap.setTilt(0);
+      }
+      if (mode === "pano") {
+        baiduMap.setTilt(65);
+        baiduMap.setZoom(13);
+        $("#mapHint").textContent = "已切换为高俯仰 3D 视角，适合展示山海空间关系";
+      }
+    }
+
+    function toggleFavorite(id) {
+      if (state.favorites.includes(id)) {
+        state.favorites = state.favorites.filter(item => item !== id);
+        showToast("已取消收藏");
+      } else {
+        state.favorites.push(id);
+        showToast("已加入收藏");
+      }
+      saveFavorites();
+      renderPlaces();
+    }
+
+    function openDetail(id) {
+      const place = places.find(item => item.id === id);
+      if (!place) return;
+      state.selectedPlace = place;
+      $("#modalImg").src = place.image;
+      $("#modalImg").alt = place.name;
+      $("#modalTitle").textContent = place.name;
+      $("#modalDesc").textContent = place.desc;
+      $("#modalScore").textContent = place.score;
+      $("#modalTime").textContent = place.time;
+      $("#modalCost").textContent = place.cost;
+      $("#modalExpert").textContent = place.expert;
+      $("#modalTags").innerHTML = place.tags.map(tag => `<span class="tag">${tag}</span>`).join("");
+      $("#modalFavorite").textContent = state.favorites.includes(place.id) ? "取消收藏" : "收藏";
+      $("#modal").classList.add("open");
+    }
+
+    function switchView(view) {
+      state.view = view;
+      $$(".view").forEach(el => el.classList.toggle("active", el.id === view));
+      $$(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (view === "map" && baiduMap) {
+        setTimeout(() => {
+          if (typeof baiduMap.resize === "function") baiduMap.resize();
+          renderBaiduMap();
+        }, 120);
+      }
+    }
+
+    function renderPlannerEmptyState() {
+      $("#plannerStageTitle").textContent = "";
+      $(".planner-stage")?.classList.add("is-empty");
+      $("#planResult").innerHTML = "";
+    }
+
+    function renderPlannerLoadingState() {
+      $("#plannerStageTitle").textContent = "";
+      $(".planner-stage")?.classList.remove("is-empty");
+      $("#planResult").innerHTML = "";
+    }
+
+    function syncPlannerChoices() {
+      $$("[data-plan-target]").forEach((button) => {
+        const input = document.getElementById(button.dataset.planTarget);
+        if (!input) return;
+        button.classList.toggle("active", input.value === button.dataset.planValue);
+      });
+    }
+
+    function planExpertReason(expert, contextText, party, pace) {
+      const text = `${contextText} ${party} ${pace}`;
+      if (expert.id === "zhou-lan") return {
+        why: "这条路线里老城、建筑和街区故事占比高，周岚能把路线里的城市背景讲透。",
+        value: "适合补足建筑解读、街区历史和慢行节奏感。"
+      };
+      if (expert.id === "qin-hai") return {
+        why: "你的需求明显在意海鲜、本地吃法和避坑判断，秦海更适合把餐食部分带稳。",
+        value: "适合补足海鲜采购、加工费判断和本地餐桌建议。"
+      };
+      if (expert.id === "lu-yuan") return {
+        why: "路线里有海岸、老城和光线敏感场景，陆远更擅长把机位和时间点安排好。",
+        value: "适合补足出片机位、拍摄时间和人流规避。"
+      };
+      if (expert.id === "han-xiao") return {
+        why: "如果你想少折返、少走冤枉路，韩骁这种海岸线陪游更适合承接整条顺路玩法。",
+        value: "适合补足车接车送、海岸线串联和夜景兜风体验。"
+      };
+      if (expert.id === "lin-tang") return {
+        why: "如果你更看重舒服、好拍和慢慢逛，林棠更适合这类轻松路线。",
+        value: "适合补足 Citywalk 节奏、拍照氛围和休息点安排。"
+      };
+      if (expert.id === "su-yan") return {
+        why: "你的路线如果偏夜游、啤酒和台东夜市，苏妍更懂夜间节奏和安全感。",
+        value: "适合补足夜宵选择、酒馆微醺和夜间接送衔接。"
+      };
+      if (expert.id === "gu-chuan") return {
+        why: "只要路线涉及崂山或轻徒步，顾川都更适合把体力、风景和安全节奏控制好。",
+        value: "适合补足崂山新手友好路线、山海机位和户外安全陪同。"
+      };
+      return {
+        why: `${expert.name}与这条路线匹配度较高。`,
+        value: "适合补足本地判断和路线执行体验。"
+      };
+    }
+
+    function getRecommendedExpertsForPlan({ interest, party, pace, start, end, days, scenario }) {
+      const contextText = `${interest} ${start} ${end} ${scenario}`.toLowerCase();
+      const scored = experts.map((expert) => {
+        let score = 0;
+        const joined = `${expert.area} ${expert.desc} ${expert.bio} ${expert.specialties.join(" ")} ${expert.routes.join(" ")}`.toLowerCase();
+        if (/(老城|建筑|街区|历史|中山路|八大关)/.test(contextText) && /(老城|建筑|历史|街区)/.test(joined)) score += 5;
+        if (/(海鲜|美食|夜市|啤酒|夜游|酒馆)/.test(contextText) && /(海鲜|夜市|啤酒|酒馆|夜宵)/.test(joined)) score += 5;
+        if (/(崂山|山海|徒步|海岸|日落)/.test(contextText) && /(崂山|徒步|海岸|山海)/.test(joined)) score += 5;
+        if (/(拍照|摄影|出片)/.test(contextText) && /(摄影|街拍|机位|拍照)/.test(joined)) score += 4;
+        if (/(轻松|不想走太多|少走路)/.test(contextText + pace) && /(轻松|车接车送|citywalk|新手友好)/.test(joined)) score += 3;
+        if (/(长辈|爸妈)/.test(party) && /(新手友好|轻徒步|轻松|慢行)/.test(joined)) score += 3;
+        if (/(情侣|朋友)/.test(party) && /(夜景|海岸线|微醺|拍照)/.test(joined)) score += 2;
+        if (days >= 2 && /(崂山|海岸|citywalk)/.test(joined)) score += 1;
+        if (scenario.includes("雨天") && /(老城|室内|餐桌|咖啡)/.test(joined)) score += 2;
+        return { expert, score };
+      }).sort((a, b) => b.score - a.score);
+
+      return scored.slice(0, 3).map(({ expert }) => ({
+        ...expert,
+        ...planExpertReason(expert, interest, party, pace)
+      }));
+    }
+
+    function generatePlan(scenario = "") {
+      const days = Number($("#daysInput").value);
+      const budget = $("#budgetInput").value;
+      const pace = $("#paceInput").value;
+      const people = $("#peopleInput").value;
+      const party = $("#partyInput").value;
+      const selectedPlaces = selectedPlannerPlaces();
+      const selectedPlaceNames = selectedPlaces.map(place => place.name);
+      const selectedPlacePrompt = plannerPlacesHintText();
+      const interest = [$("#interestInput").value.trim(), selectedPlacePrompt].filter(Boolean).join(" ");
+      const start = $("#startInput").value.trim();
+      const end = $("#endInput").value.trim();
+      if (!start || !end) {
+        showToast("请填写起点和终点");
+        return;
+      }
+
+      const result = $("#planResult");
+      renderPlannerLoadingState();
+
+      setTimeout(() => {
+        $("#plannerStageTitle").textContent = "小青正在为你准备旅程";
+        $(".planner-stage")?.classList.remove("is-empty");
+        const total = budget === "经济" ? 420 : budget === "豪华" ? 1280 : 760;
+        const recommendedExperts = getRecommendedExpertsForPlan({ interest, party, pace, start, end, days, scenario });
+        const whyItems = [
+          "优先把海岸、老城和餐食串成一条顺路动线，减少跨区折返。",
+          "根据你的预算与节奏，压低排队和无效步行，把时间留给真正值得停留的节点。",
+          "结合陪游达人建议补足本地判断，让路线不只可走，还更像懂青岛的人会怎么安排。"
+        ];
+        if (selectedPlaceNames.length) {
+          whyItems.unshift(`已优先纳入你加入的路线点：${selectedPlaceNames.join("、")}。`);
+        }
+        const extra = scenario ? `<div class="planner-why-card" style="margin-bottom:16px"><h4>本轮已应用情景改写</h4><ul class="planner-why-list"><li>已应用「${scenario}」调整，系统重新平衡了路线强度、预算和替代点。</li></ul></div>` : "";
+        const selectedPlacesCard = selectedPlaceNames.length ? `
+          <div class="planner-why-card" style="margin-bottom:16px">
+            <h4>本次已加入路线</h4>
+            <ul class="planner-why-list"><li>${selectedPlaceNames.join("、")}</li></ul>
+          </div>
+        ` : "";
+        const dayTwo = days >= 2 ? `
+          <div class="planner-day-card">
+            <h3>第 2 天｜崂山山海与本地餐桌</h3>
+            <div class="planner-stop"><div class="planner-stop-time">08:30</div><div class="planner-stop-copy"><strong>前往崂山太清游线</strong><p>预计车程 70 分钟，建议避开 10:00 后入园高峰。</p></div><span class="planner-stop-cost">90元</span></div>
+            <div class="planner-stop"><div class="planner-stop-time">12:40</div><div class="planner-stop-copy"><strong>崂山农家宴</strong><p>推荐当季海菜凉粉、崂山菇炖鸡，陪游达人提示提前确认菜单。</p></div><span class="planner-stop-cost">110元</span></div>
+            <div class="planner-stop"><div class="planner-stop-time">15:30</div><div class="planner-stop-copy"><strong>大学路咖啡与红墙街区</strong><p>返城后安排轻量步行，作为低强度收尾。</p></div><span class="planner-stop-cost">60元</span></div>
+          </div>` : "";
+        const dayThree = days >= 3 || scenario.includes("多住一天") ? `
+          <div class="planner-day-card">
+            <h3>加享日｜隐藏瑰宝与慢游</h3>
+            <div class="planner-stop"><div class="planner-stop-time">09:30</div><div class="planner-stop-copy"><strong>信号山周边老城散步</strong><p>避开热门景点密集人流，适合拍摄红瓦绿树和海岸视角。</p></div><span class="planner-stop-cost">15元</span></div>
+            <div class="planner-stop"><div class="planner-stop-time">12:00</div><div class="planner-stop-copy"><strong>本地锅贴与甜沫</strong><p>加入青岛小吃图鉴路线，预算低、排队风险小。</p></div><span class="planner-stop-cost">45元</span></div>
+          </div>` : "";
+
+        result.innerHTML = `
+          ${extra}
+          ${selectedPlacesCard}
+          <div class="planner-summary-grid">
+            <div class="planner-summary-card"><span>总预算</span><strong>约${total}元/人</strong></div>
+            <div class="planner-summary-card"><span>总步行</span><strong>${pace === "轻松" ? "7.2" : "10.5"}km</strong></div>
+            <div class="planner-summary-card"><span>交通方式</span><strong>地铁+打车</strong></div>
+            <div class="planner-summary-card"><span>同行关系</span><strong>${people}人</strong></div>
+          </div>
+          <div class="planner-timeline-board">
+            <div class="planner-day-card">
+              <h3>第 1 天｜老城建筑、海岸地标与啤酒美食</h3>
+              <div class="planner-stop"><div class="planner-stop-time">09:00</div><div class="planner-stop-copy"><strong>${start}出发至栈桥</strong><p>从海岸地标进入老城，预计游览 70 分钟。</p></div><span class="planner-stop-cost">0元</span></div>
+              <div class="planner-stop"><div class="planner-stop-time">10:30</div><div class="planner-stop-copy"><strong>中山路与天主教堂外观</strong><p>推荐从背街绕行，减少热门拍照点等待。</p></div><span class="planner-stop-cost">0-20元</span></div>
+              <div class="planner-stop"><div class="planner-stop-time">12:10</div><div class="planner-stop-copy"><strong>营口路海鲜市场</strong><p>按陪游达人建议先问加工费，优先选择当季贝类和本地鱼。</p></div><span class="planner-stop-cost">120元</span></div>
+              <div class="planner-stop"><div class="planner-stop-time">15:00</div><div class="planner-stop-copy"><strong>八大关历史街区</strong><p>安排下午光线较柔和时段，适合建筑和街景摄影。</p></div><span class="planner-stop-cost">0元</span></div>
+              <div class="planner-stop"><div class="planner-stop-time">18:30</div><div class="planner-stop-copy"><strong>青岛啤酒博物馆与台东夜市</strong><p>晚间转入啤酒文化与小吃路线，结束于${end}附近。</p></div><span class="planner-stop-cost">160元</span></div>
+            </div>
+            ${dayTwo}
+            ${dayThree}
+          </div>
+          <div class="planner-why-card">
+            <h4>为什么这样排</h4>
+            <ul class="planner-why-list">
+              ${whyItems.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+          <div class="planner-experts">
+            <h4>这条路线适合谁陪你玩</h4>
+            <p>已根据路线主题、你的节奏与兴趣，挑出更适合承接这条线的陪游达人。想继续选择服务时，点进去看对应达人即可。</p>
+            <div class="planner-expert-list">
+              ${recommendedExperts.map(expert => `
+                <article class="planner-expert-card">
+                  <div class="planner-expert-avatar"><img src="${expert.image}" alt="${expert.name}" onerror="handleImageError(this)"></div>
+                  <div class="planner-expert-copy">
+                    <strong>${expert.name}｜${expert.role}</strong>
+                    <span>${expert.area}</span>
+                    <p>${expert.why}</p>
+                    <div class="planner-expert-meta">
+                      <span class="planner-expert-chip">${expert.value}</span>
+                      <span class="planner-expert-chip">${expert.rating}分 · ${expert.followers}</span>
+                    </div>
+                  </div>
+                  <button class="ghost-btn planner-expert-link" data-plan-expert="${expert.id}">查看这位陪游达人</button>
+                </article>
+              `).join("")}
+            </div>
+          </div>
+          <div class="planner-remix">
+            <h4>再调整一版</h4>
+            <div class="planner-remix-actions">
+              <button class="chip" data-scenario="多住一天">如果多住一天</button>
+              <button class="chip" data-scenario="预算升级为豪华">预算升级为豪华</button>
+              <button class="chip" data-scenario="避开人群">避开人群</button>
+              <button class="chip" data-scenario="雨天替代方案">雨天替代方案</button>
+            </div>
+          </div>
+          <div class="planner-result-actions">
+            <button class="solid-btn" id="savePlan">保存行程</button>
+            <button class="ghost-btn" data-jump="map">在地图查看</button>
+          </div>
+        `;
+        localStorage.setItem("luyou_last_plan", result.innerHTML);
+      }, 650);
+    }
+
+    function renderExperts() {
+      $("#expertGrid").innerHTML = experts.map(expert => `
+        <article class="expert-card" data-expert-card="${expert.id}">
+          <div class="expert-media">
+            <img class="expert-photo" src="${expert.image}" alt="${expert.name}" onerror="handleImageError(this)">
+          </div>
+          <div class="expert-content">
+            <div class="meta-row"><span class="tag">认证陪游达人</span><span class="tag gold">${expert.rating}分</span><span class="tag">${expert.followers}关注</span></div>
+            <h3>${expert.name}｜${expert.role}</h3>
+            <p><strong>${expert.area}</strong></p>
+            <p>${expert.desc}</p>
+            <div class="card-actions">
+              <button class="solid-btn" data-expert-detail="${expert.id}">查看详情</button>
+              <button class="ghost-btn" data-follow="${expert.name}">关注</button>
+              <button class="ghost-btn" data-book="${expert.id}">预约体验</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+      renderBookings();
+    }
+
+    function renderBookings() {
+      const panel = $("#bookingPanel");
+      if (!panel) return;
+      const recent = bookings.slice(-3).reverse();
+      panel.classList.toggle("show", recent.length > 0);
+      if (!recent.length) {
+        panel.innerHTML = "";
+        return;
+      }
+      panel.innerHTML = `
+        <h3>最近预约意向</h3>
+        <div class="booking-records">
+          ${recent.map(item => `
+            <div class="booking-record">
+              <strong>${item.expertName}｜${item.experienceName}</strong>
+              ${item.date} ${item.time}｜${item.people}<br>
+              联系：${item.phone}<br>
+              编号：${item.id}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function saveBookings() {
+      localStorage.setItem("daoyou_bookings", JSON.stringify(bookings));
+      renderBookings();
+    }
+
+    function openBookingModal(expertId, experienceName = "") {
+      const expert = experts.find(item => item.id === expertId || item.name === expertId);
+      if (!expert) {
+        showToast("没有找到对应陪游达人");
+        return;
+      }
+      state.selectedBookingExpert = expert;
+      $("#bookingExpertId").value = expert.id;
+      $("#bookingExpertInput").value = `${expert.name}｜${expert.role}`;
+      $("#bookingExperienceInput").innerHTML = expert.experiences.map(item => `
+        <option value="${item.name}" ${item.name === experienceName ? "selected" : ""}>${item.name}｜${item.time}｜${item.price}</option>
+      `).join("");
+      const tomorrow = new Date(Date.now() + 86400000);
+      $("#bookingDateInput").value = tomorrow.toISOString().slice(0, 10);
+      $("#bookingPhoneInput").value = "";
+      $("#bookingNoteInput").value = "";
+      $("#bookingSummary").innerHTML = `
+        <strong>${expert.name}</strong> 将根据你的日期、人数和备注确认档期。当前为预约意向单，提交后会生成本地预约记录。
+      `;
+      $("#bookingModalTitle").textContent = `预约 ${expert.name}`;
+      $("#bookingModal").classList.add("open");
+    }
+
+    function closeBookingModal() {
+      $("#bookingModal").classList.remove("open");
+    }
+
+    function openExpertDetail(id) {
+      const expert = experts.find(item => item.id === id);
+      if (!expert) return;
+      $("#expertModalTitle").textContent = `${expert.name}｜${expert.role}`;
+      $("#expertModalTags").innerHTML = `
+        <span class="tag">认证陪游达人</span>
+        <span class="tag gold">${expert.rating}分</span>
+        <span class="tag">${expert.followers}关注</span>
+        <span class="tag brick">${expert.verified}</span>
+      `;
+      $("#expertModalBody").innerHTML = `
+        <div class="expert-profile">
+          <img src="${expert.image}" alt="${expert.name}" onerror="handleImageError(this)">
+          <div>
+            <div class="notice">“${expert.quote}”</div>
+            <p style="line-height:1.75;color:var(--muted)">${expert.bio}</p>
+            <div class="expert-detail-grid">
+              <div class="expert-detail-box"><span>评分</span><strong>${expert.rating}</strong></div>
+              <div class="expert-detail-box"><span>关注</span><strong>${expert.followers}</strong></div>
+              <div class="expert-detail-box"><span>可预约</span><strong>${expert.experiences.length}项</strong></div>
+            </div>
+            <h3>专业领域</h3>
+            <div class="meta-row">${expert.specialties.map(item => `<span class="tag">${item}</span>`).join("")}</div>
+            <h3>陪游达人推荐路线</h3>
+            <ul class="expert-list">${expert.routes.map(item => `<li>${item}</li>`).join("")}</ul>
+            <h3>可预约体验</h3>
+            <div class="timeline">
+              ${expert.experiences.map(item => `
+                <div class="day-block">
+                  <h3>${item.name}</h3>
+                  <p style="color:var(--muted);margin:0 0 10px">时长 ${item.time}｜参考价 ${item.price}</p>
+                  <button class="solid-btn" data-book="${expert.id}" data-experience="${item.name}">预约这个体验</button>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+      $("#expertModal").classList.add("open");
+    }
+
+    function focusExpertCard(id) {
+      const card = document.querySelector(`[data-expert-card="${id}"]`);
+      if (!card) return;
+      document.querySelectorAll(".expert-card.is-focused").forEach(node => node.classList.remove("is-focused"));
+      card.classList.add("is-focused");
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      clearTimeout(focusExpertCard.timer);
+      focusExpertCard.timer = setTimeout(() => card.classList.remove("is-focused"), 2800);
+    }
+
+    function loadDiaries() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("luyou_diaries") || "null");
+        if (!Array.isArray(saved) || !saved.length) return DEFAULT_DIARIES;
+        const custom = saved.filter(item => item.owner === "me");
+        const byId = new Map([...DEFAULT_DIARIES, ...custom].map(item => [item.id, item]));
+        return Array.from(byId.values());
+      } catch (error) {
+        return DEFAULT_DIARIES;
+      }
+    }
+
+    function saveDiaries() {
+      localStorage.setItem("luyou_diaries", JSON.stringify(diaries));
+    }
+
+    function updateDiary(id, patch) {
+      const index = diaries.findIndex(item => item.id === id);
+      if (index < 0) return;
+      diaries[index] = { ...diaries[index], ...patch };
+      saveDiaries();
+    }
+
+    function getDiarySocial(diary, index) {
+      const stored = JSON.parse(localStorage.getItem("luyou_diary_social") || "{}");
+      if (!stored[diary.id]) {
+        stored[diary.id] = {
+          likes: 128 + index * 37,
+          comments: diary.comments?.length || 0,
+          liked: false,
+          saved: false
+        };
+      }
+      stored[diary.id].comments = diary.comments?.length || stored[diary.id].comments || 0;
+      return stored[diary.id];
+    }
+
+    function saveDiarySocial(id, social) {
+      const stored = JSON.parse(localStorage.getItem("luyou_diary_social") || "{}");
+      stored[id] = social;
+      localStorage.setItem("luyou_diary_social", JSON.stringify(stored));
+    }
+
+    function xhsIcon(name) {
+      const icons = {
+        heart: `<svg class="xhs-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6c-1.7-1.7-4.5-1.7-6.2 0L12 7.2 9.4 4.6c-1.7-1.7-4.5-1.7-6.2 0s-1.7 4.5 0 6.2L12 19.6l8.8-8.8c1.7-1.7 1.7-4.5 0-6.2Z"/></svg>`,
+        bookmark: `<svg class="xhs-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v17l-6-3.8-6 3.8v-17Z"/></svg>`,
+        comment: `<svg class="xhs-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.6 8.2 9.4 9.4 0 0 1-3.8-.8L3 20.5l1.7-4.3a7.7 7.7 0 0 1-.9-3.6A8.4 8.4 0 0 1 12.4 4 8.4 8.4 0 0 1 21 11.5Z"/></svg>`,
+        share: `<svg class="xhs-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M20 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/></svg>`
+      };
+      return icons[name] || "";
+    }
+
+    const AVATAR_POOL = [
+      "https://images.pexels.com/photos/25471928/pexels-photo-25471928.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/25471966/pexels-photo-25471966.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/2955375/pexels-photo-2955375.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/307007/pexels-photo-307007.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2",
+      "https://images.pexels.com/photos/936229/pexels-photo-936229.jpeg?auto=compress&cs=tinysrgb&w=240&h=240&dpr=2"
+    ];
+
+    const AVATAR_OVERRIDES = {
+      "青岛探索者 阿敏": AVATAR_POOL[2],
+      "认证用户 老吴": AVATAR_POOL[1],
+      "青岛探索者 小满": AVATAR_POOL[5],
+      "摄影陪游达人 小北": AVATAR_POOL[4],
+      "本地向导 老程": AVATAR_POOL[7],
+      "雨天旅行家": AVATAR_POOL[0],
+      "亲子游 小白": AVATAR_POOL[3],
+      "户外小韩": AVATAR_POOL[6],
+      "咖啡地图": AVATAR_POOL[5],
+      "我": AVATAR_POOL[0]
+    };
+
+    function avatarFor(name = "") {
+      if (AVATAR_OVERRIDES[name]) return AVATAR_OVERRIDES[name];
+      const hash = Array.from(name).reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+      return AVATAR_POOL[hash % AVATAR_POOL.length];
+    }
+
+    const DIARY_IMAGE_POOLS = {
+      "diary-zhanqiao-taidong": [
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1838554/pexels-photo-1838554.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-laoshan-family": [
+        "https://images.pexels.com/photos/5616581/pexels-photo-5616581.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/35541844/pexels-photo-35541844.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36963223/pexels-photo-36963223.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-food-day": [
+        "https://images.pexels.com/photos/1838554/pexels-photo-1838554.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1400171/pexels-photo-1400171.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/7598915/pexels-photo-7598915.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-badaguan-photo": [
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/35557560/pexels-photo-35557560.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-beer-night": [
+        "https://images.pexels.com/photos/35557560/pexels-photo-35557560.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/7598915/pexels-photo-7598915.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1838554/pexels-photo-1838554.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-qingdao-rain": [
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36963223/pexels-photo-36963223.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-parent-child": [
+        "https://images.pexels.com/photos/35541844/pexels-photo-35541844.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36963223/pexels-photo-36963223.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-laoshan-sunrise": [
+        "https://images.pexels.com/photos/35541844/pexels-photo-35541844.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36963223/pexels-photo-36963223.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/5616581/pexels-photo-5616581.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ],
+      "diary-coffee-walk": [
+        "https://images.pexels.com/photos/29038201/pexels-photo-29038201.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/30143919/pexels-photo-30143919.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/36253416/pexels-photo-36253416.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "https://images.pexels.com/photos/35557560/pexels-photo-35557560.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      ]
+    };
+
+    function getDiaryHeroImage(diary) {
+      return DIARY_IMAGE_POOLS[diary.id]?.[0] || diary.img || IMAGE_FALLBACK;
+    }
+
+    function renderAvatar(name, className = "mini-avatar") {
+      return `<span class="${className}"><img src="${avatarFor(name)}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${AVATAR_POOL[0]}'"></span>`;
+    }
+
+    function diaryBodyHtml(diary) {
+      const routeLead = (diary.route || []).slice(0, 3).map(item => `${item.time} 先去${item.place}，${item.note.replace(/。$/, "")}。`).join("\n");
+      const foodLead = (diary.food || []).length ? `这次我会优先吃 ${diary.food.join("、")}。` : "";
+      const tipsLead = diary.tips ? `最后提醒一句：${diary.tips}` : "";
+      const paragraphs = [
+        diary.content,
+        routeLead,
+        foodLead,
+        tipsLead
+      ].filter(Boolean);
+      return paragraphs.map(text => `<p>${text}</p>`).join("");
+    }
+
+    function filteredDiaries() {
+      const q = state.communityQuery.trim();
+      return diaries.filter((diary) => {
+        const tags = diary.tags || [];
+        const sectionOk = state.communitySection === "recommend"
+          || (state.communitySection === "follow" && isFollowingAuthor(diary.author));
+        const filterOk = state.communityFilter === "all" || tags.includes(state.communityFilter) || diary.title.includes(state.communityFilter) || diary.text.includes(state.communityFilter);
+        const text = [diary.title, diary.author, diary.text, diary.content, tags.join(""), (diary.food || []).join("")].join("");
+        return sectionOk && filterOk && (!q || text.includes(q));
+      });
+    }
+
+    function routeToText(route) {
+      return (route || []).map(item => `${item.time}｜${item.place}｜${item.note}｜${item.cost}`).join("\n");
+    }
+
+    function parseRoute(text) {
+      return text.split("\n").map(line => line.trim()).filter(Boolean).map((line) => {
+        const parts = line.split(/[｜|]/).map(part => part.trim());
+        return {
+          time: parts[0] || "待定",
+          place: parts[1] || "未命名地点",
+          note: parts[2] || "补充说明",
+          cost: parts[3] || "-"
+        };
+      });
+    }
+
+    function getDiaryImages(diary) {
+      const pool = [
+        ...(DIARY_IMAGE_POOLS[diary.id] || []),
+        diary.img
+      ].filter(Boolean);
+      return Array.from(new Set(pool)).slice(0, 5);
+    }
+
+    function openDiary(id, imageIndex = 0) {
+      const diary = diaries.find(item => item.id === id);
+      if (!diary) return;
+      state.selectedDiary = diary;
+      const images = getDiaryImages(diary);
+      state.diaryImageIndex = ((imageIndex % images.length) + images.length) % images.length;
+      const currentImage = images[state.diaryImageIndex] || getDiaryHeroImage(diary);
+      const social = getDiarySocial(diary, diaries.indexOf(diary));
+      const followed = isFollowingAuthor(diary.author);
+      $("#diaryModalBody").innerHTML = `
+        <div class="xhs-detail-media">
+          <img src="${currentImage}" alt="${diary.title}" onerror="handleImageError(this)">
+          ${images.length > 1 ? `
+            <button class="xhs-gallery-btn prev" data-diary-image-step="-1" aria-label="上一张">‹</button>
+            <button class="xhs-gallery-btn next" data-diary-image-step="1" aria-label="下一张">›</button>
+            <div class="xhs-gallery-count">${state.diaryImageIndex + 1}/${images.length}</div>
+            <div class="xhs-gallery-dots">${images.map((_, index) => `<span class="${index === state.diaryImageIndex ? "active" : ""}"></span>`).join("")}</div>
+          ` : ""}
+        </div>
+        <div class="xhs-detail-side">
+          <div class="xhs-detail-head">
+            <div class="xhs-detail-author">
+              ${renderAvatar(diary.author, "xhs-detail-avatar")}
+              <div>
+                <strong>${diary.author}</strong>
+                <span>${diary.days} · ${diary.budget}</span>
+              </div>
+            </div>
+            <div class="xhs-detail-head-actions">
+              <button class="xhs-follow-btn" data-follow-author="${diary.author}">${followed ? "已关注" : "关注"}</button>
+              <button class="xhs-close-btn" id="closeDiaryModal" aria-label="关闭">×</button>
+            </div>
+          </div>
+          <div class="xhs-detail-scroll">
+            <h2 class="xhs-detail-title">${diary.title}</h2>
+            <div class="xhs-detail-meta">
+              <span>${diary.days}</span>
+              <span>·</span>
+              <span>${diary.budget}</span>
+            </div>
+            <div class="xhs-topic-row">${(diary.tags || []).map(tag => `<span class="xhs-topic">#${tag}</span>`).join("")}</div>
+            <div class="xhs-detail-text">
+              ${diaryBodyHtml(diary)}
+            </div>
+            <div class="xhs-detail-comments">
+              <h3>评论 ${diary.comments?.length || 0}</h3>
+              <div class="comment-list">
+                ${(diary.comments || []).map(comment => `
+                  <div class="comment-item">
+                    ${renderAvatar(comment.author, "comment-avatar")}
+                    <div><strong>${comment.author}</strong><p>${comment.text}</p></div>
+                  </div>
+                `).join("") || `<p>还没有评论，来写第一条吧。</p>`}
+              </div>
+            </div>
+          </div>
+          <div class="xhs-detail-actions">
+            <div class="xhs-action-row">
+              <div class="xhs-action-group">
+                <button class="xhs-action-btn ${social.liked ? "active-like" : ""}" data-like-diary="${diary.id}">${xhsIcon("heart")}<span>${social.likes}</span></button>
+                <button class="xhs-action-btn ${social.saved ? "active-save" : ""}" data-save-diary="${diary.id}">${xhsIcon("bookmark")}<span>${social.saved ? "已收藏" : "收藏"}</span></button>
+                <button class="xhs-action-btn" data-comment-diary="${diary.id}">${xhsIcon("comment")}<span>${social.comments}</span></button>
+                <button class="xhs-action-btn" data-share-diary="${diary.id}">${xhsIcon("share")}</button>
+              </div>
+              ${diary.owner === "me" ? `<button class="ghost-btn" id="editCurrentDiary">编辑</button>` : ""}
+            </div>
+            <form class="comment-form" id="commentForm">
+            <input id="commentInput" placeholder="说点什么...">
+            <button class="solid-btn" type="submit">评论</button>
+            </form>
+          </div>
+        </div>
+      `;
+      $("#diaryModal").classList.add("open");
+    }
+
+    function openDiaryForm(id = "") {
+      const diary = id ? diaries.find(item => item.id === id) : null;
+      $("#diaryFormTitle").textContent = diary ? "编辑日记" : "发布日记";
+      $("#diaryIdInput").value = diary?.id || "";
+      const image = diary ? getDiaryHeroImage(diary) : "";
+      $("#diaryTitleInput").value = diary?.title || "刚整理好一条青岛顺路路线，来给你们避坑";
+      $("#diaryImgInput").value = image;
+      $("#diaryImageFileInput").value = "";
+      $("#diaryContentInput").value = diary?.content || "这条路线适合第一次来青岛，又不想一直折返的人。上午先看海和老城，下午穿插咖啡街区和休息点，晚上把最有氛围的夜市留到最后。整条线我更在意的是顺路、节奏舒服、别为了网红点浪费太多时间。";
+      $("#diaryFormModal").classList.add("open");
+    }
+
+    function closeDiaryModals() {
+      $("#diaryModal").classList.remove("open");
+      $("#diaryFormModal").classList.remove("open");
+    }
+
+    function renderDiaries() {
+      const list = filteredDiaries();
+      renderCommunityHint();
+      $("#diaryGrid").innerHTML = list.length ? list.map((diary, index) => {
+        const social = getDiarySocial(diary, index);
+        const ratioClass = ["ratio-4-5", "ratio-3-4", "ratio-wide"][index % 3];
+        return `
+          <article class="xhs-card" data-diary-card="${diary.id}">
+            <div class="xhs-cover ${ratioClass}">
+              <img src="${getDiaryHeroImage(diary)}" alt="${diary.title}" onerror="handleImageError(this)">
+              <span class="xhs-badge">${diary.days} · ${diary.budget}</span>
+            </div>
+            <div class="xhs-body">
+              <h3 class="xhs-title">${diary.title}</h3>
+              <div class="xhs-author">
+                <div class="author-mini">
+                  ${renderAvatar(diary.author)}
+                  <span>${diary.author}</span>
+                </div>
+                <button class="mini-action ${social.liked ? "active-like" : ""}" data-like-diary="${diary.id}">${xhsIcon("heart")}<span>${social.likes}</span></button>
+              </div>
+              <div class="xhs-actions">
+                <div class="mini-actions">
+                  <button class="mini-action ${social.saved ? "active-save" : ""}" data-save-diary="${diary.id}">${xhsIcon("bookmark")}<span>${social.saved ? "已收藏" : "收藏"}</span></button>
+                  <button class="mini-action" data-comment-diary="${diary.id}">${xhsIcon("comment")}<span>${social.comments}</span></button>
+                </div>
+                ${diary.owner === "me" ? `<button class="mini-action" data-edit-diary="${diary.id}">编辑</button>` : `<span></span>`}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("") : `<div class="empty-state"><div><h3>${state.communitySection === "follow" ? "关注流还是空的" : "没有找到相关笔记"}</h3><p>${state.communitySection === "follow" ? "去笔记详情或达人卡片点“关注”，这里就会出现更贴近你兴趣的内容。" : "换个关键词或切换推荐标签。"}</p></div></div>`;
+    }
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-diary-card]");
+      const target = event.target.closest("button");
+      if (!target && card) {
+        openDiary(card.dataset.diaryCard);
+        return;
+      }
+      if (!target) return;
+
+      if (target.dataset.view) switchView(target.dataset.view);
+      if (target.dataset.jump) switchView(target.dataset.jump);
+      if (target.dataset.detail) openDetail(target.dataset.detail);
+      if (target.dataset.expertDetail) openExpertDetail(target.dataset.expertDetail);
+      if (target.dataset.fav) toggleFavorite(target.dataset.fav);
+      if (target.dataset.addPlan) {
+        const result = addPlaceToPlanner(target.dataset.addPlan);
+        switchView("planner");
+        if (result.ok) showToast(`${result.place.name}已加入旅程规划`);
+        else if (result.reason === "exists") showToast(`${result.place.name}已经在旅程规划里了`);
+      }
+      if (target.dataset.route) {
+        switchView("planner");
+        $("#interestInput").value = `请以“${target.dataset.route}”为主题，安排顺路、不赶路、含本地美食的青岛行程。`;
+        syncPlannerChoices();
+        showToast("路线主题已填入规划师");
+      }
+      if (target.dataset.planExpert) {
+        switchView("experts");
+        setTimeout(() => focusExpertCard(target.dataset.planExpert), 180);
+        showToast("已为你定位到匹配的陪游达人");
+      }
+      if (target.dataset.planTarget) {
+        const input = document.getElementById(target.dataset.planTarget);
+        if (input) {
+          input.value = target.dataset.planValue;
+          syncPlannerChoices();
+        }
+      }
+      if (target.dataset.interestSuggestion) {
+        $("#interestInput").value = target.dataset.interestSuggestion;
+      }
+      if (target.dataset.filter) {
+        state.filter = target.dataset.filter;
+        $$("#filterChips .chip").forEach(btn => btn.classList.toggle("active", btn === target));
+        renderPlaces();
+      }
+      if (target.dataset.communityFilter) {
+        state.communityFilter = target.dataset.communityFilter;
+        $$("#communityChips button").forEach(btn => btn.classList.toggle("active", btn === target));
+        renderDiaries();
+      }
+      if (target.dataset.communitySection) {
+        state.communitySection = target.dataset.communitySection;
+        $$(".xhs-side button").forEach(btn => btn.classList.toggle("active", btn === target));
+        renderDiaries();
+        showToast({
+          follow: followedAuthors.length ? "已切换到关注流" : "先关注一些作者，关注流会更有内容"
+        }[target.dataset.communitySection] || "已切换");
+      }
+      if (target.classList.contains("layer-toggle")) {
+        const layer = target.dataset.layer;
+        state.layers[layer] = !state.layers[layer];
+        target.classList.toggle("active", state.layers[layer]);
+        target.querySelector("span").textContent = state.layers[layer] ? "开" : "关";
+        renderBaiduMap();
+      }
+      if (target.classList.contains("map-mode")) {
+        $$(".map-mode").forEach(btn => btn.classList.remove("active"));
+        target.classList.add("active");
+        switchMapMode(target.dataset.mode);
+      }
+      if (target.dataset.routeMode) {
+        state.routeMode = target.dataset.routeMode;
+        $$("#routeModeTabs button").forEach(btn => btn.classList.toggle("active", btn === target));
+        showToast(`已切换为${target.textContent}路线`);
+      }
+      if (target.id === "searchRouteBtn") searchBaiduRoute();
+      if (target.dataset.mapFocus) {
+        const place = places.find(item => item.id === target.dataset.mapFocus);
+        if (place && baiduMap && window.BMapGL) {
+          const point = new BMapGL.Point(place.lng, place.lat);
+          baiduMap.panTo(point);
+          baiduMap.setZoom(15);
+        }
+        openDetail(target.dataset.mapFocus);
+      }
+      if (target.id === "closeModal") $("#modal").classList.remove("open");
+      if (target.id === "closeExpertModal") $("#expertModal").classList.remove("open");
+      if (target.id === "modalFavorite" && state.selectedPlace) toggleFavorite(state.selectedPlace.id);
+      if (target.id === "modalAddPlan" && state.selectedPlace) {
+        const result = addPlaceToPlanner(state.selectedPlace.id);
+        $("#modal").classList.remove("open");
+        switchView("planner");
+        if (result.ok) showToast(`${result.place.name}已加入旅程规划`);
+        else if (result.reason === "exists") showToast(`${result.place.name}已经在旅程规划里了`);
+      }
+      if (target.id === "generatePlan") generatePlan();
+      if (target.id === "resetPlan") {
+        localStorage.removeItem("luyou_last_plan");
+        $("#daysInput").value = "2";
+        $("#budgetInput").value = "舒适";
+        $("#paceInput").value = "适中";
+        $("#partyInput").value = "情侣/朋友";
+        $("#peopleInput").value = "2";
+        $("#startInput").value = "青岛站";
+        $("#endInput").value = "五四广场";
+        $("#interestInput").value = "喜欢老城建筑、海景、海鲜，不想排太久队，希望有本地人推荐的小店。";
+        syncPlannerChoices();
+        renderPlannerEmptyState();
+      }
+      if (target.dataset.scenario) generatePlan(target.dataset.scenario);
+      if (target.dataset.removePlanPlace) {
+        const place = places.find(item => item.id === target.dataset.removePlanPlace);
+        removePlaceFromPlanner(target.dataset.removePlanPlace);
+        showToast(place ? `已移除 ${place.name}` : "已移除路线点");
+      }
+      if (target.id === "clearPlannerPlaces") {
+        clearPlannerPlaces();
+        showToast("已清空加入的路线点");
+      }
+      if (target.id === "savePlan") showToast("行程已保存，可在下次打开时恢复");
+      if (target.dataset.follow) {
+        const followed = toggleFollowAuthor(target.dataset.follow);
+        target.textContent = followed ? "已关注" : "关注";
+        renderDiaries();
+        showToast(followed ? `已关注 ${target.dataset.follow}` : `已取消关注 ${target.dataset.follow}`);
+      }
+      if (target.dataset.followAuthor) {
+        const followed = toggleFollowAuthor(target.dataset.followAuthor);
+        target.textContent = followed ? "已关注" : "关注";
+        if (state.communitySection === "follow") renderDiaries();
+        showToast(followed ? `已关注 ${target.dataset.followAuthor}` : `已取消关注 ${target.dataset.followAuthor}`);
+      }
+      if (target.dataset.book) openBookingModal(target.dataset.book, target.dataset.experience || "");
+      if (target.dataset.read) openDiary(target.dataset.read);
+      if (target.dataset.diaryImageStep && state.selectedDiary) {
+        openDiary(state.selectedDiary.id, state.diaryImageIndex + Number(target.dataset.diaryImageStep));
+      }
+      if (target.dataset.editDiary) openDiaryForm(target.dataset.editDiary);
+      if (target.dataset.likeDiary) {
+        const diary = diaries.find(item => item.id === target.dataset.likeDiary);
+        const social = getDiarySocial(diary, diaries.indexOf(diary));
+        social.liked = !social.liked;
+        social.likes += social.liked ? 1 : -1;
+        saveDiarySocial(diary.id, social);
+        renderDiaries();
+        if ($("#diaryModal").classList.contains("open")) openDiary(diary.id, state.diaryImageIndex);
+      }
+      if (target.dataset.saveDiary) {
+        const diary = diaries.find(item => item.id === target.dataset.saveDiary);
+        const social = getDiarySocial(diary, diaries.indexOf(diary));
+        social.saved = !social.saved;
+        saveDiarySocial(diary.id, social);
+        renderDiaries();
+        if ($("#diaryModal").classList.contains("open")) openDiary(diary.id, state.diaryImageIndex);
+        showToast(social.saved ? "已收藏笔记" : "已取消收藏");
+      }
+      if (target.dataset.commentDiary) {
+        const diary = diaries.find(item => item.id === target.dataset.commentDiary);
+        if (!$("#diaryModal").classList.contains("open")) openDiary(diary.id);
+        setTimeout(() => $("#commentInput")?.focus(), 80);
+      }
+      if (target.dataset.shareDiary) {
+        const diary = diaries.find(item => item.id === target.dataset.shareDiary);
+        showToast(`已准备分享《${diary?.title || "这篇笔记"}》`);
+      }
+      if (target.id === "editCurrentDiary" && state.selectedDiary) openDiaryForm(state.selectedDiary.id);
+      if (target.id === "closeDiaryModal" || target.id === "closeDiaryBottom" || target.id === "closeDiaryForm" || target.id === "cancelDiaryForm") closeDiaryModals();
+      if (target.id === "closeBookingModal" || target.id === "cancelBookingForm") closeBookingModal();
+      if (target.id === "uploadDiary") {
+        $$(".xhs-side button").forEach(btn => btn.classList.toggle("active", btn === target));
+        openDiaryForm();
+      }
+    });
+
+    $("#searchBtn").addEventListener("click", () => {
+      state.query = $("#searchInput").value.trim();
+      renderPlaces();
+      showToast(state.query ? "已按关键词筛选" : "已显示全部内容");
+    });
+    $("#searchInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") $("#searchBtn").click();
+    });
+    $("#communitySearchBtn").addEventListener("click", () => {
+      state.communityQuery = $("#communitySearchInput").value.trim();
+      renderDiaries();
+      showToast(state.communityQuery ? "已筛选社区笔记" : "已显示推荐笔记");
+    });
+    $("#communitySearchInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") $("#communitySearchBtn").click();
+    });
+    $("#diaryImageFileInput").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = typeof reader.result === "string" ? reader.result : IMAGE_FALLBACK;
+        $("#diaryImgInput").value = result;
+      };
+      reader.readAsDataURL(file);
+    });
+    $("#routeStartInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") searchBaiduRoute();
+    });
+    $("#routeEndInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") searchBaiduRoute();
+    });
+    $("#modal").addEventListener("click", (event) => {
+      if (event.target.id === "modal") $("#modal").classList.remove("open");
+    });
+    $("#diaryModal").addEventListener("click", (event) => {
+      if (event.target.id === "diaryModal") closeDiaryModals();
+    });
+    $("#diaryFormModal").addEventListener("click", (event) => {
+      if (event.target.id === "diaryFormModal") closeDiaryModals();
+    });
+    $("#expertModal").addEventListener("click", (event) => {
+      if (event.target.id === "expertModal") $("#expertModal").classList.remove("open");
+    });
+    $("#bookingModal").addEventListener("click", (event) => {
+      if (event.target.id === "bookingModal") closeBookingModal();
+    });
+    $("#bookingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const expert = state.selectedBookingExpert;
+      if (!expert) {
+        showToast("请先选择陪游达人");
+        return;
+      }
+      const selectedExperience = expert.experiences.find(item => item.name === $("#bookingExperienceInput").value) || expert.experiences[0];
+      const booking = {
+        id: `DY${Date.now().toString().slice(-8)}`,
+        expertId: expert.id,
+        expertName: expert.name,
+        experienceName: selectedExperience.name,
+        price: selectedExperience.price,
+        duration: selectedExperience.time,
+        date: $("#bookingDateInput").value,
+        time: $("#bookingTimeInput").value,
+        people: $("#bookingPeopleInput").value,
+        phone: $("#bookingPhoneInput").value.trim(),
+        note: $("#bookingNoteInput").value.trim(),
+        status: "待确认",
+        createdAt: new Date().toISOString()
+      };
+      bookings.push(booking);
+      saveBookings();
+      closeBookingModal();
+      $("#expertModal").classList.remove("open");
+      showToast(`预约意向已提交，编号 ${booking.id}`);
+    });
+    $("#diaryForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = $("#diaryIdInput").value || `diary-${Date.now()}`;
+      const content = $("#diaryContentInput").value.trim();
+      const image = $("#diaryImgInput").value.trim() || IMAGE_FALLBACK;
+      const diary = {
+        id,
+        owner: "me",
+        title: $("#diaryTitleInput").value.trim(),
+        author: "青岛探索者 我",
+        img: image,
+        days: "新发布",
+        budget: "刚更新",
+        tags: ["旅行日记"],
+        text: content.slice(0, 48) || "刚发布了一篇新的青岛旅行笔记。",
+        content,
+        route: [],
+        food: [],
+        tips: ""
+      };
+      if (!diary.title || !diary.content || !diary.img) {
+        showToast("请补全图片、标题和正文内容");
+        return;
+      }
+      const index = diaries.findIndex(item => item.id === id);
+      if (index >= 0) diaries[index] = diary;
+      else diaries.unshift(diary);
+      saveDiaries();
+      renderDiaries();
+      closeDiaryModals();
+      openDiary(id);
+      showToast(index >= 0 ? "日记已更新" : "日记已发布");
+    });
+    document.addEventListener("submit", (event) => {
+      if (event.target.id !== "commentForm") return;
+      event.preventDefault();
+      if (!state.selectedDiary) return;
+      const input = $("#commentInput");
+      const text = input.value.trim();
+      if (!text) {
+        showToast("先写点评论内容");
+        return;
+      }
+      const comments = [...(state.selectedDiary.comments || []), { author: "我", text }];
+      updateDiary(state.selectedDiary.id, { comments });
+      const social = getDiarySocial(state.selectedDiary, diaries.indexOf(state.selectedDiary));
+      social.comments = comments.length;
+      saveDiarySocial(state.selectedDiary.id, social);
+      state.selectedDiary = diaries.find(item => item.id === state.selectedDiary.id);
+      renderDiaries();
+      openDiary(state.selectedDiary.id);
+      showToast("评论已发布");
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        $("#modal").classList.remove("open");
+        $("#expertModal").classList.remove("open");
+        closeDiaryModals();
+      }
+    });
+
+    function init() {
+      saveFavorites();
+      renderPlannerPicked();
+      renderPlaces();
+      renderRoutes();
+      renderMapList();
+      renderExperts();
+      renderDiaries();
+      renderCommunityHint();
+      syncPlannerChoices();
+      const savedPlan = localStorage.getItem("luyou_last_plan");
+      if (savedPlan) {
+        $("#plannerStageTitle").textContent = "小青正在为你准备旅程";
+        $(".planner-stage")?.classList.remove("is-empty");
+        $("#planResult").innerHTML = savedPlan;
+      } else renderPlannerEmptyState();
+      loadBaiduMapScript();
+    }
+
+    init();
+  </script>
+</body>
+</html>
+
