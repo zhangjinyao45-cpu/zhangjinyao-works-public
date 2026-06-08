@@ -6,7 +6,7 @@
 
 小青是这个产品里的 AI 旅程规划师。早期 Demo 中，小青的路线结果主要由前端静态逻辑生成；当前版本已经被改造成一个本地可运行的 LangGraph Multi-Agent 原型，支持真实 POI 检索、路线规划、陪游匹配、校验回退、记忆保存和可视化演示。
 
-当前小青的目标不是替代完整 OTA 或地图系统，而是作为一个从 0 到 1 的智能旅行规划 Agent 原型，证明以下能力：
+小青作为一个从 0 到 1 的智能旅行规划 Agent 原型，具有以下能力：
 
 - 能理解结构化旅行需求和自由备注。
 - 能基于真实候选 POI 规划青岛路线。
@@ -279,18 +279,6 @@ validation_retry_count += 1
 
 Supervisor 会将流程打回 Planner Agent。重新规划成功后，流程会再次经过 Companion Agent 和 Validator Agent。
 
-### 4.7 为什么不是简单 LangChain Chain
-
-简单 Chain 更适合固定线性流程，而小青需要图结构：
-
-- 缺字段时提前结束。
-- Planner 失败后回到 Retrieval。
-- Validator 失败后回到 Planner。
-- Companion 推荐依赖路线草案。
-- Memory 保存依赖最终结果。
-- 可视化控制台需要完整 trace 和状态快照。
-
-因此，小青使用 LangGraph 更自然，也更利于后续扩展。
 
 ## 5. 整体架构
 
@@ -689,117 +677,5 @@ validator_agent
 
 ## 10. 可视化演示控制台
 
-为了让作品展示更直观，小青提供了一个本地 Multi-Agent 控制台。
+为了让作品展示更直观，小青提供了一个本地 Multi-Agent 控制台。具体可以面试的时候现场展示agent效果
 
-启动命令：
-
-```powershell
-cd "C:\Users\67423\Desktop\金山\青岛"
-python -m travel_agent.cli debug-server --port 8765
-```
-
-访问地址：
-
-```text
-http://127.0.0.1:8765/debug
-```
-
-控制台包含三个区域：
-
-- 左侧：输入 JSON，可以切换演示场景。
-- 中间：Agent 执行链路和关键指标。
-- 中间下方：状态快照，包括 `travel_profile`、`live_candidates`、`draft_plan`、`matched_experts`、`validation_report`。
-- 右侧：最终路线和陪游推荐的产品化预览。
-
-当前保留三个演示场景：
-
-| 场景 | 展示重点 |
-| --- | --- |
-| 经典 2 日游 + 陪游推荐 | 完整规划链路、Planner 重试、陪游推荐 |
-| 亲子轻松路线 | 节奏偏好变化、亲子陪游匹配 |
-| 本地小店与夜市 | 餐饮/夜游偏好下的陪游排序差异 |
-
-控制台相关文件：
-
-```text
-travel_agent/debug.py
-travel_agent/debug_server.py
-travel_agent/static/debug_console.html
-```
-
-## 11. 运行与验证
-
-### 11.1 命令行生成路线
-
-```powershell
-python -m travel_agent.cli plan --user-id demo-user --input travel_agent/examples/qingdao_2day_with_companions.json --output travel_agent/tmp_plan_with_companions.json
-```
-
-### 11.2 修改已有路线
-
-```powershell
-python -m travel_agent.cli revise --user-id demo-user --current-plan travel_agent/tmp_plan.json --instruction "第二天轻松一点" --output travel_agent/tmp_revised_plan.json
-```
-
-### 11.3 启动可视化控制台
-
-```powershell
-python -m travel_agent.cli debug-server --port 8765
-```
-
-### 11.4 运行测试
-
-```powershell
-python -m pytest travel_agent/tests/test_xiaoqing_graph.py -q
-```
-
-当前测试覆盖：
-
-- 主图生成前端可渲染路线。
-- LangGraph 多 Agent trace。
-- 真实候选检索和 LLM Planner 调用边界。
-- Planner 失败后候选收缩重试。
-- Validator 打回 Planner 重规划。
-- Companion Agent 从真实候选池选择陪游。
-- SQLite 记忆保存和读取。
-- 可视化 debug payload。
-- 多场景示例注册和读取。
-
-## 12. 当前限制与下一步计划
-
-### 12.1 当前限制
-
-- POI 数据源当前使用 Nominatim，覆盖度和商业稳定性有限。
-- 路线距离和耗时使用 OSRM，尚未接入国内地图实时交通。
-- 餐厅和本地小店数据依赖 OSM/Nominatim 收录，可能为空或不完整。
-- 陪游候选池当前由输入传入，还没有接真实达人库。
-- Validator 当前只校验天数、起点和终点，还没有校验路线密度、午餐时间、绕路程度、亲子适配等。
-- Revise 子图目前可用，但还没有完全拆成多 Agent 协作流程。
-
-### 12.2 下一步计划
-
-建议优先级如下：
-
-1. 接入真实达人库，新增 `Expert Retrieval Agent`。
-2. 接入高德或百度地图 POI，替换公共地理数据源。
-3. 新增 `Weather Agent`，根据天气调整海边和室内备选。
-4. 新增 `Transport Agent`，用真实交通耗时优化路线。
-5. 增强 Validator，加入路线密度、绕路、预算、餐食时间等校验。
-6. 将可视化控制台接入正式 Demo 页面。
-7. 将 revise 子图升级为 `Revision Supervisor + Revision Planner + Revision Validator`。
-
-## 13. 总结
-
-小青当前已经从一个静态 Demo 中的路线生成逻辑，演进为一个可运行、可解释、可演示的 LangGraph Multi-Agent 旅行规划系统。
-
-它的核心价值不只是“能生成一条路线”，而是：
-
-- 有清晰的 Agent 分工。
-- 有真实世界候选数据。
-- 有结构化状态传递。
-- 有失败重试和校验打回。
-- 有陪游推荐协同。
-- 有 SQLite 记忆。
-- 有可视化控制台展示整个工作过程。
-
-这让小青具备了继续扩展成真实产品 Agent 的基础。
