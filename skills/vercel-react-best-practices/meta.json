@@ -1,0 +1,27 @@
+{
+  "author": "Github",
+  "author_icon": "https://static.marvis.qq.com/wupload/skill-author-icons/1778639349473_GitHub.png",
+  "description": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
+  "detail_describe": "提供 70 条 React/Next.js 优化规则\n按影响优先级分八大类指导重构\n识别并消除请求瀑布流问题\n指导打包体积与动态导入优化\n降低重渲染并改善渲染性能",
+  "display_description": "React 与 Next.js 性能优化最佳实践规则集",
+  "display_name": "React Best Practices",
+  "download_count": 1938,
+  "download_url": "https://down.marvis.qq.com/wupload2/skill-packages/1778578071897_vercel-react-best-practices.zip",
+  "icon": "https://static.marvis.qq.com/wupload/skill-icons/1778578071430_%E6%8A%80%E8%83%BD%E5%9B%BE%E6%A0%87.png?imageMogr2/thumbnail/224x/format/webp",
+  "id": 190,
+  "is_downloaded": false,
+  "last_modified_time": "2026-05-22 16:08:08",
+  "md5": "b59261ddc09c713f6518947af9fc5ce7",
+  "name": "vercel-react-best-practices",
+  "scope": [
+    "main",
+    "file-agent"
+  ],
+  "type": "办公学习",
+  "use_cases": [
+    "帮我审查这段 Next.js 页面的性能问题[请上传文件]",
+    "重构这个组件减少不必要的重新渲染",
+    "用 Suspense 改造这个数据加载瀑布流"
+  ],
+  "version": "1.0.3"
+}

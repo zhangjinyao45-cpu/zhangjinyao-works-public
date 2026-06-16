@@ -1,0 +1,28 @@
+{
+  "author": "Github",
+  "author_icon": "https://static.marvis.qq.com/wupload/skill-author-icons/1778639349473_GitHub.png",
+  "description": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\".",
+  "detail_describe": "拉取最新 Web Interface Guidelines 规则\n读取指定文件并逐项比对\n以 file:line 简洁格式输出问题\n覆盖可访问性与 UX 检查\n支持自定义文件或通配模式",
+  "display_description": "按 Vercel Web 界面规范审查 UI 代码合规性",
+  "display_name": "web-design-guidelines",
+  "download_count": 1924,
+  "download_url": "https://down.marvis.qq.com/wupload2/skill-packages/1778580342237_web-design-guidelines.zip",
+  "icon": "https://static.marvis.qq.com/wupload/skill-icons/1778580341864_%E6%8A%80%E8%83%BD%E5%9B%BE%E6%A0%87.png?imageMogr2/thumbnail/224x/format/webp",
+  "id": 254,
+  "is_downloaded": false,
+  "last_modified_time": "2026-05-22 16:07:59",
+  "md5": "b5e4f320b4cef28c1816d4f42e25b53a",
+  "name": "web-design-guidelines",
+  "scope": [
+    "main",
+    "search-agent",
+    "file-agent"
+  ],
+  "type": "办公学习",
+  "use_cases": [
+    "[请添加网页链接] 检查这个登录页的可访问性问题",
+    "审一下首页 Hero 区是否符合设计规范 [请添加网页链接] ",
+    "给我这个表单做一次 UX 合规扫描 [请上传文件] "
+  ],
+  "version": "1.0.4"
+}

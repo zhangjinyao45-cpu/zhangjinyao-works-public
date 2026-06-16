@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image To Editable PPT"
+  short_description: "Turn a flat image into editable PPT modules and shapes."
+  default_prompt: "Use this skill to rebuild an image as editable PowerPoint modules."

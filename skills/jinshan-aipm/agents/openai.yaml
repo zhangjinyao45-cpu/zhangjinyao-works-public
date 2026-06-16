@@ -1,0 +1,4 @@
+interface:
+  display_name: "金山AIPM"
+  short_description: "把头脑风暴、PRD、线框图和原型整合到单一HTML交付中的设计技能"
+  default_prompt: "请按金山AIPM流程，从头脑风暴、提示词增强、PRD、线框图到高保真原型，输出同一个HTML中的PRD视图与原型视图。"

@@ -1,0 +1,92 @@
+{
+  "title": "Editable PPT Demo",
+  "layout": {
+    "name": "LAYOUT_WIDE",
+    "backgroundColor": "F6F1E8"
+  },
+  "slides": [
+    {
+      "title": "Demo",
+      "notes": "Sample slide generated from a module spec.",
+      "elements": [
+        {
+          "type": "shape",
+          "shape": "roundRect",
+          "x": 0.6,
+          "y": 0.6,
+          "w": 5.6,
+          "h": 5.8,
+          "fill": "FFF9F0",
+          "line": "E7D7C7",
+          "lineWidth": 1.2
+        },
+        {
+          "type": "text",
+          "text": "Editable Card Title",
+          "x": 0.95,
+          "y": 1.0,
+          "w": 4.5,
+          "h": 0.45,
+          "fontFace": "Microsoft YaHei",
+          "fontSize": 24,
+          "bold": true,
+          "color": "342E2A"
+        },
+        {
+          "type": "text",
+          "text": "This text is a native PPT text box, not part of a pasted screenshot.",
+          "x": 0.95,
+          "y": 1.7,
+          "w": 4.8,
+          "h": 1.1,
+          "fontFace": "Microsoft YaHei",
+          "fontSize": 14,
+          "color": "5A514B"
+        },
+        {
+          "type": "shape",
+          "shape": "rect",
+          "x": 7.0,
+          "y": 0.9,
+          "w": 5.1,
+          "h": 2.1,
+          "fill": "D97941",
+          "line": "D97941"
+        },
+        {
+          "type": "text",
+          "text": "Module Block",
+          "x": 7.35,
+          "y": 1.45,
+          "w": 2.5,
+          "h": 0.4,
+          "fontFace": "Microsoft YaHei",
+          "fontSize": 20,
+          "bold": true,
+          "color": "FFFFFF"
+        },
+        {
+          "type": "shape",
+          "shape": "line",
+          "x": 7.0,
+          "y": 3.6,
+          "w": 4.8,
+          "h": 0,
+          "line": "A8917C",
+          "lineWidth": 1.4
+        },
+        {
+          "type": "text",
+          "text": "Use this pattern to rebuild screenshots, posters, or page fragments as editable modules.",
+          "x": 7.0,
+          "y": 3.9,
+          "w": 5.1,
+          "h": 1.0,
+          "fontFace": "Microsoft YaHei",
+          "fontSize": 16,
+          "color": "4B443F"
+        }
+      ]
+    }
+  ]
+}
