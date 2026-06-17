@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Live2D Model Gallery</title>
+<style>
+  body { margin: 0; padding: 20px; background: #1a1a2e; color: #fff; font-family: sans-serif; }
+  h1 { text-align: center; margin-bottom: 30px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+  .card { background: #16213e; border-radius: 12px; padding: 15px; text-align: center; }
+  .card canvas { width: 280px; height: 350px; background: #0f3460; border-radius: 8px; }
+  .card h3 { margin: 10px 0 5px; }
+  .card p { font-size: 12px; color: #aaa; margin: 5px 0; }
+  .tag { display: inline-block; background: #e94560; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px; }
+  .tag.male { background: #0f3460; }
+  .tag.female { background: #533483; }
+</style>
+</head>
+<body>
+<h1>Live2D Model Gallery - Pick Your Favorites</h1>
+<div class="grid" id="grid"></div>
+
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+<script>
+const models = [
+  { name: 'Haru', path: '/app/models/Haru/Haru.model3.json', gender: 'female', desc: '双马尾少女，表情丰富', style: '二次元' },
+  { name: 'Hiyori', path: '/app/models/Hiyori/Hiyori.model3.json', gender: 'female', desc: '桃濑日向，标准示范模型', style: '二次元' },
+  { name: 'Mark', path: '/app/models/Mark/Mark.model3.json', gender: 'male', desc: '马克君，简约男性角色', style: 'Q版' },
+  { name: 'Natori', path: '/app/models/Natori/Natori.model3.json', gender: 'male', desc: '名执尽，表情丰富男性', style: '二次元' },
+  { name: 'Rice', path: '/app/models/Rice/Rice.model3.json', gender: 'female', desc: '稻荷，可爱风格', style: 'Q版' },
+  { name: 'Mao', path: '/app/models/Mao/Mao.model3.json', gender: 'female', desc: '虹色真央，表情丰富', style: '二次元' },
+];
+
+const grid = document.getElementById('grid');
+
+models.forEach(m => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <canvas id="cvs-${m.name}" width="280" height="350"></canvas>
+    <h3>${m.name}</h3>
+    <p>${m.desc}</p>
+    <span class="tag ${m.gender}">${m.gender === 'male' ? '男' : '女'}</span>
+    <span class="tag">${m.style}</span>
+  `;
+  grid.appendChild(card);
+
+  const app = new PIXI.Application({
+    view: document.getElementById(`cvs-${m.name}`),
+    width: 280, height: 350,
+    backgroundAlpha: 0,
+    resolution: 1
+  });
+
+  const modelUrl = `http://localhost:3000${m.path}`;
+  pixi_live2d.Live2DModel.from(modelUrl, { autoInteract: false }).then(model => {
+    model.anchor.set(0.5, 0.5);
+    model.position.set(140, 200);
+    const scale = Math.min(250 / model.width, 300 / model.height);
+    model.scale.set(scale);
+    app.stage.addChild(model);
+  }).catch(e => console.error(`Failed to load ${m.name}:`, e));
+});
+</script>
+</body>
+</html>

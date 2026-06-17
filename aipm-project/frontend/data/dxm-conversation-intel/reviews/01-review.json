@@ -1,0 +1,88 @@
+{
+  "$schema": "https://aipm.dev/schemas/review-v1.json",
+  "stage": "01",
+  "stageName": "提示词增强（质量验收）",
+  "artifactPath": "stages/01-增强提示词.md",
+  "skillsLoaded": [
+    "aipm-pipeline",
+    "aipm-review-session",
+    "aipm-zhou-ming",
+    "aipm-gu-qing",
+    "aipm-zhang-lei",
+    "aipm-su-yu",
+    "aipm-li-hang",
+    "enhance-prompt"
+  ],
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "Stage 01 是一份提示词清单，不是决策性产物。今天评审会快——三件事：决策是否准确呈现、视觉提示词是否够细、Stage 04 的实现强约束有没有疏漏。",
+      "timestamp": 1750071000000,
+      "duration": 6000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T1",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "main_speech",
+      "content": "决策呈现完整——5 个决策点都标了 [依据 decision-XXX] 引用，per-user 优先这条主线在'核心价值主张'里第一句话出现，符合 decision-00.5-001 的精神。\n\n建议补一点——'与小满智客集成'这个技术架构应该在产品定位关键词里更明确，现在只在'内部说明'里轻提了一句，对 Stage 04 工程师可能不够强。",
+      "timestamp": 1750071006000,
+      "duration": 14000,
+      "confidence": 0.85,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T2",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "视觉系统提示词写得够细了——色板带 CSS 变量名、字号有明确分级、组件库给出了核心组件的盒子模型。但有两个建议：\n\n1. '消息气泡'的 user/AI/人工客服三色对比，AI 蓝（#21262D 灰底）和人工客服绿（#143824 深绿）在深色背景下区分度不够强，建议人工客服改成度小满蓝实色 #2967FF 70% 透明度。\n\n2. '接待速览卡'的雷区警示色彩可以更醒目——现在背景 #2D2412 太低调，员工急的时候会忽略。建议把'⛔ 雷区'那行单独描红边框 1px。",
+      "timestamp": 1750071020000,
+      "duration": 22000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T3",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "工程视角看 Stage 04 强约束——\n\n✅ 单文件 HTML、CDN 库白名单、SPA hash 路由、真实 mock 数据，这些都明确。\n\n⚠️ 缺一个关键点：'mock 数据中至少包含 2 个真正的 per-user prompt 完整文本' —— 这个'完整文本'应该有具体长度参考，比如 200-400 字符的 system_prompt 模板，不然实现的时候可能写成一句话糊弄过去。\n\n建议加一条：'每个 per-user prompt 必须包含——用户脱敏标识、性格特征摘要、3-5 条沟通规则、2-3 条避雷词、示例对话开头'。",
+      "timestamp": 1750071042000,
+      "duration": 20000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T4",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "我替员工把关——'接待速览卡'终于落到提示词里了，太好了，张磊投支持票。\n\n一个补充：现在'接待速览卡'的三行内容——开场建议 / 雷区警示 / 当前情绪——都是 AI 输出。但员工经常会想'上一次客服小张接的时候有没有备注'。建议在速览卡下面加一行小字：'上一位客服备注：xxx'，没有就不显示。这个细节对协同特别重要。",
+      "timestamp": 1750071062000,
+      "duration": 16000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "好，四点修改建议都吸收了——顾青的'小满智客'强化、苏予的颜色微调、李航的 prompt 文本规格、张磊的协同备注小字。这些是文案级修订，不需要决策。我直接合并到 Stage 01 文档，进 Stage 02。",
+      "timestamp": 1750071078000,
+      "duration": 10000,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [],
+  "metadata": {
+    "totalSpeaks": 6,
+    "interrupts": 0,
+    "duration": 88000,
+    "tokenCost": 0.08,
+    "model": "claude-opus-4-8",
+    "createdAt": "2026-06-16T11:55:00Z"
+  }
+}

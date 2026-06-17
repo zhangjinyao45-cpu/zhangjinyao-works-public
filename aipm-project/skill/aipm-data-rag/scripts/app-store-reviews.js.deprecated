@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+/**
+ * App Store 评论拉取（iTunes Customer Reviews RSS）
+ *
+ * 用法：
+ *   node app-store-reviews.js <app_id> [--country cn] [--pages 3] [--write file.json]
+ *
+ * 示例：
+ *   node app-store-reviews.js 414478124 --country cn --pages 5
+ *   node app-store-reviews.js 904237743 --country us --pages 3 --write things-us-reviews.json
+ *
+ * 接口：https://itunes.apple.com/{country}/rss/customerreviews/id={app_id}/sortBy=mostRecent/page={page}/json
+ *
+ * 注意：
+ * - RSS 仅含最近约 500 条（10 页 × 50 条）
+ * - 高频调用可能 429，每页间隔 1 秒
+ * - 无需 API Key
+ */
+
+const https = require('https');
+const fs = require('fs');
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  if (args.length === 0) {
+    console.error('用法: node app-store-reviews.js <app_id> [--country cn] [--pages 3] [--write file.json]');
+    process.exit(1);
+  }
+  const opts = {
+    appId: args[0],
+    country: 'cn',
+    pages: 3,
+    write: null,
+  };
+  for (let i = 1; i < args.length; i++) {
+    if (args[i] === '--country') opts.country = args[++i];
+    else if (args[i] === '--pages') opts.pages = parseInt(args[++i], 10);
+    else if (args[i] === '--write') opts.write = args[++i];
+  }
+  return opts;
+}
+
+function fetchPage(country, appId, page) {
+  return new Promise((resolve, reject) => {
+    const url = `https://itunes.apple.com/${country}/rss/customerreviews/id=${appId}/sortBy=mostRecent/page=${page}/json`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', (chunk) => (data += chunk));
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(new Error(`Page ${page} parse error: ${e.message}`));
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+function extractReviews(rss) {
+  const entries = rss?.feed?.entry || [];
+  // 第一条通常是 App 元信息，从第 2 条起是评论
+  const reviews = entries.slice(1).map((e) => ({
+    id: e.id?.label,
+    rating: parseInt(e['im:rating']?.label || '0', 10),
+    title: e.title?.label,
+    content: e.content?.label,
+    author: e.author?.name?.label,
+    version: e['im:version']?.label,
+    updated: e.updated?.label,
+    voteSum: parseInt(e['im:voteSum']?.label || '0', 10),
+    voteCount: parseInt(e['im:voteCount']?.label || '0', 10),
+  })).filter((r) => r.id && r.content);
+  return reviews;
+}
+
+async function main() {
+  const opts = parseArgs();
+  const all = [];
+  console.error(`Fetching reviews for app ${opts.appId} from ${opts.country.toUpperCase()} App Store...`);
+
+  for (let p = 1; p <= opts.pages; p++) {
+    try {
+      const rss = await fetchPage(opts.country, opts.appId, p);
+      const reviews = extractReviews(rss);
+      if (reviews.length === 0) {
+        console.error(`  Page ${p}: empty, stopping.`);
+        break;
+      }
+      console.error(`  Page ${p}: ${reviews.length} reviews`);
+      all.push(...reviews);
+      // 节流 1 秒避免 429
+      if (p < opts.pages) await new Promise((r) => setTimeout(r, 1000));
+    } catch (e) {
+      console.error(`  Page ${p} failed: ${e.message}`);
+      break;
+    }
+  }
+
+  const result = {
+    app_id: opts.appId,
+    country: opts.country,
+    fetched_at: new Date().toISOString(),
+    total: all.length,
+    rating_distribution: {
+      1: all.filter((r) => r.rating === 1).length,
+      2: all.filter((r) => r.rating === 2).length,
+      3: all.filter((r) => r.rating === 3).length,
+      4: all.filter((r) => r.rating === 4).length,
+      5: all.filter((r) => r.rating === 5).length,
+    },
+    bad_reviews: all.filter((r) => r.rating <= 2),
+    all_reviews: all,
+    data_gaps: all.length >= 500 ? ['RSS 仅含最近约 500 条评论'] : [],
+  };
+
+  if (opts.write) {
+    fs.writeFileSync(opts.write, JSON.stringify(result, null, 2));
+    console.error(`\n已写入 ${opts.write}`);
+    console.error(`总计 ${all.length} 条评论，差评（1-2 星）${result.bad_reviews.length} 条`);
+  } else {
+    console.log(JSON.stringify(result, null, 2));
+  }
+}
+
+main().catch((e) => {
+  console.error('Fatal:', e.message);
+  process.exit(1);
+});

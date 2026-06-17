@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIPM · 阶段状态</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night: #150d08;
+      --brown: #2b1c12;
+      --brass: #c89943;
+      --brass-light: #d4af37;
+      --mist: #f4ecd8;
+      --mist-soft: rgba(244, 236, 216, 0.76);
+      --line: rgba(212, 175, 55, 0.2);
+      --panel: rgba(244, 236, 216, 0.05);
+      --panel-strong: rgba(244, 236, 216, 0.08);
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      --font-serif-zh: 'Noto Serif SC', serif;
+      --font-sans-zh: 'Noto Sans SC', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font-sans-zh);
+      color: var(--mist);
+      background:
+        radial-gradient(circle at top left, rgba(200, 153, 67, 0.08), transparent 30%),
+        linear-gradient(180deg, var(--night), var(--brown));
+      padding: 28px 20px 48px;
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      font-size: 12px;
+      color: var(--brass);
+      letter-spacing: 0.36em;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-family: var(--font-serif-zh);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      max-width: 620px;
+      line-height: 1.8;
+      color: var(--mist-soft);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+    }
+
+    .panel-title {
+      font-family: var(--font-serif-zh);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .meta-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .meta-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    .meta-k {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.26em;
+      color: var(--brass);
+      margin-bottom: 6px;
+    }
+
+    .meta-v {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      padding: 14px 16px;
+      border-left: 3px solid rgba(212, 175, 55, 0.32);
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .timeline-stage {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .timeline-status {
+      color: var(--mist-soft);
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .action-note {
+      color: var(--mist-soft);
+      line-height: 1.8;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .primary-btn, .ghost-btn {
+      min-width: 180px;
+      flex: 1 1 220px;
+      border-radius: 4px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-family: var(--font-serif-zh);
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      line-height: 1.5;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .primary-btn {
+      border: 0;
+      background: linear-gradient(180deg, var(--brass-light), var(--brass));
+      color: #20140c;
+    }
+
+    .ghost-btn {
+      background: transparent;
+      color: var(--mist);
+      border: 1px solid var(--line);
+    }
+
+    .primary-btn:hover, .ghost-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .artifact-box {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.14);
+      white-space: pre-wrap;
+      line-height: 1.7;
+      max-height: 380px;
+      overflow: auto;
+      font-size: 14px;
+    }
+
+    .artifact-box.structured {
+      white-space: normal;
+      max-height: none;
+      overflow: visible;
+      display: grid;
+      gap: 14px;
+    }
+
+    .insight-hero {
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 6px;
+      padding: 16px;
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .insight-kicker {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 0.26em;
+      color: var(--brass);
+      margin-bottom: 8px;
+    }
+
+    .insight-title {
+      font-family: var(--font-serif-zh);
+      font-size: 21px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .insight-body {
+      color: var(--mist-soft);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .insight-card {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.14);
+      min-width: 0;
+    }
+
+    .insight-card h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+      color: var(--mist);
+    }
+
+    .insight-card ul {
+      margin-left: 18px;
+      color: var(--mist-soft);
+      line-height: 1.75;
+      font-size: 13px;
+    }
+
+    .artifact-details summary {
+      cursor: pointer;
+      color: var(--brass-light);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .artifact-details pre {
+      white-space: pre-wrap;
+      overflow: auto;
+      max-height: 280px;
+      line-height: 1.7;
+      color: var(--mist-soft);
+      font-family: var(--font-sans-zh);
+      font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      .meta-list { grid-template-columns: 1fr; }
+      .insight-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="masthead">
+      <div>
+        <div class="eyebrow">PIPELINE STATUS</div>
+        <h1 class="title" id="projectName">项目加载中</h1>
+        <p class="subtitle" id="projectIdea">正在读取当前阶段与项目上下文。</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2 class="panel-title">当前进度</h2>
+        <div class="meta-list" id="metaList"></div>
+        <div class="timeline" id="timeline"></div>
+        <div class="artifact-box" id="artifactBox">正在读取阶段产物...</div>
+      </div>
+
+      <aside class="panel">
+        <h2 class="panel-title">下一步</h2>
+        <div class="action-note" id="actionNote">正在判断当前阶段应该进入哪一类场景。</div>
+        <div class="actions" id="actions"></div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin) + '/api';
+    const params = new URLSearchParams(location.search);
+    const projectId = params.get('project');
+
+    const stageNames = {
+      '00': '需求头脑风暴',
+      '00.5': '竞品分析',
+      '01': '提示增强',
+      '02': 'PRD',
+      '03': '线框图',
+      '04': '高保真原型',
+    };
+
+    const stageStatusMap = {
+      pending: '待开始',
+      in_progress: '执行中',
+      review_pending: '待评审',
+      review_running: '评审中',
+      decision_pending: '待拍板',
+      done: '已完成',
+      needs_redo: '需重做',
+    };
+
+    if (!projectId) {
+      document.getElementById('projectName').textContent = '缺少项目参数';
+      document.getElementById('projectIdea').textContent = '请从启动页重新进入。';
+      document.getElementById('artifactBox').textContent = '无可展示内容';
+    } else {
+      loadStatus();
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/status`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '状态加载失败');
+        const meta = result.data;
+        renderMeta(meta);
+        await renderArtifact(meta);
+      } catch (err) {
+        document.getElementById('projectName').textContent = '状态加载失败';
+        document.getElementById('projectIdea').textContent = err.message;
+        document.getElementById('artifactBox').textContent = '请确认后端服务是否正常。';
+      }
+    }
+
+    function renderMeta(meta) {
+      document.getElementById('projectName').textContent = meta.name;
+      document.getElementById('projectIdea').textContent = meta.idea;
+
+      document.getElementById('metaList').innerHTML = `
+        <div class="meta-item">
+          <div class="meta-k">CURRENT STAGE</div>
+          <div class="meta-v">阶段 ${meta.currentStage} · ${stageNames[meta.currentStage] || meta.currentStage}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-k">WORKFLOW STATE</div>
+          <div class="meta-v">${stageStatusMap[meta.currentState] || meta.currentState}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-k">GLOBAL STATE</div>
+          <div class="meta-v">${meta.globalState}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-k">UPDATED</div>
+          <div class="meta-v">${new Date(meta.updatedAt).toLocaleString('zh-CN')}</div>
+        </div>
+      `;
+
+      document.getElementById('timeline').innerHTML = Object.entries(meta.stages).map(([stage, info]) => `
+        <div class="timeline-item">
+          <div class="timeline-stage">阶段 ${stage} · ${stageNames[stage] || stage}</div>
+          <div class="timeline-status">${stageStatusMap[info.status] || info.status}</div>
+        </div>
+      `).join('');
+
+      renderActions(meta);
+    }
+
+    async function renderArtifact(meta) {
+      const stageInfo = meta.stages[meta.currentStage];
+      const lastDone = [...Object.entries(meta.stages)].reverse().find(([_, info]) => info.artifactPath);
+      const target = stageInfo?.artifactPath ? meta.currentStage : (lastDone ? lastDone[0] : null);
+
+      if (!target) {
+        document.getElementById('artifactBox').textContent = '当前还没有生成可预览的阶段产物。';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(target)}/artifact?format=json`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '产物读取失败');
+        renderArtifactContent(target, result.data.content);
+      } catch (err) {
+        const artifactBox = document.getElementById('artifactBox');
+        artifactBox.classList.remove('structured');
+        artifactBox.textContent = `产物暂时不可读：${err.message}`;
+      }
+    }
+
+    function renderArtifactContent(stage, content) {
+      const artifactBox = document.getElementById('artifactBox');
+      if (stage === '04') {
+        artifactBox.classList.add('structured');
+        const prototypeUrl = `${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/04/artifact`;
+        artifactBox.innerHTML = `
+          <section class="insight-hero">
+            <div class="insight-kicker">STAGE 04 · FINAL PROTOTYPE</div>
+            <div class="insight-title">高保真交互原型已生成</div>
+            <div class="insight-body">Stage 04 产物是一个可直接打开的单 HTML 原型。这里不直接渲染源码，避免把最终 demo 显示成文本。</div>
+          </section>
+          <div class="actions">
+            <button class="primary-btn" onclick="window.open('${prototypeUrl}', '_blank')">打开交互原型</button>
+          </div>
+          <details class="artifact-details">
+            <summary>展开 HTML 源码</summary>
+            <pre>${escapeHtml(content)}</pre>
+          </details>
+        `;
+        return;
+      }
+
+      if (stage !== '00.5') {
+        artifactBox.classList.remove('structured');
+        artifactBox.textContent = content;
+        return;
+      }
+
+      artifactBox.classList.add('structured');
+      const conclusions = extractNumberedSection(content, '二、顾清结论').slice(0, 3);
+      const competitors = extractTableRows(content, '三、竞品概览').slice(0, 4);
+      const signals = extractTableRows(content, '四、行业讨论信号').slice(0, 3);
+      const gaps = extractBullets(content, '五、数据来源与缺口').slice(0, 3);
+
+      artifactBox.innerHTML = `
+        <section class="insight-hero">
+          <div class="insight-kicker">STAGE 00.5 · 顾清</div>
+          <div class="insight-title">竞品分析已生成，下一步进入圆桌评审</div>
+          <div class="insight-body">这一阶段先把竞品、行业讨论和数据缺口整理成可评审材料。当前环境优先使用 mock 数据保证流程闭环，后续真实接口可用时会自动替换为真实快照。</div>
+        </section>
+        <div class="insight-grid">
+          <section class="insight-card">
+            <h3>顾清结论</h3>
+            <ul>${toList(conclusions)}</ul>
+          </section>
+          <section class="insight-card">
+            <h3>竞品信号</h3>
+            <ul>${toList(competitors.map(row => `${row[1] || '-'}：${row[4] || row[2] || '-'}`))}</ul>
+          </section>
+          <section class="insight-card">
+            <h3>行业讨论</h3>
+            <ul>${toList(signals.map(row => `${row[1] || '-'}：${row[4] || '-'}`))}</ul>
+          </section>
+          <section class="insight-card">
+            <h3>数据来源</h3>
+            <ul>${toList(gaps.length ? gaps : ['App Store 与 Hacker News 快照已写入 data-snapshots。'])}</ul>
+          </section>
+        </div>
+        <details class="artifact-details">
+          <summary>展开完整 0.5 报告</summary>
+          <pre>${escapeHtml(content)}</pre>
+        </details>
+      `;
+    }
+
+    function toList(items) {
+      const fallback = ['暂无可展示摘要，打开完整报告查看。'];
+      return (items.length ? items : fallback)
+        .map(item => `<li>${escapeHtml(String(item).replace(/^\d+\.\s*/, '').replace(/^\-\s*/, ''))}</li>`)
+        .join('');
+    }
+
+    function extractNumberedSection(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => /^\d+\.\s+/.test(line));
+    }
+
+    function extractBullets(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('- '))
+        .map(line => line.slice(2));
+    }
+
+    function extractTableRows(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('|') && !line.includes('---'))
+        .slice(1)
+        .map(line => line.split('|').slice(1, -1).map(cell => cell.trim()));
+    }
+
+    function extractSection(content, heading) {
+      const start = content.indexOf(`## ${heading}`);
+      if (start < 0) return '';
+      const next = content.indexOf('\n## ', start + 4);
+      return content.slice(start, next > start ? next : content.length);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderActions(meta) {
+      const actionNote = document.getElementById('actionNote');
+      const actions = document.getElementById('actions');
+
+      if (meta.globalState === 'completed' || meta.currentState === 'completed') {
+        actionNote.textContent = 'AIPM 流水线已完成。最终原型、阶段产物、评审记录和决策追溯都已经沉淀在项目工作区。';
+        const prototypeUrl = `${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/04/artifact`;
+        actions.innerHTML = `
+          <button class="primary-btn" onclick="window.open('${prototypeUrl}', '_blank')">打开最终原型</button>
+          <button class="ghost-btn" onclick="exportProject()">导出项目 manifest</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+          <button class="ghost-btn" onclick="location.href='start.html'">回到启动页</button>
+        `;
+        return;
+      }
+
+      if (meta.currentStage === '00.5' && meta.currentState === 'pending') {
+        actionNote.textContent = '顾清会先进入数据工作台，拉取 App Store 与 Hacker News 数据，再生成阶段 0.5 的竞品分析报告。';
+        actions.innerHTML = `
+          <button class="primary-btn" onclick="location.href='workbench.html?project=${encodeURIComponent(projectId)}&stage=00.5'">进入顾清竞品数据工作台</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      if (meta.currentStage === '00.5' && meta.currentState === 'in_progress') {
+        actionNote.textContent = '顾清正在整理竞品数据。可以刷新查看产物是否已经生成。';
+        actions.innerHTML = `
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      if (meta.currentStage === '01' && meta.currentState === 'pending') {
+        actionNote.textContent = '阶段 0.5 已完成，周明会把需求和竞品结论压缩成后续 PRD / 原型生成提示。';
+        actions.innerHTML = `
+          <button id="runStage01Btn" class="primary-btn" onclick="runStage01()">启动阶段 1 提示增强</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      if (['01', '02', '03', '04'].includes(meta.currentStage) && meta.currentState === 'pending') {
+        const stageActionMap = {
+          '01': {
+            label: '进入周明提示增强工作台',
+            note: '阶段 0.5 已完成，周明会把需求和竞品结论压缩成增强提示词。',
+          },
+          '02': {
+            label: '进入周明PRD工作台',
+            note: '阶段 1 已完成，接下来根据增强提示词生成 PRD。',
+          },
+          '03': {
+            label: '进入苏予线框图工作台',
+            note: 'PRD 已完成，接下来生成线框图与交互规范。',
+          },
+          '04': {
+            label: '进入苏予高保真原型工作台',
+            note: '线框规范已完成，接下来生成高保真原型。',
+          },
+        };
+        const action = stageActionMap[meta.currentStage];
+        actionNote.textContent = action.note;
+        actions.innerHTML = `
+          <button class="primary-btn" onclick="location.href='workbench.html?project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(meta.currentStage)}'">${action.label}</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      if (meta.currentState === 'review_pending') {
+        actionNote.textContent = '当前阶段产物已生成，下一步进入圆桌评审会。';
+        const workbenchButton = meta.currentStage === '00.5'
+          ? `<button class="ghost-btn" onclick="location.href='stage05.html?project=${encodeURIComponent(projectId)}'">查看顾清工作台</button>`
+          : '';
+        const prototypeButton = meta.currentStage === '04'
+          ? `<button class="ghost-btn" onclick="window.open('${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/04/artifact', '_blank')">打开交互原型</button>`
+          : '';
+        actions.innerHTML = `
+          <button class="primary-btn" onclick="location.href='theatre.html?mode=review&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(meta.currentStage)}'">进入评审会</button>
+          ${workbenchButton}
+          ${prototypeButton}
+          <button class="ghost-btn" onclick="advanceCurrentStage('${meta.currentStage}')">评审已完成，进入下一阶段</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      if (meta.currentState === 'decision_pending') {
+        actionNote.textContent = '本轮评审已经收敛出关键分歧，需要你先拍板，系统才会进入下一阶段。';
+        actions.innerHTML = `
+          <button class="primary-btn" onclick="location.href='decisions.html?project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(meta.currentStage)}'">去拍板决策</button>
+          <button class="ghost-btn" onclick="location.href='theatre.html?mode=review&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(meta.currentStage)}'">回看评审会</button>
+          <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        `;
+        return;
+      }
+
+      actionNote.textContent = '这里是全屏工作区，适合承接问卷、文档阅读、阶段说明和后续动作入口。';
+      actions.innerHTML = `
+        <button class="ghost-btn" onclick="location.reload()">刷新状态</button>
+        <button class="ghost-btn" onclick="location.href='start.html'">回到启动页</button>
+      `;
+    }
+
+    async function runStage05(useMock = false) {
+      const btn = document.getElementById('runStage05Btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '顾清正在拉数据...';
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00.5/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ useMock }),
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '阶段 0.5 执行失败');
+        launchTransition('00.5');
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '重新启动顾清竞品分析';
+        }
+        document.getElementById('actionNote').textContent = `顾清拉取数据失败：${err.message}`;
+      }
+    }
+
+    async function advanceCurrentStage(stage) {
+      const actionNote = document.getElementById('actionNote');
+      const actions = document.getElementById('actions');
+      actions.querySelectorAll('button').forEach((button) => {
+        button.disabled = true;
+      });
+      actionNote.textContent = '正在推进到下一阶段...';
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/advance`, {
+          method: 'POST',
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '阶段推进失败');
+        const nextStage = result.data.nextStage || stage;
+        const message = nextStage === '00.5'
+          ? '好，阶段 0 已确认完成。现在进入阶段 0.5。顾清，去把竞品和市场数据拉回来。'
+          : `好，当前阶段已确认完成。现在进入阶段 ${nextStage}。`;
+        const nextUrl = `status.html?project=${encodeURIComponent(projectId)}`;
+        location.href =
+          `theatre.html?mode=solo&speaker=zhou-ming&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(nextStage)}&message=${encodeURIComponent(message)}&next=${encodeURIComponent(nextUrl)}`;
+      } catch (err) {
+        actionNote.textContent = `阶段推进失败：${err.message}`;
+        actions.querySelectorAll('button').forEach((button) => {
+          button.disabled = false;
+        });
+      }
+    }
+
+    async function runStage01() {
+      const btn = document.getElementById('runStage01Btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '周明正在增强提示...';
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/01/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ useMock: false }),
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '阶段 1 执行失败');
+        const message = '阶段 1 的增强提示已经整理好。接下来我们进入圆桌，确认它能不能支撑后续 PRD 和原型。';
+        const nextUrl = `status.html?project=${encodeURIComponent(projectId)}`;
+        location.href =
+          `theatre.html?mode=solo&speaker=zhou-ming&project=${encodeURIComponent(projectId)}&stage=01&message=${encodeURIComponent(message)}&next=${encodeURIComponent(nextUrl)}`;
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '重新启动阶段 1 提示增强';
+        }
+        document.getElementById('actionNote').textContent = `阶段 1 执行失败：${err.message}`;
+      }
+    }
+
+    async function runCurrentStage(stage) {
+      const btn = document.getElementById('runCurrentStageBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '正在生成阶段产物...';
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ useMock: false }),
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || `阶段 ${stage} 执行失败`);
+        const message = `阶段 ${stage} 的 mock 产物已经生成。接下来进入圆桌评审，确认是否可以继续往下游推进。`;
+        const nextUrl = `status.html?project=${encodeURIComponent(projectId)}`;
+        location.href =
+          `theatre.html?mode=solo&speaker=zhou-ming&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(stage)}&message=${encodeURIComponent(message)}&next=${encodeURIComponent(nextUrl)}`;
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '重新生成阶段产物';
+        }
+        document.getElementById('actionNote').textContent = `阶段执行失败：${err.message}`;
+      }
+    }
+
+    function launchTransition(stage) {
+      const message = '我先去拉竞品、评论和市场数据。等我把底盘铺好，再回圆桌说结论。';
+      const nextUrl = `status.html?project=${encodeURIComponent(projectId)}`;
+      location.href =
+        `theatre.html?mode=transition&speaker=gu-qing&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(stage)}&message=${encodeURIComponent(message)}&next=${encodeURIComponent(nextUrl)}`;
+    }
+
+    async function exportProject() {
+      const actionNote = document.getElementById('actionNote');
+      const previous = actionNote.textContent;
+      actionNote.textContent = '正在生成项目 manifest...';
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/export`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '导出失败');
+        const data = result.data;
+        const fileCount = Array.isArray(data.files) ? data.files.length : 0;
+        actionNote.innerHTML = `已导出 manifest：<strong>${escapeHtml(data.exportPath || 'exports/latest/manifest.json')}</strong><br>包含 ${fileCount} 个产物条目，工作区路径：${escapeHtml(data.workspacePath || '-')}`;
+      } catch (err) {
+        actionNote.textContent = `导出失败：${err.message}`;
+        setTimeout(() => { actionNote.textContent = previous; }, 4000);
+      }
+    }
+  </script>
+</body>
+</html>

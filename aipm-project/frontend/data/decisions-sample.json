@@ -1,0 +1,94 @@
+{
+  "pendingDecisions": [
+    {
+      "id": "decision-001",
+      "stage": "00",
+      "question": "目标用户是否收窄到大一/大二？",
+      "background": "评审会上顾清和张磊提出质疑：赚零花钱的诉求和\"靠谱性\"的核心价值可能不匹配。大一/大二更在乎\"立刻拿到钱\"和\"学姐推荐\"，而非抽象的\"已结算订单数\"。",
+      "options": [
+        {
+          "id": "A",
+          "label": "收窄到大一/大二",
+          "description": "聚焦大一/大二学生，低门槛兼职为主",
+          "pros": ["用户画像清晰", "产品设计聚焦"],
+          "cons": ["与「靠谱性」诉求不匹配", "市场可能偏小"],
+          "supporters": [],
+          "opponents": ["zhang-lei", "gu-qing"]
+        },
+        {
+          "id": "B",
+          "label": "扩大到全体大学生",
+          "description": "覆盖全体大学生，但优先服务大三/大四",
+          "pros": ["覆盖面更广", "和核心价值「靠谱性」匹配", "大三/大四付费意愿高"],
+          "cons": ["用户画像模糊", "产品设计需要权衡"],
+          "supporters": ["zhou-ming", "gu-qing", "zhang-lei"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "B"
+    },
+    {
+      "id": "decision-002",
+      "stage": "00",
+      "question": "首页第一屏放什么？",
+      "background": "信任体系是 MVP 必做，但具体呈现方式有争议。苏予建议社交背书，李航警告隐私合规风险。",
+      "options": [
+        {
+          "id": "A",
+          "label": "已结算订单数 + 用户评分",
+          "description": "首屏 Hero 放\"已结算 12,345 单、平均评分 4.5 星\"",
+          "pros": ["数据客观，符合信任体系逻辑", "开发成本低（3天）"],
+          "cons": ["张磊说\"数字对大学生不起作用\"", "苏予说\"太抽象\""],
+          "supporters": [],
+          "opponents": ["zhang-lei", "su-yu"]
+        },
+        {
+          "id": "B",
+          "label": "社交背书",
+          "description": "首屏展示\"你的同学【张三】在这里做过 3 份兼职\"",
+          "pros": ["符合大学生心智", "信任感最强（张磊支持）", "差异化最强"],
+          "cons": ["李航警告：开发成本 10-20 天 + PIPL 隐私合规风险"],
+          "supporters": ["zhang-lei", "su-yu"],
+          "opponents": ["li-hang"]
+        },
+        {
+          "id": "C",
+          "label": "本校使用人数",
+          "description": "首屏展示\"复旦大学已有 128 人用过\"",
+          "pros": ["兼顾社交背书和开发成本（3天能上）", "无隐私问题"],
+          "cons": ["没有具体人名，信任感弱于选项B"],
+          "supporters": ["li-hang", "zhou-ming"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "C"
+    },
+    {
+      "id": "decision-003",
+      "stage": "00",
+      "question": "用户评价做到什么程度？",
+      "background": "李航警告 MVP 阶段用户基数小（目标 100 人），文字评论容易被刷，且反作弊成本高。",
+      "options": [
+        {
+          "id": "A",
+          "label": "完整评价系统（评分 + 文字评论）",
+          "description": "用户可以给雇主打分（1-5 星）+ 写文字评论",
+          "pros": ["信息丰富", "差异化明显", "竞品青团社评价系统弱"],
+          "cons": ["李航警告易被刷", "需要反作弊机制（人工审核）", "工时 8-12 天"],
+          "supporters": ["gu-qing", "zhang-lei", "su-yu"],
+          "opponents": ["li-hang"]
+        },
+        {
+          "id": "B",
+          "label": "仅评分（1-5 星）",
+          "description": "用户只能给雇主打分，不能写评论",
+          "pros": ["降低刷单动力", "开发成本低（3天）", "MVP 快速验证"],
+          "cons": ["信息量少", "差异化不明显"],
+          "supporters": ["li-hang", "zhou-ming"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "B"
+    }
+  ]
+}

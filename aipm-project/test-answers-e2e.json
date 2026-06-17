@@ -1,0 +1,109 @@
+﻿[
+    {
+        "answer":  "A1a",
+        "questionId":  "A1"
+    },
+    {
+        "answer":  "A2a",
+        "questionId":  "A2"
+    },
+    {
+        "answer":  "A3b",
+        "questionId":  "A3"
+    },
+    {
+        "answer":  "A4a",
+        "questionId":  "A4"
+    },
+    {
+        "answer":  "B1a",
+        "questionId":  "B1"
+    },
+    {
+        "answer":  "B2a",
+        "questionId":  "B2"
+    },
+    {
+        "answer":  "B3b",
+        "questionId":  "B3"
+    },
+    {
+        "answer":  [
+                       "B4d"
+                   ],
+        "questionId":  "B4"
+    },
+    {
+        "answer":  "B5b",
+        "questionId":  "B5"
+    },
+    {
+        "answer":  "B6a",
+        "questionId":  "B6"
+    },
+    {
+        "answer":  "C1a",
+        "questionId":  "C1"
+    },
+    {
+        "answer":  [
+                       "C2a",
+                       "C2b"
+                   ],
+        "questionId":  "C2"
+    },
+    {
+        "answer":  [
+                       "C3a"
+                   ],
+        "questionId":  "C3"
+    },
+    {
+        "answer":  [
+                       "C4a",
+                       "C4b"
+                   ],
+        "questionId":  "C4"
+    },
+    {
+        "answer":  [
+                       "D1a",
+                       "D1b",
+                       "D1c"
+                   ],
+        "questionId":  "D1"
+    },
+    {
+        "answer":  "D2a",
+        "questionId":  "D2"
+    },
+    {
+        "answer":  "D3a",
+        "questionId":  "D3"
+    },
+    {
+        "answer":  [
+                       "E1a",
+                       "E1b"
+                   ],
+        "questionId":  "E1"
+    },
+    {
+        "answer":  "E2a",
+        "questionId":  "E2"
+    },
+    {
+        "answer":  "E3c",
+        "questionId":  "E3"
+    },
+    {
+        "answer":  [
+                       "E4d"
+                   ],
+        "questionId":  "E4"
+    },
+    {
+        "answer":  "首版聚焦同校面交，不做物流和支付",
+        "questionId":  "F1"
+    }
+]

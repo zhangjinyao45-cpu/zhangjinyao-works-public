@@ -1,0 +1,32 @@
+{
+  "stage": "00.5",
+  "pendingDecisions": [
+    {
+      "id": "decision-001",
+      "stage": "00.5",
+      "question": "差异化优先级：第一版押哪条路径？",
+      "background": "本产品有三条差异化路径——信任闭环、per-user 个性化、与小满智客深度集成。",
+      "options": [
+        {"id": "A", "label": "信任闭环优先", "description": "合规+人工审核作为护城河"},
+        {"id": "B", "label": "per-user 个性化优先", "description": "千人千面是核心卖点"},
+        {"id": "C", "label": "深度集成优先", "description": "小满智客上层 prompt 平台"}
+      ],
+      "recommendation": "A",
+      "status": "decided",
+      "userChoice": "B"
+    },
+    {
+      "id": "decision-002",
+      "stage": "00.5",
+      "question": "分类策略：单标签 vs 多标签？",
+      "background": "App Store 真实差评显示利率不满和投诉边界模糊。",
+      "options": [
+        {"id": "A", "label": "维持 4 类单标签"},
+        {"id": "B", "label": "升级为多标签：主+次"}
+      ],
+      "recommendation": "B",
+      "status": "decided",
+      "userChoice": "A"
+    }
+  ]
+}

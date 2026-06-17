@@ -1,0 +1,28 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Generated project data and local runtime output
+workspace/
+aipm-test-workspace/
+tmp-cdp-checks/
+
+# Nested repository metadata from vendored/sample assets
+**/.git/
+**/.git.bak/
+
+# Logs and transient files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

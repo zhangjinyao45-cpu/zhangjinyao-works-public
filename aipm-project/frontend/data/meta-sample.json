@@ -1,0 +1,42 @@
+{
+  "$schema": "https://aipm.dev/schemas/meta-v1.json",
+  "projectId": "大学生兼职App",
+  "name": "大学生兼职App",
+  "idea": "我想做一个帮大学生找兼职的 App",
+  "userPersona": "default",
+  "createdAt": "2026-06-05T14:30:00Z",
+  "updatedAt": "2026-06-05T16:45:00Z",
+
+  "currentStage": "00",
+  "currentState": "decision_pending",
+  "globalState": "paused",
+  "blockedReason": null,
+
+  "stages": {
+    "00": {
+      "status": "decision_pending",
+      "startedAt": "2026-06-05T14:30:00Z",
+      "completedAt": null,
+      "artifactPath": "stages/00-需求头脑风暴设计.md",
+      "reviewPath": "reviews/00-review.json",
+      "reviewMinutesPath": "reviews/00-review-minutes.md",
+      "decisions": ["decision-001", "decision-002", "decision-003"],
+      "needsRedo": false
+    },
+    "00.5": { "status": "pending", "needsRedo": false },
+    "01": { "status": "pending", "needsRedo": false },
+    "02": { "status": "pending", "needsRedo": false },
+    "03": { "status": "pending", "needsRedo": false },
+    "04": { "status": "pending", "needsRedo": false }
+  },
+
+  "decisionHistory": [],
+
+  "eventLog": [
+    { "time": "2026-06-05T14:30:00Z", "event": "pipeline_started", "user": "default" },
+    { "time": "2026-06-05T14:35:00Z", "event": "stage_started", "stage": "00" },
+    { "time": "2026-06-05T15:00:00Z", "event": "artifact_generated", "stage": "00" },
+    { "time": "2026-06-05T15:05:00Z", "event": "review_started", "stage": "00" },
+    { "time": "2026-06-05T15:30:00Z", "event": "review_completed", "stage": "00", "decisionCount": 3 }
+  ]
+}

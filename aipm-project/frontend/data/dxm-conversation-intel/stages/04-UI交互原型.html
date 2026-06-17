@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>ConvIntel · 度小满高净值客户对话智能分析平台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{
+  bgPrimary:'#0E1117',bgElevated:'#1A1F29',bgHover:'#21262D',bgActive:'#2D333B',
+  textPrimary:'#E6EDF3',textSecondary:'#8B949E',textTertiary:'#6E7681',
+  brand:'#2967FF',brandHover:'#4D85FF',brandPressed:'#1F4FBF',
+  catEdu:'#3B82F6',catRate:'#8B5CF6',catRepay:'#10B981',catComplaint:'#EF4444',
+  vipGold:'#D29922',
+  borderDefault:'#30363D',borderMuted:'#21262D',
+  succ:'#3FB950',warn:'#D29922',danger:'#F85149',info:'#58A6FF'
+},fontFamily:{sans:['-apple-system','PingFang SC','Microsoft YaHei','system-ui','sans-serif'],mono:['JetBrains Mono','Consolas','Courier New','monospace']}}}}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.461.0/font/lucide.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;font-size:13px;line-height:1.45;color:#E6EDF3;background:#0E1117;min-width:1280px}
+body{overflow-x:hidden}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0E1117}
+::-webkit-scrollbar-thumb{background:#30363D;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#484F58}
+
+/* 接待速览卡三行不同色描边 */
+.prep-line-1{box-shadow:inset 0 0 0 1px #58A6FF}
+.prep-line-2{box-shadow:inset 0 0 0 1px #F85149}
+.prep-line-3{box-shadow:inset 0 0 0 1px #D29922}
+
+.vip-bar{position:relative}
+.vip-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#D29922}
+
+/* 徽章 */
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:4px;font-size:11px;font-weight:500;line-height:1;border:1px solid currentColor;background:rgba(255,255,255,0.04)}
+.badge-lg{height:32px;padding:0 12px;border-radius:6px;font-size:13px}
+.badge-edu{color:#3B82F6}
+.badge-edu-bg{color:#3B82F6;background:rgba(59,130,246,0.15)}
+.badge-rate{color:#8B5CF6}
+.badge-rate-bg{color:#8B5CF6;background:rgba(139,92,246,0.15)}
+.badge-repay{color:#10B981}
+.badge-repay-bg{color:#10B981;background:rgba(16,185,129,0.15)}
+.badge-complaint{color:#EF4444}
+.badge-complaint-bg{color:#EF4444;background:rgba(239,68,68,0.15)}
+.badge-vip{background:#D29922;color:#0E1117;border:none;font-weight:700;height:18px;padding:0 6px;font-size:10px}
+
+/* 消息气泡 */
+.bubble-user{background:rgba(249,115,22,0.7);max-width:70%;padding:10px 14px;border-radius:12px 12px 2px 12px;color:#fff;align-self:flex-end}
+.bubble-ai{background:#21262D;max-width:70%;padding:10px 14px;border-radius:12px 12px 12px 2px;color:#E6EDF3;align-self:flex-start}
+.bubble-human{background:rgba(41,103,255,0.7);max-width:70%;padding:10px 14px;border-radius:12px 12px 12px 2px;color:#fff;align-self:flex-start}
+
+.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;font-family:JetBrains Mono,monospace;font-size:11px;border:1px solid #30363D;border-bottom-width:2px;border-radius:3px;background:#1A1F29;color:#8B949E}
+
+/* 数据表格 */
+table.data-table{width:100%;border-collapse:collapse;font-size:12px}
+table.data-table thead th{position:sticky;top:0;background:#1A1F29;text-align:left;font-weight:600;color:#8B949E;height:36px;padding:0 12px;border-bottom:1px solid #30363D;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;z-index:10}
+table.data-table tbody tr{height:36px;border-bottom:1px solid #21262D;cursor:pointer}
+table.data-table tbody tr:hover{background:#21262D}
+table.data-table tbody tr.selected{background:#2D333B;border-left:2px solid #2967FF}
+table.data-table tbody td{padding:0 12px;color:#E6EDF3;vertical-align:middle}
+table.data-table tbody tr:nth-child(even){background:rgba(255,255,255,0.015)}
+
+/* 透明度禁用 */
+.disabled{opacity:0.5;pointer-events:none}
+
+/* 焦点环 */
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #2967FF;outline-offset:2px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;min-width:280px;max-width:400px;padding:12px 16px;border-radius:8px;background:#1A1F29;border:1px solid #30363D;color:#E6EDF3;font-size:13px;z-index:9999;animation:slideIn 0.25s ease}
+.toast.success{border-color:#3FB950}
+.toast.warn{border-color:#D29922}
+.toast.danger{border-color:#F85149}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* 模态 */
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center}
+.modal{width:600px;background:#1A1F29;border:1px solid #30363D;border-radius:12px;padding:24px}
+
+/* 高频键盘提示条 */
+.kbd-hint-bar{position:sticky;bottom:0;height:28px;display:flex;align-items:center;gap:16px;padding:0 16px;background:#0E1117;border-top:1px solid #21262D;color:#8B949E;font-size:11px}
+
+/* prompt 编辑器语法高亮 */
+.prompt-code{font-family:JetBrains Mono,Consolas,monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.prompt-code .comment{color:#6E7681}
+.prompt-code .var{color:#2967FF}
+.prompt-code .key{color:#58A6FF}
+.prompt-code .str{color:#3FB950}
+
+/* 主导航项目 */
+.nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 16px;color:#8B949E;cursor:pointer;border-radius:6px;font-size:13px;font-weight:500}
+.nav-item:hover{background:#21262D;color:#E6EDF3}
+.nav-item.active{background:#21262D;color:#E6EDF3;position:relative}
+.nav-item.active::before{content:'';position:absolute;left:-16px;top:8px;bottom:8px;width:3px;background:#2967FF;border-radius:0 2px 2px 0}
+
+/* KPI 卡片 */
+.kpi-card{background:#1A1F29;border:1px solid #30363D;border-radius:8px;padding:16px;height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.kpi-card .kpi-title{font-size:12px;color:#8B949E}
+.kpi-card .kpi-value{font-size:24px;font-weight:700;color:#E6EDF3}
+.kpi-card .kpi-trend{font-size:11px;color:#3FB950}
+.kpi-card .kpi-trend.down{color:#F85149}
+
+/* 圆形仪表盘 */
+.gauge-bg{stroke:#30363D;stroke-width:8;fill:none}
+.gauge-fg{stroke:#3FB950;stroke-width:8;fill:none;transition:stroke-dashoffset 0.4s}
+
+/* 接待速览卡 */
+.prep-card{background:#2D2412;border:1px solid #D29922;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px}
+.prep-row{background:#1A1F29;border-radius:4px;padding:6px 10px;font-size:12px;color:#E6EDF3;display:flex;align-items:center;gap:8px}
+
+/* 选项卡 */
+.tab-btn{padding:8px 16px;color:#8B949E;cursor:pointer;border-bottom:2px solid transparent;font-size:13px;font-weight:500}
+.tab-btn:hover{color:#E6EDF3}
+.tab-btn.active{color:#2967FF;border-bottom-color:#2967FF}
+
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid transparent;background:transparent;color:#E6EDF3}
+.btn:hover{background:#21262D}
+.btn-primary{background:#2967FF;color:#fff;border-color:#2967FF}
+.btn-primary:hover{background:#4D85FF;border-color:#4D85FF}
+.btn-danger{border-color:#F85149;color:#F85149}
+.btn-danger:hover{background:rgba(248,81,73,0.1)}
+.btn-success{background:#3FB950;color:#fff;border-color:#3FB950}
+.btn-success:hover{background:#4FCA60}
+.btn-large{height:40px;padding:0 20px;font-size:13px}
+
+input.field,textarea.field,select.field{background:#1A1F29;border:1px solid #30363D;border-radius:6px;padding:8px 12px;color:#E6EDF3;font-size:12px;font-family:inherit}
+input.field:focus,textarea.field:focus,select.field:focus{border-color:#2967FF;outline:none}
+
+/* 路由切换 */
+.route{display:none}
+.route.active{display:block}
+
+/* 折线图 */
+.spark{height:24px;width:80px}
+</style>
+</head>
+<body class="text-textPrimary">
+
+<!-- 顶部导航 -->
+<header class="h-16 bg-bgPrimary border-b border-borderDefault flex items-center justify-between px-6 sticky top-0 z-40">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded bg-brand flex items-center justify-center font-bold text-white">C</div>
+    <div>
+      <div class="font-bold text-textPrimary">ConvIntel</div>
+      <div class="text-xs text-textTertiary -mt-1">度小满 · 高净值客户对话智能分析平台</div>
+    </div>
+  </div>
+  <div class="flex-1 max-w-2xl mx-8">
+    <input type="text" class="field w-full" placeholder="🔍 搜索 用户ID / 手机后4位 / 对话关键词" id="globalSearch" onfocus="onGlobalSearch()">
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="relative cursor-pointer" onclick="toast('共3条新通知','info')">
+      <i class="lucide-bell text-textSecondary"></i>
+      <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-danger text-white text-[10px] flex items-center justify-center">3</span>
+    </div>
+    <div class="flex items-center gap-2 cursor-pointer">
+      <div class="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xs">张</div>
+      <div class="text-xs">
+        <div class="text-textPrimary">张玲</div>
+        <div class="text-textTertiary">客服 · L5</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 主区 = 左导航 + 路由 -->
+<div class="flex min-h-[calc(100vh-64px)]">
+
+  <!-- 左导航 -->
+  <aside class="w-64 bg-bgPrimary border-r border-borderDefault flex flex-col p-4 sticky top-16 self-start" style="height:calc(100vh - 64px)">
+    <nav class="flex flex-col gap-1 flex-1">
+      <a class="nav-item active" data-route="dashboard"><i class="lucide-home"></i> 工作台</a>
+      <a class="nav-item" data-route="conversations"><i class="lucide-messages-square"></i> 对话<span class="ml-auto badge badge-edu-bg" style="height:18px;padding:0 6px;font-size:10px">247</span></a>
+      <a class="nav-item" data-route="profile"><i class="lucide-user-circle"></i> 用户画像</a>
+      <a class="nav-item" data-route="prompt-center"><i class="lucide-sparkles"></i> Prompt 中心<span class="ml-auto badge badge-rate-bg" style="height:18px;padding:0 6px;font-size:10px">18</span></a>
+      <a class="nav-item" data-route="analytics"><i class="lucide-bar-chart-3"></i> 数据看板</a>
+    </nav>
+    <div class="mt-auto pt-4 border-t border-borderMuted flex flex-col gap-1">
+      <a class="nav-item"><i class="lucide-settings"></i> 设置</a>
+      <a class="nav-item" onclick="toast('退出登录（mock）','info')"><i class="lucide-log-out"></i> 退出</a>
+      <div class="text-textTertiary text-[10px] mt-2 px-4">v1.0.0 · 内部使用</div>
+    </div>
+  </aside>
+
+  <!-- 路由区域 -->
+  <main class="flex-1 flex flex-col" id="routeContainer">
+    <!-- 路由内容由 JS 渲染填充 -->
+  </main>
+
+</div>
+
+<!-- Toast 容器 -->
+<div id="toastContainer"></div>
+
+<!-- 模态容器 -->
+<div id="modalContainer"></div>
+
+<script>
+// ============ Mock 数据 ============
+const MOCK = {
+  kpi: {
+    todayConversations: {value:247, trend:'+12%', dir:'up'},
+    pendingPrompts: {value:18, trend:'+5', dir:'up'},
+    classifyAccuracy: {value:'82%', trend:'目标 80%', dir:'up'},
+    vipUsers: {value:312, trend:'本月新增 8', dir:'up'}
+  },
+  classifyDistribution: [
+    {name:'借贷额度', count:94, pct:38, color:'#3B82F6', tone:'edu'},
+    {name:'利率不满', count:67, pct:27, color:'#8B5CF6', tone:'rate'},
+    {name:'还款方式', count:47, pct:19, color:'#10B981', tone:'repay'},
+    {name:'投诉',     count:39, pct:16, color:'#EF4444', tone:'complaint'}
+  ],
+  conversations: [
+    {id:'c001',user:'王*** (139****8821)',vip:true,cat:'rate',catLabel:'利率不满',confidence:92,summary:'我借了 80 万，最近发现利率从 8.4% 涨到 14.6%，这个差距太大了，请给我个合理的解释',time:'14:32',date:'2026-06-15',unread:true,channel:'AI',rounds:12},
+    {id:'c002',user:'李*** (138****2173)',vip:true,cat:'edu',catLabel:'借贷额度',confidence:88,summary:'我想申请提额到 50 万，目前我的额度只有 20 万，征信良好',time:'13:21',date:'2026-06-15',unread:false,channel:'人工·张玲',rounds:8},
+    {id:'c003',user:'陈*** (135****6610)',vip:false,cat:'complaint',catLabel:'投诉',confidence:76,summary:'上次的客服态度很差，我要求投诉，并退还提前还款手续费',time:'11:05',date:'2026-06-15',unread:true,channel:'AI',rounds:15},
+    {id:'c004',user:'赵*** (137****4592)',vip:true,cat:'repay',catLabel:'还款方式',confidence:94,summary:'我想把还款方式改成 24 期分期，现在 12 期压力太大',time:'10:48',date:'2026-06-15',unread:false,channel:'AI',rounds:6},
+    {id:'c005',user:'刘*** (188****0021)',vip:false,cat:'edu',catLabel:'借贷额度',confidence:71,summary:'我能借多少？需要什么资料？审核多久？',time:'10:12',date:'2026-06-15',unread:false,channel:'AI',rounds:4},
+    {id:'c006',user:'王*** (139****8821)',vip:true,cat:'rate',catLabel:'利率不满',confidence:89,summary:'第二次咨询利率，依然不满意上次客服的解释，希望直接转人工',time:'09:50',date:'2026-06-15',unread:false,channel:'人工·李伟',rounds:7},
+    {id:'c007',user:'张*** (159****3380)',vip:true,cat:'complaint',catLabel:'投诉',confidence:81,summary:'明明承诺了利率优惠，到账时却打折扣，这是欺诈',time:'09:20',date:'2026-06-15',unread:true,channel:'人工·王朗',rounds:11},
+    {id:'c008',user:'刘*** (188****0021)',vip:false,cat:'repay',catLabel:'还款方式',confidence:65,summary:'问还款日为什么是 5 号，能不能改到 10 号',time:'08:55',date:'2026-06-15',unread:false,channel:'AI',rounds:3},
+    {id:'c009',user:'孙*** (133****1188)',vip:true,cat:'edu',catLabel:'借贷额度',confidence:90,summary:'额度被降低了 15 万，原因不明',time:'08:32',date:'2026-06-15',unread:true,channel:'AI',rounds:9},
+    {id:'c010',user:'赵*** (137****4592)',vip:true,cat:'repay',catLabel:'还款方式',confidence:78,summary:'昨天还的款没显示，想确认',time:'昨天 18:12',date:'2026-06-14',unread:false,channel:'AI',rounds:5},
+    {id:'c011',user:'吴*** (186****7782)',vip:false,cat:'rate',catLabel:'利率不满',confidence:69,summary:'对比了别家，你们的利率明显高',time:'昨天 17:30',date:'2026-06-14',unread:false,channel:'AI',rounds:8},
+    {id:'c012',user:'郑*** (158****0091)',vip:true,cat:'rate',catLabel:'利率不满',confidence:85,summary:'同样资质，朋友的利率比我低 4 个点，要求复核',time:'昨天 16:20',date:'2026-06-14',unread:true,channel:'AI',rounds:6}
+  ],
+  // 用户画像
+  profiles: {
+    'c001-user': {
+      id:'u_8821',name:'王*** (139****8821)',vip:true,
+      basic:{loan:'80万',rate:'14.6%',rateChange:'8.4% → 14.6%',overdueCount:0,health:92,totalConv:12},
+      distribution:{rate:7,edu:3,repay:1,complaint:1},
+      prep:{
+        intro:'直接问候 + 调出最近账单，承认价格波动客户的合理疑虑',
+        avoid:'避免使用"系统综合评估"、"个人评分变化"等模板话术',
+        emotion:'焦虑、价格敏感、易升级投诉（72%）',
+        lastCsBy:'李伟',
+        lastNote:'用户两次明确表示倾向 24 期还款，希望降低月供'
+      },
+      ai:{
+        traits:'理性敏感型 · 决策慢但坚定（置信 88%）',
+        demand:'核心诉求是利率合理性解释，次要诉求是降低月供压力',
+        comm:'偏好简洁直接，少模板话术；情绪激动时需要先认情绪',
+        risk:'流失中度风险（投诉倾向 72%，本月二次咨询利率）',
+        suggest:'让出 24 期空间作为善意；先共情再解释定价机制'
+      },
+      promptStatus:'V1.3 待审核',
+      promptHistory:['V1.0 (上线 2026-04-12)','V1.1 (上线 2026-05-08)','V1.2 (上线 2026-06-08)','V1.3 (待审核)'],
+      csat:'4.3 (↑0.4)',
+      relatedConv:[
+        {date:'06-15',cat:'rate',label:'利率不满',summary:'第二次咨询利率'},
+        {date:'06-12',cat:'edu',label:'借贷额度',summary:'询问可借额度上限'},
+        {date:'06-08',cat:'rate',label:'利率不满',summary:'首次咨询利率波动'},
+        {date:'06-02',cat:'rate',label:'利率不满',summary:'对比同业利率'},
+        {date:'05-28',cat:'edu',label:'借贷额度',summary:'询问提额条件'}
+      ]
+    },
+    'c002-user': {
+      id:'u_2173',name:'李*** (138****2173)',vip:true,
+      basic:{loan:'20万',rate:'9.8%',overdueCount:0,health:96,totalConv:8},
+      distribution:{edu:6,repay:1,rate:1,complaint:0},
+      prep:{
+        intro:'简明扼要给提额条件清单，承认其良好征信',
+        avoid:'避免直接说"暂不能提额"，先列条件后给结论',
+        emotion:'目标驱动型，理性平和（置信 91%）',
+        lastCsBy:null,
+        lastNote:null
+      },
+      ai:{
+        traits:'目标驱动型 · 信息收集者（置信 91%）',
+        demand:'明确的提额诉求，希望了解评审标准',
+        comm:'偏好结构化清单，喜欢量化数据',
+        risk:'低风险，高价值客户',
+        suggest:'用清单式回答展示专业性'
+      },
+      promptStatus:'V1.1 已上线',
+      promptHistory:['V1.0 (上线 2026-05-01)','V1.1 (上线 2026-06-01)'],
+      csat:'4.6 (→0.0)',
+      relatedConv:[
+        {date:'06-15',cat:'edu',label:'借贷额度',summary:'申请提额到 50 万'},
+        {date:'06-09',cat:'edu',label:'借贷额度',summary:'提额前征信查询'},
+        {date:'05-23',cat:'repay',label:'还款方式',summary:'询问大额还款手续费'}
+      ]
+    },
+    'c004-user': {
+      id:'u_4592',name:'赵*** (137****4592)',vip:true,
+      basic:{loan:'40万',rate:'10.2%',overdueCount:1,health:78,totalConv:6},
+      distribution:{repay:4,edu:1,rate:1,complaint:0},
+      prep:{
+        intro:'询问当前还款压力情况，给 24 期方案细节',
+        avoid:'避免提及"逾期记录"，正面表达',
+        emotion:'压力型，希望减负（置信 84%）',
+        lastCsBy:null,
+        lastNote:null
+      },
+      ai:{
+        traits:'压力型用户 · 寻求方案（置信 84%）',
+        demand:'希望延长分期降低月供',
+        comm:'喜欢具体数字（每月还多少）',
+        risk:'中风险（曾有 1 次逾期）',
+        suggest:'给具体方案对比表，用数字说服'
+      },
+      promptStatus:'V1.0 已上线',
+      promptHistory:['V1.0 (上线 2026-06-01)'],
+      csat:'4.1 (↑0.2)',
+      relatedConv:[
+        {date:'06-15',cat:'repay',label:'还款方式',summary:'改 24 期还款'},
+        {date:'06-14',cat:'repay',label:'还款方式',summary:'确认还款是否到账'},
+        {date:'05-30',cat:'repay',label:'还款方式',summary:'询问提前还款'}
+      ]
+    }
+  },
+  // 待审核 prompt
+  pendingPromptList: [
+    {id:'p001',userId:'u_8821',userName:'王*** (139****8821)',vip:true,version:'V1.3',cat:'rate',createdAt:'2026-06-15 14:32',generatedReason:'用户本月第二次咨询利率，情绪升级'},
+    {id:'p002',userId:'u_2173',userName:'李*** (138****2173)',vip:true,version:'V1.2',cat:'edu',createdAt:'2026-06-15 13:21',generatedReason:'累积 8 通对话触发版本更新'},
+    {id:'p003',userId:'u_3380',userName:'张*** (159****3380)',vip:true,version:'V1.0',cat:'complaint',createdAt:'2026-06-15 09:20',generatedReason:'初版生成（新增高净值用户）'},
+    {id:'p004',userId:'u_4592',userName:'赵*** (137****4592)',vip:true,version:'V1.1',cat:'repay',createdAt:'2026-06-15 10:48',generatedReason:'画像更新（新增逾期记录）'},
+    {id:'p005',userId:'u_0091',userName:'郑*** (158****0091)',vip:true,version:'V1.0',cat:'rate',createdAt:'2026-06-15 08:30',generatedReason:'初版生成'}
+  ],
+  // 已上线 prompt
+  livePromptList: [
+    {userId:'u_2173',userName:'李*** (138****2173)',version:'V1.1',live:'2026-06-01',hits:42,csat:'4.6 (→)',reviewer:'李航'},
+    {userId:'u_4592',userName:'赵*** (137****4592)',version:'V1.0',live:'2026-06-01',hits:28,csat:'4.1 (↑0.2)',reviewer:'李航'},
+    {userId:'u_8821',userName:'王*** (139****8821)',version:'V1.2',live:'2026-06-08',hits:35,csat:'4.0 (↓0.1)',reviewer:'李航'},
+    {userId:'u_1188',userName:'孙*** (133****1188)',version:'V1.0',live:'2026-05-28',hits:51,csat:'4.4 (↑0.3)',reviewer:'李航'}
+  ],
+  // prompt 文本
+  promptTexts: {
+    'p001-V1.3': `# 角色定位
+你是度小满金融的 AI 客服小满，正在和高净值借贷客户王 *** 进行第 13 通对话。
+
+# 用户特征（u_8821）
+- 性格：理性敏感型，决策慢但坚定（置信 88%）
+- 当前借贷：80 万，利率从 8.4% 上调至 14.6%
+- 核心诉求：要求合理解释利率涨幅，倾向 24 期还款
+
+# 沟通规则
+1. 直接回答问题，不绕弯，不冗长开场
+2. 先认情绪后给方案（用户已二次咨询同问题）
+3. 必要时主动让出 24 期还款空间作为善意
+4. 数字要精确，如月供差额具体到元
+5. 提及"价格调整原因"时给具体分项
+
+# 避雷词
+- "系统综合评估"
+- "个人评分变化"
+- "请您理解我们的政策"
+
+# 示例开场
+"您好，王女士，我看到您本月第二次咨询利率问题。我先为上次未能给您满意答复表达歉意。现在我想直接说清楚您的利率从 8.4% 调整到 14.6% 背后的几个具体因素..."`,
+    'p001-V1.2': `# 角色定位
+你是度小满 AI 客服小满。
+
+# 沟通规则
+1. 友好接待
+2. 详细解释
+
+# 避雷词
+- "系统评估"`,
+    'p002-V1.2': `# 角色定位
+你是度小满金融 AI 客服，正在与目标驱动型高净值客户李 *** 沟通。
+
+# 用户特征（u_2173）
+- 性格：目标驱动型，信息收集者（置信 91%）
+- 当前借贷：20 万，利率 9.8%，征信优秀
+- 核心诉求：明确的提额需求，希望了解评审标准
+
+# 沟通规则
+1. 用清单结构化回答（条目化）
+2. 给具体数字（额度、利率、期数）
+3. 不主动延展话题
+4. 直奔主题，不寒暄超过一句
+
+# 避雷词
+- "看您的实际情况"
+- "我们会综合考虑"
+
+# 示例开场
+"您好李先生，关于您 50 万的提额申请，我直接给您几个关键条件清单：1) 当前征信状态..."`,
+    'p003-V1.0': `# 角色定位
+你是度小满金融 AI 客服，正在处理愤怒投诉客户张 *** 的问题。
+
+# 用户特征（u_3380）
+- 性格：维权型，被许诺感强（置信 79%）
+- 关键事件：用户称获得过利率优惠承诺，到账后未兑现
+- 核心诉求：要求兑现承诺或退款
+
+# 沟通规则
+1. 优先承认情绪，避免反驳
+2. 立即调出该客户的所有营销/沟通记录
+3. 不否认前期承诺，先核实再回应
+4. 给出明确的下一步动作（24h 内有人对接）
+5. 升级流程不可见地启动（H+1 客服主管接手）
+
+# 避雷词
+- "我们没有过这样的承诺"
+- "请您冷静"
+- "无法核实"
+
+# 示例开场
+"张女士您好，我先为您遇到的不一致体验表达歉意。关于利率优惠的事，我立即帮您调取所有的沟通记录..."`,
+    'p005-V1.0': `# 角色定位
+你是度小满金融 AI 客服，正面对资质比较型高净值客户郑 ***。
+
+# 用户特征（u_0091）
+- 性格：资质比较型，看重公平（置信 86%）
+- 关键事件：朋友资质相似但利率低 4 个点
+- 核心诉求：要求复核利率定价
+
+# 沟通规则
+1. 不否认差异存在
+2. 解释利率定价的多维度机制（不只看征信）
+3. 给一个明确的复核动作
+4. 必要时让出"利率优化通道"作为补救
+
+# 避雷词
+- "每个人情况不一样"
+- "我们的定价是合理的"
+
+# 示例开场
+"郑先生您好，我理解您看到资质相近的人利率低于您，这种感受是很合理的。关于利率定价..."`
+  }
+};
+
+// 当前选中
+let currentRoute = 'dashboard';
+let selectedConvId = 'c001';
+let selectedProfileUserKey = 'c001-user';
+let selectedPromptId = 'p001';
+let promptCenterTab = 'pending';
+
+function $(s,c=document){return c.querySelector(s)}
+function $$(s,c=document){return [...c.querySelectorAll(s)]}
+
+function toast(msg, type='info'){
+  const el = document.createElement('div');
+  el.className = 'toast '+(type||'info');
+  el.textContent = msg;
+  $('#toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+
+function showModal(html){
+  const m = document.createElement('div');
+  m.className = 'modal-mask';
+  m.innerHTML = `<div class="modal">${html}</div>`;
+  m.addEventListener('click', e=>{ if(e.target===m) m.remove();});
+  $('#modalContainer').appendChild(m);
+  return m;
+}
+
+function onGlobalSearch(){
+  toast('搜索: 已找到 3 个匹配结果（mock）','info');
+}
+
+function nav(route){
+  currentRoute = route;
+  $$('.nav-item').forEach(el=>el.classList.toggle('active', el.dataset.route===route));
+  render();
+}
+$$('.nav-item').forEach(el=>{ if(el.dataset.route) el.addEventListener('click',()=>nav(el.dataset.route)); });
+</script>
+
+<script id="render-router">
+function render(){
+  const c = $('#routeContainer');
+  if(currentRoute==='dashboard') c.innerHTML = renderDashboard();
+  else if(currentRoute==='conversations') c.innerHTML = renderConversations();
+  else if(currentRoute==='conv-detail') c.innerHTML = renderConvDetail();
+  else if(currentRoute==='profile') c.innerHTML = renderProfile();
+  else if(currentRoute==='prompt-center') c.innerHTML = renderPromptCenter();
+  else if(currentRoute==='analytics') c.innerHTML = renderAnalytics();
+  bindHandlers();
+}
+
+function renderDashboard(){
+  const k = MOCK.kpi;
+  const dist = MOCK.classifyDistribution;
+  return `
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h1 class="text-xl font-bold">工作台</h1>
+        <p class="text-textSecondary text-xs mt-1">2026-06-15 · 星期一 · 张玲，欢迎回来</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-textTertiary">
+        <span class="w-2 h-2 rounded-full bg-succ"></span> 系统正常 · 小满智客 API 在线
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4 mb-5">
+      ${kpiCard('今日新对话', k.todayConversations.value, k.todayConversations.trend, k.todayConversations.dir)}
+      ${kpiCard('待审核 Prompt', k.pendingPrompts.value, k.pendingPrompts.trend, k.pendingPrompts.dir)}
+      ${kpiCard('分类准确率', k.classifyAccuracy.value, k.classifyAccuracy.trend, k.classifyAccuracy.dir)}
+      ${kpiCard('VIP 客户', k.vipUsers.value, k.vipUsers.trend, k.vipUsers.dir)}
+    </div>
+
+    <div class="grid grid-cols-5 gap-4">
+      <!-- 待办列表 -->
+      <div class="col-span-3 bg-bgElevated border border-borderDefault rounded-lg p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="font-semibold">我的待办 · 待审核 Prompt</h2>
+            <p class="text-textTertiary text-xs">共 18 个 · 优先 VIP 客户</p>
+          </div>
+          <button class="btn btn-primary" onclick="nav('prompt-center')">前往 Prompt 中心 →</button>
+        </div>
+        <div class="space-y-2">
+          ${MOCK.pendingPromptList.map(p=>`
+            <div class="flex items-center gap-3 p-3 bg-bgPrimary rounded border border-borderMuted hover:border-brand cursor-pointer ${p.vip?'vip-bar':''}" onclick="selectedPromptId='${p.id}';nav('prompt-center')">
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium">${p.userName}</span>
+                  ${p.vip?'<span class="badge badge-vip">VIP</span>':''}
+                  <span class="badge badge-${p.cat}-bg">${badgeLabel(p.cat)}</span>
+                </div>
+                <div class="text-textTertiary text-xs mt-1">${p.generatedReason} · ${p.createdAt}</div>
+              </div>
+              <div class="text-textSecondary text-xs">${p.version}</div>
+              <i class="lucide-chevron-right text-textTertiary"></i>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- 今日分布环形 -->
+      <div class="col-span-2 bg-bgElevated border border-borderDefault rounded-lg p-5">
+        <h2 class="font-semibold mb-4">今日对话分类分布</h2>
+        <div class="flex items-center gap-5">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            ${donutSVG(dist)}
+            <text x="80" y="78" text-anchor="middle" fill="#E6EDF3" font-size="20" font-weight="700">247</text>
+            <text x="80" y="98" text-anchor="middle" fill="#8B949E" font-size="10">总对话数</text>
+          </svg>
+          <div class="flex-1 space-y-2">
+            ${dist.map(d=>`
+              <div class="flex items-center gap-2 text-xs">
+                <span class="w-3 h-3 rounded-sm" style="background:${d.color}"></span>
+                <span class="flex-1">${d.name}</span>
+                <span class="text-textSecondary">${d.count}</span>
+                <span class="text-textTertiary">${d.pct}%</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 今日动态 -->
+    <div class="mt-4 bg-bgElevated border border-borderDefault rounded-lg p-5">
+      <h2 class="font-semibold mb-3">今日活动</h2>
+      <div class="space-y-2 text-xs">
+        <div class="flex gap-3"><span class="text-textTertiary w-12">14:32</span><span>你审核通过 王*** 的 V1.3 prompt</span></div>
+        <div class="flex gap-3"><span class="text-textTertiary w-12">14:05</span><span>系统自动分类 12 通新对话（准确率 84%）</span></div>
+        <div class="flex gap-3"><span class="text-textTertiary w-12">13:50</span><span>陈*** 的对话被修正分类（投诉 → 利率不满 → 投诉）</span></div>
+        <div class="flex gap-3"><span class="text-textTertiary w-12">11:20</span><span>新增 2 个 VIP 用户画像生成（李***, 赵***）</span></div>
+        <div class="flex gap-3"><span class="text-textTertiary w-12">09:08</span><span>张*** 申请删除画像（合规工单 #wt-2891）</span></div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function kpiCard(title,value,trend,dir){
+  return `<div class="kpi-card">
+    <div class="kpi-title">${title}</div>
+    <div class="kpi-value">${value}</div>
+    <div class="kpi-trend ${dir==='down'?'down':''}">${dir==='down'?'↓':'↑'} ${trend}</div>
+  </div>`;
+}
+
+function donutSVG(items){
+  const total = items.reduce((s,i)=>s+i.count,0);
+  let acc = 0;
+  const r = 60, cx=80, cy=80;
+  return items.map(it=>{
+    const start = acc/total * Math.PI*2 - Math.PI/2;
+    acc += it.count;
+    const end = acc/total * Math.PI*2 - Math.PI/2;
+    const large = (end-start)>Math.PI?1:0;
+    const x1 = cx+r*Math.cos(start), y1 = cy+r*Math.sin(start);
+    const x2 = cx+r*Math.cos(end), y2 = cy+r*Math.sin(end);
+    return `<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z" fill="${it.color}" opacity="0.85"/>`
+  }).join('') + `<circle cx="80" cy="80" r="42" fill="#1A1F29"/>`;
+}
+
+function badgeLabel(cat){
+  return {edu:'借贷额度',rate:'利率不满',repay:'还款方式',complaint:'投诉'}[cat];
+}
+
+// ============ 对话列表页 ============
+let convFilters = {keyword:'',cats:new Set(),vipOnly:false,date:'today'};
+function renderConversations(){
+  let list = MOCK.conversations.filter(c=>{
+    if(convFilters.cats.size>0 && !convFilters.cats.has(c.cat)) return false;
+    if(convFilters.vipOnly && !c.vip) return false;
+    if(convFilters.keyword && !(c.user.includes(convFilters.keyword)||c.summary.includes(convFilters.keyword))) return false;
+    return true;
+  });
+  const selected = list.find(c=>c.id===selectedConvId) || list[0] || MOCK.conversations[0];
+  const profile = MOCK.profiles[(selected.id||'c001')+'-user'] || MOCK.profiles['c001-user'];
+
+  return `
+  <div class="flex flex-1">
+    <!-- 中区 -->
+    <div class="flex-1 flex flex-col">
+      <div class="px-6 py-4 border-b border-borderDefault flex items-center justify-between">
+        <div>
+          <h1 class="text-xl font-bold">对话列表</h1>
+          <p class="text-textTertiary text-xs">共 ${MOCK.conversations.length} 条 · 当前筛选 ${list.length} 条</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn"><i class="lucide-refresh-cw"></i> 刷新</button>
+          <button class="btn"><i class="lucide-download"></i> 导出</button>
+        </div>
+      </div>
+
+      <!-- 过滤条 -->
+      <div class="px-6 py-3 border-b border-borderMuted flex flex-wrap items-center gap-2">
+        <input class="field flex-1 max-w-xs" placeholder="🔍 搜索用户/对话内容" oninput="convFilters.keyword=this.value;render()" value="${convFilters.keyword}">
+        ${['edu','rate','repay','complaint'].map(c=>{
+          const on = convFilters.cats.has(c);
+          return `<button class="badge ${on?`badge-${c}-bg`:`badge-${c}`}" style="cursor:pointer;${on?'':'opacity:0.6'}" onclick="convFilters.cats.has('${c}')?convFilters.cats.delete('${c}'):convFilters.cats.add('${c}');render()">${badgeLabel(c)}</button>`;
+        }).join('')}
+        <div class="flex items-center gap-2 ml-3 text-xs">
+          <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" ${convFilters.vipOnly?'checked':''} onchange="convFilters.vipOnly=this.checked;render()"> 仅 VIP</label>
+        </div>
+        <select class="field ml-auto" onchange="convFilters.date=this.value;render()">
+          <option ${convFilters.date==='today'?'selected':''} value="today">今天</option>
+          <option ${convFilters.date==='week'?'selected':''} value="week">本周</option>
+          <option ${convFilters.date==='month'?'selected':''} value="month">本月</option>
+        </select>
+      </div>
+
+      <!-- 表格 -->
+      <div class="flex-1 overflow-auto" style="max-height:calc(100vh - 240px)">
+        <table class="data-table">
+          <thead><tr>
+            <th style="width:40px"><input type="checkbox"></th>
+            <th>客户</th>
+            <th style="width:110px">分类</th>
+            <th>对话摘要</th>
+            <th style="width:90px">渠道</th>
+            <th style="width:80px">轮数</th>
+            <th style="width:80px">时间</th>
+            <th style="width:60px">状态</th>
+          </tr></thead>
+          <tbody>
+            ${list.map(c=>`
+              <tr class="${c.id===selectedConvId?'selected':''} ${c.vip?'vip-bar':''}" onclick="selectedConvId='${c.id}';render()">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span>${c.user}</span>
+                    ${c.vip?'<span class="badge badge-vip">VIP</span>':''}
+                  </div>
+                </td>
+                <td><span class="badge badge-${c.cat}-bg">${c.catLabel}</span>${c.confidence<70?'<span class="ml-1 text-warn" title="低置信度">⚠</span>':''}</td>
+                <td class="text-textSecondary text-xs" style="max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.summary}</td>
+                <td class="text-xs">${c.channel}</td>
+                <td class="text-textSecondary text-xs">${c.rounds}</td>
+                <td class="text-textSecondary text-xs">${c.time}</td>
+                <td>${c.unread?'<span class="w-2 h-2 rounded-full bg-info inline-block"></span>':'<span class="text-textTertiary text-xs">已读</span>'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 快捷键提示条 -->
+      <div class="kbd-hint-bar">
+        <span><span class="kbd">↑</span><span class="kbd">↓</span> 切换</span>
+        <span><span class="kbd">Enter</span> 进入详情</span>
+        <span><span class="kbd">L</span> 标记已读</span>
+        <span><span class="kbd">/</span> 搜索</span>
+        <span class="ml-auto text-textTertiary">每页 50 条 · 第 1 / 5 页</span>
+      </div>
+    </div>
+
+    <!-- 右侧栏 -->
+    <aside class="w-[360px] bg-bgPrimary border-l border-borderDefault p-4 overflow-y-auto" style="max-height:calc(100vh - 64px)">
+      <h3 class="text-textSecondary text-xs font-semibold mb-3 uppercase">快速浏览</h3>
+      <div class="bg-bgElevated rounded-lg p-4 space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="font-medium">${selected.user}</span>
+          ${selected.vip?'<span class="badge badge-vip">VIP</span>':''}
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="badge badge-${selected.cat}-bg badge-lg">${selected.catLabel}</span>
+          <span class="text-textTertiary text-xs">置信度 ${selected.confidence}%</span>
+        </div>
+        ${profile?renderPrepCard(profile.prep,profile.vip):''}
+      </div>
+      <button class="btn btn-primary w-full mt-3" onclick="nav('conv-detail')">进入详情 →</button>
+      <button class="btn w-full mt-2" onclick="nav('profile')">查看完整画像</button>
+
+      <h3 class="text-textSecondary text-xs font-semibold mb-3 uppercase mt-6">本周高频问题</h3>
+      <div class="space-y-2">
+        ${[
+          {k:'利率为什么涨了',v:34},
+          {k:'我能借多少',v:28},
+          {k:'提前还款手续费',v:24},
+          {k:'怎么改还款方式',v:22},
+          {k:'额度被降低原因',v:18}
+        ].map((q,i)=>`
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-textTertiary w-4">${i+1}</span>
+            <span class="flex-1">${q.k}</span>
+            <span class="text-textSecondary">${q.v}</span>
+          </div>
+        `).join('')}
+      </div>
+    </aside>
+  </div>
+  `;
+}
+
+function renderPrepCard(p,vip){
+  return `
+  <div class="prep-card">
+    <div class="text-vipGold text-[11px] flex items-center gap-1 px-1 mb-1"><i class="lucide-sparkles"></i> 接待速览${vip?' · VIP 客户':''}</div>
+    <div class="prep-row prep-line-1"><span>💬</span><span class="text-[11px] text-textSecondary">开场建议</span><span class="flex-1 text-textPrimary text-xs">${p.intro}</span></div>
+    <div class="prep-row prep-line-2"><span>⛔</span><span class="text-[11px] text-textSecondary">雷区警示</span><span class="flex-1 text-textPrimary text-xs">${p.avoid}</span></div>
+    <div class="prep-row prep-line-3"><span>🌡️</span><span class="text-[11px] text-textSecondary">当前情绪</span><span class="flex-1 text-textPrimary text-xs">${p.emotion}</span></div>
+    ${p.lastNote?`<div class="px-1 text-[11px] text-textTertiary mt-1">上一位客服 <span class="text-textSecondary">${p.lastCsBy||'未知'}</span> 备注：${p.lastNote}</div>`:''}
+  </div>
+  `;
+}
+
+// ============ 对话详情页 ============
+function renderConvDetail(){
+  const sel = MOCK.conversations.find(c=>c.id===selectedConvId) || MOCK.conversations[0];
+  const profile = MOCK.profiles[sel.id+'-user'] || MOCK.profiles['c001-user'];
+  const messages = buildConvMessages(sel);
+  return `
+  <div class="flex flex-1">
+    <!-- 左小列表 -->
+    <aside class="w-64 bg-bgPrimary border-r border-borderDefault overflow-y-auto" style="max-height:calc(100vh - 64px)">
+      <div class="p-3 border-b border-borderMuted">
+        <button class="btn btn-primary w-full" onclick="nav('conversations')"><i class="lucide-arrow-left"></i> 返回列表</button>
+      </div>
+      <div class="p-2">
+        ${MOCK.conversations.slice(0,12).map(c=>`
+          <div class="p-2 rounded cursor-pointer mb-1 ${c.id===selectedConvId?'bg-bgActive border-l-2 border-brand':'hover:bg-bgHover'} ${c.vip?'vip-bar':''}" onclick="selectedConvId='${c.id}';render()">
+            <div class="flex items-center gap-1 text-xs">
+              <span class="flex-1 truncate">${c.user.split(' ')[0]}</span>
+              ${c.vip?'<span class="badge badge-vip">VIP</span>':''}
+              ${c.unread?'<span class="w-1.5 h-1.5 rounded-full bg-info"></span>':''}
+            </div>
+            <div class="flex items-center gap-1 mt-1">
+              <span class="badge badge-${c.cat}-bg" style="height:18px;font-size:10px">${c.catLabel}</span>
+              <span class="text-textTertiary text-[10px] ml-auto">${c.time}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </aside>
+
+    <!-- 中区 -->
+    <div class="flex-1 flex flex-col">
+      <!-- 顶部固定栏 -->
+      <div class="px-6 py-4 border-b border-borderDefault flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="font-semibold text-base">${sel.user}</span>
+          ${sel.vip?'<span class="badge badge-vip">VIP</span>':''}
+          <span class="badge badge-${sel.cat}-bg badge-lg">${sel.catLabel}</span>
+          <span class="text-textTertiary text-xs">置信度 ${sel.confidence}%</span>
+          <button class="btn" onclick="showCorrectModal('${sel.id}')"><i class="lucide-edit-3"></i> 修正分类</button>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-textTertiary">
+          ${sel.date} · ${sel.rounds} 轮 · ${sel.channel}
+        </div>
+      </div>
+
+      <!-- 消息区 -->
+      <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-3" style="max-height:calc(100vh - 220px)">
+        ${messages.map(m=>{
+          const cls = m.role==='user'?'bubble-user':(m.role==='ai'?'bubble-ai':'bubble-human');
+          const align = m.role==='user'?'items-end':'items-start';
+          return `<div class="flex flex-col ${align} gap-1">
+            <div class="text-[10px] text-textTertiary px-2">${m.role==='user'?'用户':(m.role==='ai'?'AI 客服 · 小满':'人工客服 · '+m.by)} · ${m.time}</div>
+            <div class="${cls}">${m.text}</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <!-- 操作栏 -->
+      <div class="px-6 py-3 border-t border-borderDefault flex items-center justify-between bg-bgElevated">
+        <div class="flex items-center gap-2">
+          <button class="btn"><i class="lucide-flag"></i> 标记重要</button>
+          <button class="btn" onclick="toast('已重新触发分类（mock）','info')"><i class="lucide-refresh-cw"></i> 重新分类</button>
+          <button class="btn" onclick="selectedProfileUserKey='${sel.id}-user';nav('profile')"><i class="lucide-user-circle"></i> 跳画像页</button>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-textTertiary">
+          <span><span class="kbd">J</span><span class="kbd">K</span> 切换</span>
+          <span><span class="kbd">L</span> 已读</span>
+          <span><span class="kbd">R</span> 重分类</span>
+          <span><span class="kbd">P</span> Prompt</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏 -->
+    <aside class="w-[360px] bg-bgPrimary border-l border-borderDefault overflow-y-auto" style="max-height:calc(100vh - 64px)">
+      <div class="flex border-b border-borderDefault">
+        <div class="tab-btn active" onclick="rightTab='prep';render()" id="tab-prep">画像速览</div>
+        <div class="tab-btn" onclick="rightTab='cat';render()" id="tab-cat">分类详情</div>
+        <div class="tab-btn" onclick="rightTab='prompt';render()" id="tab-prompt">Prompt 历史</div>
+      </div>
+      <div class="p-4">
+        ${renderRightPanel(profile,sel)}
+      </div>
+    </aside>
+  </div>
+  `;
+}
+
+let rightTab = 'prep';
+
+function renderRightPanel(profile,sel){
+  if(rightTab==='prep'){
+    return `
+      ${renderPrepCard(profile.prep,profile.vip)}
+      <div class="bg-bgElevated rounded-lg p-3 mt-3 border border-borderMuted">
+        <div class="text-[11px] text-textSecondary uppercase mb-2">AI 总结</div>
+        <div class="space-y-2 text-xs">
+          <div><span class="text-textTertiary">性格：</span>${profile.ai.traits}</div>
+          <div><span class="text-textTertiary">诉求：</span>${profile.ai.demand}</div>
+          <div><span class="text-textTertiary">偏好：</span>${profile.ai.comm}</div>
+          <div><span class="text-textTertiary">风险：</span>${profile.ai.risk}</div>
+          <div><span class="text-textTertiary">建议：</span>${profile.ai.suggest}</div>
+        </div>
+      </div>
+      <button class="btn btn-primary w-full mt-3" onclick="selectedProfileUserKey='${sel.id}-user';nav('profile')">查看完整画像 →</button>
+    `;
+  }
+  if(rightTab==='cat'){
+    return `
+      <div class="bg-bgElevated rounded-lg p-4 border border-borderMuted">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-${sel.cat}-bg badge-lg">${sel.catLabel}</span>
+          <span class="text-textSecondary">置信度 ${sel.confidence}%</span>
+        </div>
+        <div class="text-xs text-textSecondary mb-3">AI 推断依据：</div>
+        <div class="text-xs space-y-1">
+          <div class="bg-bgPrimary rounded p-2">关键词：<span class="text-warn">"利率"</span> <span class="text-warn">"涨了"</span> <span class="text-warn">"差距太大"</span></div>
+          <div class="bg-bgPrimary rounded p-2">情绪信号：<span class="text-danger">不满 (78%)</span> · <span class="text-warn">焦虑 (62%)</span></div>
+          <div class="bg-bgPrimary rounded p-2">话题集中：<span class="text-info">利率波动机制</span></div>
+        </div>
+        <button class="btn btn-danger w-full mt-3" onclick="showCorrectModal('${sel.id}')">不准确 - 修正分类</button>
+      </div>
+    `;
+  }
+  if(rightTab==='prompt'){
+    return `
+      <div class="space-y-2">
+        <div class="text-[11px] text-textSecondary uppercase">Prompt 历史</div>
+        ${(profile.promptHistory||[]).map(p=>`
+          <div class="bg-bgElevated p-3 rounded border border-borderMuted text-xs flex items-center justify-between">
+            <span>${p}</span>
+            ${p.includes('待审核')?'<span class="text-warn">⏳ 待审</span>':'<span class="text-succ">✓ 已上线</span>'}
+          </div>
+        `).join('')}
+        <button class="btn btn-primary w-full mt-3" onclick="nav('prompt-center')">前往 Prompt 中心</button>
+      </div>
+    `;
+  }
+}
+
+function buildConvMessages(c){
+  // 模拟一段真实对话（针对当前 cat 生成）
+  if(c.id==='c001'){
+    return [
+      {role:'user',time:'14:30:05',text:'你好，我借了 80 万，最近发现利率从 8.4% 涨到了 14.6%。这个差距实在太大了，请给我个合理的解释。'},
+      {role:'ai',time:'14:30:21',text:'您好，王女士，关于您的利率调整，系统综合评估您的近期资质变化…'},
+      {role:'user',time:'14:31:02',text:'我不接受这种解释。我的征信没有变化，工作也稳定。这是上次那个客服小张也说不清楚的话术。'},
+      {role:'user',time:'14:31:38',text:'我现在每月要多还 4000 多块，这是为什么？请给我具体原因，不要再说"系统综合评估"。'},
+      {role:'ai',time:'14:31:56',text:'我理解您的不满。请稍等，我帮您查询利率调整的具体因素…'},
+      {role:'human',by:'李伟',time:'14:33:10',text:'王女士您好，我是值班客服李伟，我来接手处理。您反馈的利率从 8.4% 上调到 14.6% 这件事，确实需要给您一个清楚的说明。'},
+      {role:'human',by:'李伟',time:'14:33:42',text:'第一，您借款 8 个月，市场基准利率本身上调了 2.1%；第二，系统在 4 月对您的负债比有重新评估；第三，这次调整属于"利率重置周期"。这三点叠加下来就是 6.2 个百分点的差距。'},
+      {role:'user',time:'14:34:30',text:'谢谢说清楚。那有没有补救方案？比如改长一点期数？'},
+      {role:'human',by:'李伟',time:'14:34:55',text:'我刚刚帮您算了一下，如果改成 24 期分期，您每月负担可以从现在的 7842 元降到 4980 元。我帮您预审一下您的资质，给您最快回复。'},
+      {role:'user',time:'14:35:22',text:'好的，请帮我处理。'}
+    ];
+  }
+  if(c.id==='c002'){
+    return [
+      {role:'user',time:'13:21:01',text:'你好，我想申请提额到 50 万。'},
+      {role:'ai',time:'13:21:14',text:'好的李先生，关于您 50 万的提额申请，我直接给您几个关键条件清单：'},
+      {role:'ai',time:'13:21:32',text:'1) 当前征信状态：✓ 良好（最近 6 个月无逾期）；2) 累计借贷记录：≥6 个月（您已 13 个月）；3) 月收入要求：≥3 万（您当前申报 4.5 万）；4) 公司：上市/国企优先（您是腾讯）；5) 资产：自有房产/车辆（您有房产）'},
+      {role:'ai',time:'13:21:55',text:'根据这 5 项，您当前批复 50 万的概率约 78%。我已经帮您发起预审，预计 30 分钟内出结果。期间需要您补充：① 最近 3 个月银行流水；② 工资条（任意一个月）。'},
+      {role:'user',time:'13:22:30',text:'好的，我马上传给你。提额成功后利率会变化吗？'},
+      {role:'ai',time:'13:22:45',text:'提额至 50 万的话，利率会从当前 9.8% 调整为 9.2%（高额度优惠）。'},
+      {role:'user',time:'13:23:10',text:'感谢，效率高。'}
+    ];
+  }
+  // 其他对话简化
+  return [
+    {role:'user',time:c.time,text:c.summary},
+    {role:'ai',time:c.time,text:'您好，我已经收到您的问题，正在为您处理…'},
+    {role:'human',by:'王朗',time:c.time,text:'您好，我来帮您跟进。请稍等，我先调取您的信息。'},
+    {role:'user',time:c.time,text:'好的。'}
+  ];
+}
+
+function showCorrectModal(convId){
+  const cur = MOCK.conversations.find(c=>c.id===convId);
+  const m = showModal(`
+    <h3 class="text-base font-semibold mb-3">修正分类</h3>
+    <p class="text-textTertiary text-xs mb-4">当前 AI 分类：<span class="badge badge-${cur.cat}-bg ml-1">${cur.catLabel}</span> · 置信度 ${cur.confidence}%</p>
+    <div class="space-y-2 mb-4">
+      ${['edu','rate','repay','complaint'].map(k=>`
+        <label class="flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-bgHover">
+          <input type="radio" name="newcat" value="${k}" ${k===cur.cat?'checked':''}>
+          <span class="badge badge-${k}-bg">${badgeLabel(k)}</span>
+        </label>
+      `).join('')}
+    </div>
+    <textarea class="field w-full mb-4" rows="3" placeholder="修正理由（选填）"></textarea>
+    <div class="flex justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-primary" onclick="this.closest('.modal-mask').remove();toast('分类已修正，将在下次模型迭代纳入训练','success')">确认修正</button>
+    </div>
+  `);
+}
+
+// ============ 用户画像页 ============
+function renderProfile(){
+  const profile = MOCK.profiles[selectedProfileUserKey] || MOCK.profiles['c001-user'];
+  return `
+  <div class="flex flex-1">
+    <!-- 左导航小列表 -->
+    <aside class="w-64 bg-bgPrimary border-r border-borderDefault overflow-y-auto p-3" style="max-height:calc(100vh - 64px)">
+      <input class="field w-full mb-3" placeholder="🔍 搜索用户">
+      <div class="text-textTertiary text-[11px] uppercase mb-2 px-1">VIP 客户列表</div>
+      <div class="space-y-1">
+        ${Object.keys(MOCK.profiles).map(k=>{
+          const p = MOCK.profiles[k];
+          return `<div class="p-2 rounded cursor-pointer ${k===selectedProfileUserKey?'bg-bgActive border-l-2 border-brand':'hover:bg-bgHover'} ${p.vip?'vip-bar':''}" onclick="selectedProfileUserKey='${k}';render()">
+            <div class="flex items-center gap-1 text-xs">
+              <span class="flex-1 truncate">${p.name.split(' ')[0]}</span>
+              ${p.vip?'<span class="badge badge-vip">VIP</span>':''}
+            </div>
+            <div class="text-[10px] text-textTertiary mt-1">${p.basic.totalConv} 通对话</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </aside>
+
+    <!-- 中区 -->
+    <div class="flex-1 overflow-y-auto p-6" style="max-height:calc(100vh - 64px)">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <button class="btn" onclick="nav('conversations')"><i class="lucide-arrow-left"></i> 返回</button>
+          <h1 class="text-lg font-semibold">${profile.name}</h1>
+          ${profile.vip?'<span class="badge badge-vip">VIP</span>':''}
+          <span class="text-textTertiary text-xs">用户 ID: ${profile.id}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn"><i class="lucide-history"></i> 修改记录</button>
+        </div>
+      </div>
+
+      <!-- 基本信息卡 -->
+      <div class="grid grid-cols-5 gap-4 mb-4">
+        ${[
+          ['当前借贷额度',profile.basic.loan],
+          ['当前利率',(profile.basic.rateChange||profile.basic.rate)],
+          ['累计逾期',profile.basic.overdueCount+' 次'],
+          ['还款健康度',profile.basic.health+' / 100'],
+          ['累计对话',profile.basic.totalConv+' 通']
+        ].map(([t,v])=>`
+          <div class="bg-bgElevated border border-borderDefault rounded-lg p-3">
+            <div class="text-[11px] text-textTertiary">${t}</div>
+            <div class="text-base font-semibold mt-1">${v}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- 接待速览卡（置顶） -->
+      ${renderPrepCard(profile.prep,profile.vip)}
+
+      <!-- 分类分布微图 -->
+      <div class="bg-bgElevated rounded-lg p-4 mt-4 border border-borderMuted">
+        <div class="text-[11px] text-textSecondary uppercase mb-2">对话分类分布</div>
+        <div class="flex items-center gap-2">
+          ${['rate','edu','repay','complaint'].map(k=>{
+            const v = profile.distribution[k]||0;
+            const total = Object.values(profile.distribution).reduce((s,n)=>s+n,0);
+            const w = total ? (v/total*100) : 0;
+            return v>0?`<div class="flex-1 h-8 rounded relative overflow-hidden" style="background:rgba(255,255,255,0.04)">
+              <div class="absolute inset-0" style="background:rgba(${k==='edu'?'59,130,246':k==='rate'?'139,92,246':k==='repay'?'16,185,129':'239,68,68'},0.4);width:${w*4}px;max-width:100%"></div>
+              <div class="relative px-2 py-1.5 flex items-center justify-between text-xs">
+                <span>${badgeLabel(k)}</span>
+                <span class="text-textSecondary">${v} 通</span>
+              </div>
+            </div>`:'';
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- AI 总结卡 -->
+      <div class="bg-bgElevated rounded-lg p-4 mt-4 border border-borderMuted">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-[11px] text-textSecondary uppercase flex items-center gap-2"><i class="lucide-sparkles text-brand"></i> AI 自动总结</div>
+          <div class="text-[11px] text-textTertiary">由 小满智客 Llama 生成 · 2026-06-15 14:32</div>
+        </div>
+        <div class="space-y-3 text-sm">
+          ${[
+            ['性格特征',profile.ai.traits],
+            ['核心诉求',profile.ai.demand],
+            ['沟通偏好',profile.ai.comm],
+            ['风险标签',profile.ai.risk],
+            ['服务建议',profile.ai.suggest]
+          ].map(([t,v])=>`
+            <div class="flex gap-3 py-2 border-b border-borderMuted last:border-b-0">
+              <div class="w-20 text-textTertiary text-xs">${t}</div>
+              <div class="flex-1 text-textPrimary text-sm">${v}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- 客服备注 -->
+      <div class="rounded-lg p-4 mt-4" style="background:#2D2412;border:1px solid #D29922">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-[11px] text-vipGold uppercase flex items-center gap-2"><i class="lucide-edit-3"></i> 客服备注（可编辑）</div>
+          <span class="text-textSecondary text-[11px]" id="saveStatus"><span class="text-succ">✓ 已保存</span></span>
+        </div>
+        <textarea class="field w-full" rows="3" oninput="onNoteEdit(this)" placeholder="补充备注，会被下一位客服看到">用户上次明确希望 24 期还款。利率焦点是"为什么我比朋友高 4 个点"，需要重点关注。</textarea>
+      </div>
+
+      <!-- 合规操作区 -->
+      <div class="mt-4 flex items-center justify-end gap-3 px-4 py-3 bg-bgElevated rounded-lg border border-borderMuted">
+        <span class="text-[11px] text-textTertiary mr-auto">合规操作 · 留痕审计 · 依据 CAC 11 条</span>
+        <button class="btn btn-danger" onclick="showAppealModal()"><i class="lucide-flag"></i> 申诉画像内容</button>
+        <button class="btn btn-danger" onclick="showDeleteModal()"><i class="lucide-trash-2"></i> 删除此画像</button>
+      </div>
+    </div>
+
+    <!-- 右栏 -->
+    <aside class="w-[360px] bg-bgPrimary border-l border-borderDefault overflow-y-auto p-4" style="max-height:calc(100vh - 64px)">
+      <h3 class="text-textSecondary text-[11px] font-semibold mb-3 uppercase">关联对话</h3>
+      <div class="space-y-2 mb-6">
+        ${(profile.relatedConv||[]).map(c=>`
+          <div class="bg-bgElevated rounded-lg p-3 border border-borderMuted hover:border-brand cursor-pointer">
+            <div class="flex items-center justify-between mb-1">
+              <span class="badge badge-${c.cat}-bg">${c.label}</span>
+              <span class="text-textTertiary text-[11px]">${c.date}</span>
+            </div>
+            <div class="text-xs text-textSecondary">${c.summary}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <h3 class="text-textSecondary text-[11px] font-semibold mb-3 uppercase">专属 Prompt 状态</h3>
+      <div class="bg-bgElevated rounded-lg p-4 border border-borderMuted">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold text-sm">${profile.promptStatus}</span>
+          <span class="text-warn text-xs">⏳ 待审</span>
+        </div>
+        <div class="text-textTertiary text-[11px] mb-3">CSAT 表现：${profile.csat}</div>
+        <div class="space-y-1.5 text-xs">
+          ${(profile.promptHistory||[]).map(h=>`<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-${h.includes('待审核')?'warn':'succ'}"></span><span class="${h.includes('待审核')?'text-warn':'text-textSecondary'}">${h}</span></div>`).join('')}
+        </div>
+        <button class="btn btn-primary w-full mt-3" onclick="nav('prompt-center')">前往 Prompt 中心 →</button>
+      </div>
+    </aside>
+  </div>
+  `;
+}
+
+let saveTimer=null;
+function onNoteEdit(el){
+  $('#saveStatus').innerHTML = '<span class="text-warn">…保存中</span>';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    $('#saveStatus').innerHTML = '<span class="text-succ">✓ 已保存 ' + new Date().toTimeString().slice(0,8) + '</span>';
+  }, 1500);
+}
+
+function showAppealModal(){
+  showModal(`
+    <h3 class="text-base font-semibold mb-3">申诉画像内容</h3>
+    <p class="text-textTertiary text-xs mb-3">依据《生成式人工智能服务管理暂行办法》第 11 条，您可以申诉本平台对客户的 AI 画像内容。</p>
+    <div class="text-xs text-textSecondary mb-2">申诉对象</div>
+    <select class="field w-full mb-3">
+      <option>性格特征 - 理性敏感型</option>
+      <option>核心诉求 - 利率合理性解释</option>
+      <option>风险标签 - 流失中度风险</option>
+      <option>整张画像</option>
+    </select>
+    <div class="text-xs text-textSecondary mb-2">申诉理由</div>
+    <textarea class="field w-full mb-4" rows="4" placeholder="请说明为何认为该画像内容不准确、不公平或有歧视风险..."></textarea>
+    <div class="flex items-center justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-primary" onclick="this.closest('.modal-mask').remove();toast('申诉已提交（工单 #wt-2891），24 小时内回复','success')">提交申诉</button>
+    </div>
+  `);
+}
+function showDeleteModal(){
+  showModal(`
+    <h3 class="text-base font-semibold mb-3 text-danger">⚠️ 删除画像确认</h3>
+    <p class="text-textSecondary text-sm mb-4">删除后该用户的所有 AI 总结字段将清空，已上线的个性化 Prompt 将自动回退到通用 Prompt。该操作记入合规审计日志。</p>
+    <div class="text-xs text-textSecondary mb-2">删除原因（必填）</div>
+    <textarea class="field w-full mb-4" rows="3" placeholder="请说明删除原因，例如：用户主动要求 / 画像不准确 / 合规审查"></textarea>
+    <div class="flex items-center justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-danger" onclick="this.closest('.modal-mask').remove();toast('画像已删除，该用户将使用通用 Prompt','warn')">确认删除</button>
+    </div>
+  `);
+}
+
+// ============ Prompt 中心 ============
+function renderPromptCenter(){
+  return `
+  <div class="flex-1 flex flex-col">
+    <div class="px-6 py-4 border-b border-borderDefault flex items-center justify-between">
+      <h1 class="text-xl font-bold">Prompt 中心</h1>
+      <div class="flex items-center gap-2 text-xs text-textTertiary">
+        与小满智客集成 · 实时注入 system_prompt + user_context
+      </div>
+    </div>
+    <div class="flex border-b border-borderDefault px-6">
+      <div class="tab-btn ${promptCenterTab==='pending'?'active':''}" onclick="promptCenterTab='pending';render()">⏳ 待审核 <span class="badge badge-rate-bg ml-2">18</span></div>
+      <div class="tab-btn ${promptCenterTab==='live'?'active':''}" onclick="promptCenterTab='live';render()">✅ 已上线 <span class="text-textTertiary ml-2 text-[11px]">312</span></div>
+      <div class="tab-btn ${promptCenterTab==='diff'?'active':''}" onclick="promptCenterTab='diff';render()">📜 历史版本</div>
+    </div>
+    ${promptCenterTab==='pending'?renderPromptPending():''}
+    ${promptCenterTab==='live'?renderPromptLive():''}
+    ${promptCenterTab==='diff'?renderPromptDiff():''}
+  </div>
+  `;
+}
+
+function renderPromptPending(){
+  const sel = MOCK.pendingPromptList.find(p=>p.id===selectedPromptId) || MOCK.pendingPromptList[0];
+  const profile = Object.values(MOCK.profiles).find(p=>p.id===sel.userId) || MOCK.profiles['c001-user'];
+  const promptKey = sel.id+'-'+sel.version;
+  const promptText = MOCK.promptTexts[promptKey] || `# 系统生成中...\n# 请稍候`;
+  const userConv = MOCK.conversations.filter(c=>c.user.includes(sel.userName.split(' ')[0])).slice(0,5);
+  if(userConv.length===0) userConv.push(...MOCK.conversations.slice(0,3));
+
+  return `
+  <div class="flex flex-1" style="max-height:calc(100vh - 156px)">
+    <!-- 左：用户画像紧凑版 -->
+    <aside class="w-[320px] bg-bgPrimary border-r border-borderDefault overflow-y-auto p-4">
+      <div class="text-[11px] text-textSecondary uppercase mb-2">待审核列表</div>
+      <div class="space-y-1 mb-4">
+        ${MOCK.pendingPromptList.map(p=>`
+          <div class="p-2 rounded cursor-pointer text-xs ${p.id===selectedPromptId?'bg-bgActive border-l-2 border-brand':'hover:bg-bgHover'} ${p.vip?'vip-bar':''}" onclick="selectedPromptId='${p.id}';render()">
+            <div class="flex items-center gap-1">
+              <span class="flex-1 truncate">${p.userName.split(' ')[0]}</span>
+              ${p.vip?'<span class="badge badge-vip">VIP</span>':''}
+            </div>
+            <div class="flex items-center gap-1 mt-1">
+              <span class="badge badge-${p.cat}-bg" style="height:18px;font-size:10px">${badgeLabel(p.cat)}</span>
+              <span class="text-textTertiary text-[10px] ml-auto">${p.version}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="text-[11px] text-textSecondary uppercase mb-2">用户画像</div>
+      <div class="bg-bgElevated rounded-lg p-3 mb-3 border border-borderMuted">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="font-medium text-sm">${sel.userName}</span>
+          ${sel.vip?'<span class="badge badge-vip">VIP</span>':''}
+        </div>
+        <div class="text-[11px] text-textSecondary mb-2">触发原因：${sel.generatedReason}</div>
+      </div>
+
+      ${renderPrepCard(profile.prep,profile.vip)}
+
+      <div class="bg-bgElevated rounded-lg p-3 mt-3 border border-borderMuted">
+        <div class="text-[11px] text-textSecondary uppercase mb-2">AI 总结摘要</div>
+        <div class="space-y-1.5 text-xs">
+          <div><span class="text-textTertiary">性格：</span>${profile.ai.traits}</div>
+          <div><span class="text-textTertiary">诉求：</span>${profile.ai.demand}</div>
+          <div><span class="text-textTertiary">风险：</span>${profile.ai.risk}</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 中：对话历史 -->
+    <div class="flex-1 overflow-y-auto p-6 bg-bgPrimary border-r border-borderDefault">
+      <div class="text-[11px] text-textSecondary uppercase mb-3">对话历史 · 最近 5 通</div>
+      <div class="space-y-4">
+        ${userConv.map(c=>`
+          <div class="bg-bgElevated rounded-lg p-4 border border-borderMuted">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="badge badge-${c.cat}-bg">${c.catLabel}</span>
+              <span class="text-textTertiary text-[11px]">${c.date} ${c.time} · ${c.channel}</span>
+              <span class="ml-auto text-textTertiary text-[11px]">${c.rounds} 轮</span>
+            </div>
+            <p class="text-sm text-textPrimary">${c.summary}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- 右：Prompt 编辑器 -->
+    <aside class="w-[420px] bg-bgPrimary overflow-y-auto p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[11px] text-textSecondary uppercase">system_prompt</div>
+        <span class="text-warn text-xs flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-warn"></span> ${sel.version} 待审核</span>
+      </div>
+      <div class="bg-bgElevated rounded-lg border border-borderMuted p-3 mb-3" style="max-height:380px;overflow-y:auto">
+        <pre class="prompt-code">${highlightPrompt(promptText)}</pre>
+      </div>
+
+      <div class="text-[11px] text-textSecondary uppercase mb-2">user_context (动态字段)</div>
+      <div class="bg-bgElevated rounded-lg border border-borderMuted p-3 mb-4">
+        <pre class="prompt-code">${highlightJSON('{\n  "current_loan": "'+(profile.basic.loan||'-')+'",\n  "rate": "'+(profile.basic.rate||'-')+'",\n  "overdue": '+(profile.basic.overdueCount||0)+',\n  "recent_topics": ["'+sel.cat+'"],\n  "csat_history": "'+(profile.csat||'-')+'"\n}')}</pre>
+      </div>
+
+      <div class="space-y-2">
+        <button class="btn btn-success w-full btn-large" onclick="showApproveModal('${sel.id}')"><i class="lucide-check"></i> 通过并上线</button>
+        <button class="btn btn-danger w-full btn-large" onclick="showRejectModal('${sel.id}')"><i class="lucide-x"></i> 驳回 + 修改建议</button>
+        <button class="btn w-full btn-large"><i class="lucide-edit-3"></i> 直接编辑后上线</button>
+      </div>
+
+      <div class="kbd-hint-bar mt-3 rounded">
+        <span><span class="kbd">⏎</span> 通过</span>
+        <span><span class="kbd">⌘</span><span class="kbd">⌫</span> 驳回</span>
+        <span><span class="kbd">⌘</span><span class="kbd">E</span> 编辑</span>
+      </div>
+    </aside>
+  </div>
+  `;
+}
+
+function highlightPrompt(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^(#.+)$/gm,'<span class="comment">$1</span>')
+    .replace(/(\{\{[a-z_]+\}\})/g,'<span class="var">$1</span>');
+}
+function highlightJSON(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("[^"]+")(\s*:)/g,'<span class="key">$1</span>$2')
+    .replace(/:(\s*"[^"]+")/g,':<span class="str">$1</span>');
+}
+
+function showApproveModal(pid){
+  showModal(`
+    <h3 class="text-base font-semibold mb-3">通过 Prompt 并上线</h3>
+    <p class="text-textTertiary text-xs mb-3">该 Prompt 将在 5 秒后通过小满智客 API 立即生效，覆盖该用户的下次对话。</p>
+    <textarea class="field w-full mb-4" rows="3" placeholder="审核备注（选填，会留痕用于追溯）"></textarea>
+    <div class="flex items-center justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-success" onclick="this.closest('.modal-mask').remove();toast('Prompt 已通过并上线（V1.3）','success')">确认通过</button>
+    </div>
+  `);
+}
+function showRejectModal(pid){
+  showModal(`
+    <h3 class="text-base font-semibold mb-3">驳回 Prompt</h3>
+    <textarea class="field w-full mb-4" rows="4" placeholder="修改建议（必填，至少 10 字）：例如开场需要更加直接，删除"系统综合评估"等..."></textarea>
+    <div class="flex items-center justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-danger" onclick="this.closest('.modal-mask').remove();toast('已驳回，会重新生成新版本','warn')">确认驳回</button>
+    </div>
+  `);
+}
+
+function renderPromptLive(){
+  return `
+  <div class="p-6">
+    <div class="bg-bgElevated rounded-lg border border-borderDefault overflow-hidden">
+      <table class="data-table">
+        <thead><tr>
+          <th>客户</th>
+          <th>当前版本</th>
+          <th>上线时间</th>
+          <th>命中对话</th>
+          <th>CSAT 表现</th>
+          <th>审核员</th>
+          <th style="width:140px">操作</th>
+        </tr></thead>
+        <tbody>
+          ${MOCK.livePromptList.map(p=>`
+            <tr>
+              <td><div class="flex items-center gap-2">${p.userName}<span class="badge badge-vip">VIP</span></div></td>
+              <td><span class="text-succ">${p.version}</span></td>
+              <td class="text-textSecondary text-xs">${p.live}</td>
+              <td>${p.hits}</td>
+              <td><span class="text-textPrimary">${p.csat}</span></td>
+              <td class="text-textSecondary text-xs">${p.reviewer}</td>
+              <td>
+                <button class="btn" style="height:24px;padding:0 8px;font-size:11px" onclick="toast('查看详情（mock）','info')">查看</button>
+                <button class="btn btn-danger" style="height:24px;padding:0 8px;font-size:11px" onclick="confirmRollback('${p.userName}','${p.version}')">回滚</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  `;
+}
+
+function confirmRollback(name,ver){
+  showModal(`
+    <h3 class="text-base font-semibold mb-3 text-warn">⚠️ 回滚 Prompt</h3>
+    <p class="text-sm mb-4">将把 ${name} 的 ${ver} 回滚到上一个版本。该客户的下次对话会立刻使用旧版本 prompt。</p>
+    <div class="flex items-center justify-end gap-2">
+      <button class="btn" onclick="this.closest('.modal-mask').remove()">取消</button>
+      <button class="btn btn-danger" onclick="this.closest('.modal-mask').remove();toast('已回滚到 V1.1','warn')">确认回滚</button>
+    </div>
+  `);
+}
+
+function renderPromptDiff(){
+  const v12 = MOCK.promptTexts['p001-V1.2'];
+  const v13 = MOCK.promptTexts['p001-V1.3'];
+  return `
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <span class="font-semibold">王*** (139****8821)</span>
+        <span class="badge badge-vip">VIP</span>
+        <select class="field"><option>V1.2 vs V1.3</option><option>V1.1 vs V1.2</option><option>V1.0 vs V1.1</option></select>
+      </div>
+      <button class="btn btn-danger"><i class="lucide-rotate-ccw"></i> 回滚到 V1.2</button>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-bgElevated rounded-lg border border-borderMuted">
+        <div class="px-4 py-2 border-b border-borderMuted flex items-center justify-between">
+          <span class="font-semibold">V1.2 (06-08 上线)</span>
+          <span class="text-textTertiary text-xs">已上线</span>
+        </div>
+        <pre class="prompt-code p-4" style="max-height:480px;overflow-y:auto">${highlightPrompt(v12)}</pre>
+      </div>
+      <div class="bg-bgElevated rounded-lg border border-borderMuted">
+        <div class="px-4 py-2 border-b border-borderMuted flex items-center justify-between">
+          <span class="font-semibold">V1.3 (06-15 待审核)</span>
+          <span class="text-warn text-xs">⏳ 待审</span>
+        </div>
+        <pre class="prompt-code p-4" style="max-height:480px;overflow-y:auto">${highlightPrompt(v13)}</pre>
+      </div>
+    </div>
+    <div class="mt-4 bg-bgElevated rounded-lg p-4 border border-borderMuted text-xs space-y-1">
+      <div class="text-textSecondary uppercase mb-2 text-[11px]">变更摘要</div>
+      <div class="text-succ">+ 新增"用户特征"章节（性格 / 借贷 / 诉求）</div>
+      <div class="text-succ">+ 沟通规则从 2 条扩展到 5 条</div>
+      <div class="text-succ">+ 新增"必要时主动让出 24 期还款空间作为善意"</div>
+      <div class="text-succ">+ 避雷词新增"个人评分变化"、"请您理解我们的政策"</div>
+      <div class="text-succ">+ 新增示例开场（200 字）</div>
+    </div>
+  </div>
+  `;
+}
+
+// ============ 数据看板 ============
+function renderAnalytics(){
+  return `
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h1 class="text-xl font-bold">数据分析看板</h1>
+      <div class="flex items-center gap-2">
+        <select class="field"><option>本周</option><option>本月</option><option>本季度</option></select>
+        <button class="btn"><i class="lucide-download"></i> 导出 Excel</button>
+      </div>
+    </div>
+
+    <!-- 顶部 KPI -->
+    <div class="grid grid-cols-4 gap-4 mb-5">
+      ${kpiCard('本周新对话',1247,'↑12% vs 上周','up')}
+      ${kpiCard('本周分类准确率','82.4%','目标 80%','up')}
+      ${kpiCard('Prompt 通过率','75%','目标 70%','up')}
+      ${kpiCard('VIP 覆盖率','83%','Top 20% 已生效','up')}
+    </div>
+
+    <!-- 四象限 -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- 4 类趋势 -->
+      <div class="bg-bgElevated rounded-lg p-5 border border-borderDefault">
+        <h2 class="font-semibold mb-3">4 类对话趋势 (最近 7 天)</h2>
+        <svg viewBox="0 0 400 200" class="w-full h-48">
+          ${renderTrendLines()}
+        </svg>
+        <div class="flex items-center gap-4 mt-3 text-xs">
+          ${MOCK.classifyDistribution.map(d=>`
+            <div class="flex items-center gap-1.5"><span class="w-3 h-1 rounded" style="background:${d.color}"></span>${d.name}</div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- 准确率仪表 -->
+      <div class="bg-bgElevated rounded-lg p-5 border border-borderDefault flex flex-col items-center justify-center">
+        <h2 class="font-semibold mb-3 self-start">分类准确率仪表</h2>
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="80" class="gauge-bg"/>
+          <circle cx="110" cy="110" r="80" class="gauge-fg" stroke="#3FB950"
+            stroke-dasharray="${2*Math.PI*80}" stroke-dashoffset="${2*Math.PI*80*(1-0.824)}"
+            transform="rotate(-90 110 110)" stroke-linecap="round"/>
+          <text x="110" y="115" text-anchor="middle" font-size="36" font-weight="700" fill="#E6EDF3">82.4%</text>
+          <text x="110" y="138" text-anchor="middle" font-size="11" fill="#8B949E">目标 80% · ↑0.4</text>
+        </svg>
+        <div class="text-xs text-textTertiary text-center mt-2">基于 F6 人工修正反推 · 最近 30 天数据</div>
+      </div>
+
+      <!-- 通过率柱状 -->
+      <div class="bg-bgElevated rounded-lg p-5 border border-borderDefault">
+        <h2 class="font-semibold mb-3">Prompt 审核 (本周)</h2>
+        <div class="space-y-3">
+          <div>
+            <div class="flex items-center justify-between mb-1 text-xs">
+              <span>通过</span><span class="text-succ font-semibold">75% (66 个)</span>
+            </div>
+            <div class="h-3 bg-bgPrimary rounded relative overflow-hidden">
+              <div class="absolute inset-y-0 left-0 bg-succ rounded" style="width:75%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1 text-xs">
+              <span>驳回</span><span class="text-danger font-semibold">25% (22 个)</span>
+            </div>
+            <div class="h-3 bg-bgPrimary rounded relative overflow-hidden">
+              <div class="absolute inset-y-0 left-0 bg-danger rounded" style="width:25%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-textTertiary mt-3 pt-3 border-t border-borderMuted">
+            驳回 Top 3 原因：
+            <div class="mt-1 space-y-0.5">
+              <div>• 开场不够直接（45%）</div>
+              <div>• 避雷词不充分（27%）</div>
+              <div>• 沟通规则太宽泛（18%）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 高频问题 -->
+      <div class="bg-bgElevated rounded-lg p-5 border border-borderDefault">
+        <h2 class="font-semibold mb-3">Top 10 高频问题词条</h2>
+        <div class="space-y-1.5">
+          ${[
+            {k:'利率为什么涨了',v:34,c:'rate'},
+            {k:'我能借多少',v:28,c:'edu'},
+            {k:'提前还款手续费',v:24,c:'repay'},
+            {k:'怎么改还款方式',v:22,c:'repay'},
+            {k:'额度被降低原因',v:18,c:'edu'},
+            {k:'客服态度差',v:14,c:'complaint'},
+            {k:'同样资质利率不同',v:12,c:'rate'},
+            {k:'还款日期怎么改',v:10,c:'repay'},
+            {k:'承诺优惠没兑现',v:9,c:'complaint'},
+            {k:'征信查询次数过多',v:8,c:'edu'}
+          ].map((q,i)=>`
+            <div class="flex items-center gap-3 text-xs py-1">
+              <span class="text-textTertiary w-5">${i+1}</span>
+              <span class="flex-1">${q.k}</span>
+              <span class="badge badge-${q.c}-bg">${badgeLabel(q.c)}</span>
+              <span class="w-12 text-right text-textSecondary">${q.v} 次</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function renderTrendLines(){
+  // 模拟 7 天 4 类对话量
+  const data = {
+    edu: [80,85,92,88,94,98,94],
+    rate: [55,62,58,68,72,70,67],
+    repay: [40,42,38,45,48,46,47],
+    complaint: [30,32,35,38,40,42,39]
+  };
+  const colors = {edu:'#3B82F6',rate:'#8B5CF6',repay:'#10B981',complaint:'#EF4444'};
+  const w = 400, h = 200, pad = 30;
+  const yMax = 110;
+  const labels = ['周一','周二','周三','周四','周五','周六','周日'];
+  const xScale = i => pad + (w-pad*2) * (i/(labels.length-1));
+  const yScale = v => h-pad - (h-pad*2) * (v/yMax);
+
+  let svg = '';
+  // 网格
+  for(let i=0;i<=4;i++){
+    const y = pad + (h-pad*2)*(i/4);
+    svg += `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#21262D" stroke-width="1"/>`;
+  }
+  // 文字
+  labels.forEach((l,i)=>{
+    svg += `<text x="${xScale(i)}" y="${h-10}" font-size="10" fill="#6E7681" text-anchor="middle">${l}</text>`;
+  });
+  // 4 条线
+  Object.keys(data).forEach(k=>{
+    const pts = data[k].map((v,i)=>`${xScale(i)},${yScale(v)}`).join(' ');
+    svg += `<polyline points="${pts}" fill="none" stroke="${colors[k]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    data[k].forEach((v,i)=>{
+      svg += `<circle cx="${xScale(i)}" cy="${yScale(v)}" r="3" fill="${colors[k]}"/>`;
+    });
+  });
+  return svg;
+}
+
+// ============ 全局键盘 ============
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+  const cur = MOCK.conversations.findIndex(c=>c.id===selectedConvId);
+  if(e.key==='j'||e.key==='ArrowDown'){
+    selectedConvId = MOCK.conversations[Math.min(cur+1,MOCK.conversations.length-1)].id;
+    render();
+  }else if(e.key==='k'||e.key==='ArrowUp'){
+    selectedConvId = MOCK.conversations[Math.max(cur-1,0)].id;
+    render();
+  }else if(e.key==='l'){
+    toast('已标记已读','success');
+  }else if(e.key==='/'){
+    e.preventDefault();
+    $('#globalSearch').focus();
+  }else if(e.key==='Escape'){
+    if(currentRoute==='conv-detail') nav('conversations');
+  }
+});
+
+function bindHandlers(){
+  // dynamic handlers handled inline via onclick
+}
+
+// 启动
+render();
+</script>
+
+</body>
+</html>

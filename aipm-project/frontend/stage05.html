@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>���L� � ~��pn�\�</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night: #150d08;
+      --brown: #2b1c12;
+      --brass: #c89943;
+      --brass-light: #d4af37;
+      --mist: #f4ecd8;
+      --mist-soft: rgba(244, 236, 216, 0.76);
+      --line: rgba(212, 175, 55, 0.2);
+      --panel: rgba(244, 236, 216, 0.05);
+      --panel-strong: rgba(244, 236, 216, 0.08);
+      --green: #8dd8b0;
+      --orange: #f2bc6b;
+      --red: #f29b8d;
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      --font-serif-zh: 'Noto Serif SC', serif;
+      --font-sans-zh: 'Noto Sans SC', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font-sans-zh);
+      color: var(--mist);
+      background:
+        radial-gradient(circle at top left, rgba(200, 153, 67, 0.08), transparent 30%),
+        linear-gradient(180deg, var(--night), var(--brown));
+      padding: 30px 20px 52px;
+    }
+
+    .shell { max-width: 1180px; margin: 0 auto; }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-display);
+      color: var(--brass);
+      letter-spacing: 0.36em;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-family: var(--font-serif-zh);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1.18;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      color: var(--mist-soft);
+      line-height: 1.8;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+      border-radius: 8px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .panel + .panel { margin-top: 18px; }
+
+    .panel-title {
+      font-family: var(--font-serif-zh);
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .muted { color: var(--mist-soft); line-height: 1.75; font-size: 14px; }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .meta-card, .source-card {
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.16);
+      border-radius: 6px;
+      padding: 14px;
+    }
+
+    .meta-k, .source-kicker {
+      font-family: var(--font-display);
+      color: var(--brass);
+      letter-spacing: 0.24em;
+      font-size: 11px;
+      margin-bottom: 7px;
+    }
+
+    .meta-v { font-weight: 700; line-height: 1.55; }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .source-title { font-weight: 800; margin-bottom: 8px; }
+    .source-status { color: var(--mist-soft); line-height: 1.7; font-size: 13px; }
+    .source-card.ok { border-color: rgba(141, 216, 176, 0.45); }
+    .source-card.warn { border-color: rgba(242, 188, 107, 0.48); }
+    .source-card.fail { border-color: rgba(242, 155, 141, 0.48); }
+
+    .button-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+
+    .primary-btn, .ghost-btn {
+      border-radius: 5px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-family: var(--font-serif-zh);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .primary-btn {
+      border: 0;
+      background: linear-gradient(180deg, var(--brass-light), var(--brass));
+      color: #20140c;
+    }
+
+    .ghost-btn {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mist);
+    }
+
+    .primary-btn:hover, .ghost-btn:hover { transform: translateY(-1px); }
+    .primary-btn:disabled, .ghost-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .status-strip {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.18);
+      color: var(--mist-soft);
+      line-height: 1.75;
+      margin-top: 14px;
+    }
+
+    .status-strip strong { color: var(--mist); }
+    .status-strip.real strong { color: var(--green); }
+    .status-strip.mock strong { color: var(--orange); }
+    .status-strip.fallback_mock strong { color: var(--orange); }
+
+    .warning-list {
+      margin-top: 12px;
+      padding-left: 18px;
+      color: var(--orange);
+      line-height: 1.75;
+      font-size: 13px;
+    }
+
+    .summary-box, .report-box {
+      white-space: pre-wrap;
+      max-height: 320px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.16);
+      padding: 14px;
+      color: var(--mist-soft);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .report-box { max-height: 620px; }
+
+    .report-cards {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .report-card {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .report-card h3 { font-size: 16px; margin-bottom: 9px; }
+    .report-card ul { padding-left: 18px; color: var(--mist-soft); line-height: 1.75; font-size: 14px; }
+
+    @media (max-width: 900px) {
+      .masthead, .grid { grid-template-columns: 1fr; }
+      .nav-actions { justify-content: flex-start; }
+      .source-grid, .meta-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="masthead">
+      <div>
+        <div class="eyebrow">STAGE 00.5 · GU QING WORKBENCH</div>
+        <h1 class="title">顾清竞品数据工作�?/h1>
+        <p class="subtitle" id="subtitle">顾清会先把竞品、讨论和数据缺口铺出来，再交给五人圆桌评审。这里不是直接下结论，而是先把证据底盘做出来�?/p>
+      </div>
+      <div class="nav-actions">
+        <button class="ghost-btn" onclick="goStatus()">返回状态页</button>
+        <button class="ghost-btn" onclick="location.href='start.html'">启动新项�?/button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div>
+        <div class="panel">
+          <h2 class="panel-title">项目上下�?/h2>
+          <p class="muted" id="projectIdea">正在读取项目...</p>
+          <div class="meta-grid" id="metaGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">阶段 0 摘要</h2>
+          <div class="summary-box" id="stage0Summary">正在读取需求头脑风暴文�?..</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h2 class="panel-title">数据检�?/h2>
+          <p class="muted">真实模式会尝试调用仓库或用户 skills 里的 `aipm-data-rag` 脚本；如果脚本或网络不可用，系统会明确标记数据缺口并�?mock 数据兜底，保证流程可以继续�?/p>
+
+          <div class="source-grid" id="sourceGrid">
+            <article class="source-card" id="sourceAppStore">
+              <div class="source-kicker">APP STORE</div>
+              <div class="source-title">国内 App Store 竞品搜索</div>
+              <div class="source-status">等待启动。用于识别直接竞品、评分、评价量和基础定位�?/div>
+            </article>
+            <article class="source-card" id="sourceHn">
+              <div class="source-kicker">HACKER NEWS</div>
+              <div class="source-title">海外/技术圈讨论信号</div>
+              <div class="source-status">等待启动。用于观察双边市场、信任机制、冷启动等讨论�?/div>
+            </article>
+          </div>
+
+          <div class="button-row">
+            <button class="primary-btn" id="realBtn" onclick="runStage05(false)">开始真实数据检�?/button>
+            <button class="ghost-btn" onclick="loadReport()">刷新报告</button>
+          </div>
+
+          <div class="status-strip" id="runStatus">尚未启动 Stage 0.5。请选择真实检索或 mock 演示�?/div>
+          <ul class="warning-list" id="warnings"></ul>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">竞品分析报告</h2>
+          <div id="reportPreview" class="report-box">报告尚未生成�?/div>
+          <div class="button-row">
+            <button class="primary-btn" id="reviewBtn" onclick="enterReview()" disabled>继续下一阶段</button>
+            <button class="ghost-btn" onclick="goStatus()">回状态页查看全流�?/button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin) + '/api';
+    const params = new URLSearchParams(location.search);
+    const projectId = params.get('project');
+    let latestMeta = null;
+
+    const stageStatusMap = {
+      pending: '待开�?,
+      in_progress: '执行�?,
+      review_pending: '待评�?,
+      review_running: '评审�?,
+      decision_pending: '待拍�?,
+      done: '已完�?,
+      needs_redo: '需重做',
+      completed: '已完�?,
+    };
+
+    if (!projectId) {
+      document.getElementById('projectIdea').textContent = '缺少 project 参数，请从状态页重新进入�?;
+      disableRunButtons();
+    } else {
+      init();
+    }
+
+    async function init() {
+      await loadStatus();
+      await loadStage0Summary();
+      await loadReport();
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/status`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '状态加载失�?);
+        latestMeta = result.data;
+        renderMeta(latestMeta);
+        updateReviewButton(latestMeta);
+      } catch (err) {
+        document.getElementById('projectIdea').textContent = `状态加载失败：${err.message}`;
+        disableRunButtons();
+      }
+    }
+
+    function renderMeta(meta) {
+      document.getElementById('subtitle').textContent = `${meta.name} · 阶段 00.5 会把阶段 0 的需求假设放到竞品和讨论数据里验证。`;
+      document.getElementById('projectIdea').textContent = meta.idea || '暂无项目想法�?;
+      const stage05 = meta.stages?.['00.5'] || {};
+      const stage00 = meta.stages?.['00'] || {};
+      document.getElementById('metaGrid').innerHTML = `
+        <div class="meta-card">
+          <div class="meta-k">PROJECT</div>
+          <div class="meta-v">${escapeHtml(meta.name)}</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-k">CURRENT</div>
+          <div class="meta-v">阶段 ${escapeHtml(meta.currentStage)} · ${stageStatusMap[meta.currentState] || meta.currentState}</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-k">STAGE 00</div>
+          <div class="meta-v">${stageStatusMap[stage00.status] || stage00.status || '-'}</div>
+        </div>
+        <div class="meta-card">
+          <div class="meta-k">STAGE 00.5</div>
+          <div class="meta-v">${stageStatusMap[stage05.status] || stage05.status || '-'}</div>
+        </div>
+      `;
+    }
+
+    async function loadStage0Summary() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00/artifact?format=json`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '阶段 0 文档不可�?);
+        document.getElementById('stage0Summary').textContent = summarizeStage0(result.data.content);
+      } catch (err) {
+        document.getElementById('stage0Summary').textContent = `阶段 0 文档暂不可读�?{err.message}`;
+      }
+    }
+
+    async function loadReport() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00.5/artifact?format=json`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '报告尚未生成');
+        renderReport(result.data.content);
+        document.getElementById('reviewBtn').disabled = false;
+      } catch (err) {
+        document.getElementById('reportPreview').className = 'report-box';
+        document.getElementById('reportPreview').textContent = `报告尚未生成�?{err.message}`;
+        updateReviewButton(latestMeta);
+      }
+    }
+
+    async function runStage05(useMock = false) {
+      useMock = false;
+      setRunning(true, useMock);
+      setRunStatus('in_progress', useMock ? '正在生成 mock 竞品数据...' : '正在调用 RAG 脚本检索真实数�?..');
+      clearWarnings();
+      resetSourceCards();
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00.5/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ useMock }),
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '阶段 0.5 执行失败');
+
+        renderRunResult(result.data);
+        await loadStatus();
+        await loadReport();
+
+        // 自动流程：autoreview 模式下，生成完报告后自动推进�?0.5 无需圆桌评审�?        if (autoReview) {
+          setRunStatus('real', '报告已生成，自动推进到下一阶段...');
+          await new Promise(r => setTimeout(r, 1500));
+          // 00.5 不需要圆桌，直接 advance
+          const advRes = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00.5/advance`, { method: 'POST' });
+          const advResult = await advRes.json();
+          if (advResult.success && advResult.data?.nextStage) {
+            location.href = `stage-run.html?project=${encodeURIComponent(projectId)}&stage=01&skipReview=true`;
+          } else {
+            location.href = `decisions.html?project=${encodeURIComponent(projectId)}&stage=00.5`;
+          }
+        }
+      } catch (err) {
+        setRunStatus('fallback_mock', `Stage 0.5 执行失败�?{err.message}`);
+        showWarnings([err.message]);
+      } finally {
+        setRunning(false, useMock);
+      }
+    }
+
+    function renderRunResult(data) {
+      const mode = data.dataMode || (data.mock ? 'mock' : 'real');
+      const label = mode === 'real' ? '真实数据' : mode === 'fallback_mock' ? '兜底 mock' : 'mock 演示';
+      setRunStatus(mode, `报告已生成：${label}。下一步可以进入五人圆桌评审。`);
+      renderSourceCard('sourceAppStore', data.sources?.appStore, 'App Store');
+      renderSourceCard('sourceHn', data.sources?.hackerNews, 'Hacker News');
+      showWarnings([...(data.warnings || []), ...(data.dataGaps || [])]);
+    }
+
+    function renderSourceCard(id, source, fallbackName) {
+      const el = document.getElementById(id);
+      const mode = source?.mode || 'mock';
+      el.classList.remove('ok', 'warn', 'fail');
+      el.classList.add(mode === 'real' ? 'ok' : mode === 'fallback_mock' ? 'warn' : 'ok');
+      const modeLabel = mode === 'real' ? '真实检索成�? : mode === 'fallback_mock' ? '真实检索失败，mock 兜底' : 'mock 数据';
+      const snapshot = source?.snapshot ? `<br>快照�?{escapeHtml(source.snapshot)}` : '';
+      const warning = source?.warning ? `<br>说明�?{escapeHtml(source.warning)}` : '';
+      el.querySelector('.source-status').innerHTML = `${fallbackName}�?{modeLabel}${snapshot}${warning}`;
+    }
+
+    function resetSourceCards() {
+      document.getElementById('sourceAppStore').classList.remove('ok', 'warn', 'fail');
+      document.getElementById('sourceHn').classList.remove('ok', 'warn', 'fail');
+      document.querySelector('#sourceAppStore .source-status').textContent = '检索中。用于识别直接竞品、评分、评价量和基础定位�?;
+      document.querySelector('#sourceHn .source-status').textContent = '检索中。用于观察双边市场、信任机制、冷启动等讨论�?;
+    }
+
+    function renderReport(content) {
+      const conclusions = extractNumberedSection(content, '二、顾清结�?).slice(0, 3);
+      const competitors = extractTableRows(content, '三、竞品概�?).slice(0, 4)
+        .map(row => `${row[1] || '-'}�?{row[4] || row[2] || '-'}`);
+      const gaps = extractBullets(content, '五、数据来源与缺口').slice(0, 4);
+
+      document.getElementById('reportPreview').className = '';
+      document.getElementById('reportPreview').innerHTML = `
+        <div class="report-cards">
+          <section class="report-card">
+            <h3>顾清结论</h3>
+            <ul>${toList(conclusions)}</ul>
+          </section>
+          <section class="report-card">
+            <h3>竞品信号</h3>
+            <ul>${toList(competitors)}</ul>
+          </section>
+          <section class="report-card">
+            <h3>数据来源与缺�?/h3>
+            <ul>${toList(gaps)}</ul>
+          </section>
+        </div>
+        <div class="report-box">${escapeHtml(content)}</div>
+      `;
+    }
+
+    function summarizeStage0(content) {
+      const sections = ['一、产品定�?, '二、用户场景与任务�?, '三、功能范围（P0/P1/P2�?];
+      const summary = sections.map((heading) => {
+        const section = extractSection(content, heading).trim();
+        return section ? section.split('\n').slice(0, 7).join('\n') : '';
+      }).filter(Boolean).join('\n\n');
+      return summary || content.slice(0, 1200);
+    }
+
+    function updateReviewButton(meta) {
+      const btn = document.getElementById('reviewBtn');
+      const stage05 = meta?.stages?.['00.5'];
+      const canContinue = stage05?.artifactPath && ['review_pending', 'decision_pending', 'done'].includes(stage05.status);
+      btn.disabled = !canContinue;
+      btn.textContent = stage05?.status === 'decision_pending' ? '去拍板决�? : '进入五人评审';
+    }
+
+    function enterReview() {
+      // Stage 00.5 不需要圆桌评审，直接推进
+      const advRes = fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00.5/advance`, { method: 'POST' })
+        .then(r => r.json())
+        .then(result => {
+          if (result.success && result.data?.nextStage) {
+            location.href = `stage-run.html?project=${encodeURIComponent(projectId)}&stage=01&skipReview=true`;
+          } else {
+            location.href = `status.html?project=${encodeURIComponent(projectId)}`;
+          }
+        });
+    }
+
+    // 自动启动：如�?URL �?autostart=true，自动触发真实检�?    const autoStart = params.get('autostart') === 'true';
+    if (autoStart && projectId) {
+      // 延迟一秒让页面渲染完成
+      setTimeout(() => runStage05(false), 1000);
+    }
+
+    // 生成报告后自动进评审
+    const autoReview = params.get('autoreview') === 'true';
+    const _origRenderRunResult = typeof renderRunResult === 'function' ? renderRunResult : null;
+
+    function goStatus() {
+      location.href = projectId ? `status.html?project=${encodeURIComponent(projectId)}` : 'status.html';
+    }
+
+    function setRunning(isRunning, useMock) {
+      document.getElementById('realBtn').disabled = isRunning;
+      if (isRunning) {
+        document.getElementById('realBtn').textContent = '��"-...';
+      } else {
+        document.getElementById('realBtn').textContent = '开始真实数据检�?;
+      }
+    }
+
+    function disableRunButtons() {
+      document.getElementById('realBtn').disabled = true;
+      document.getElementById('reviewBtn').disabled = true;
+    }
+
+    function setRunStatus(mode, text) {
+      const el = document.getElementById('runStatus');
+      el.className = `status-strip ${mode}`;
+      el.innerHTML = `<strong>${escapeHtml(text)}</strong>`;
+    }
+
+    function showWarnings(items) {
+      const unique = [...new Set((items || []).filter(Boolean))];
+      document.getElementById('warnings').innerHTML = unique.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+    }
+
+    function clearWarnings() {
+      document.getElementById('warnings').innerHTML = '';
+    }
+
+    function toList(items) {
+      const fallback = ['暂无可展示摘要，查看完整报告�?];
+      return (items.length ? items : fallback)
+        .map(item => `<li>${escapeHtml(String(item).replace(/^\d+\.\s*/, '').replace(/^\-\s*/, ''))}</li>`)
+        .join('');
+    }
+
+    function extractNumberedSection(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => /^\d+\.\s+/.test(line));
+    }
+
+    function extractBullets(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('- '))
+        .map(line => line.slice(2));
+    }
+
+    function extractTableRows(content, heading) {
+      return extractSection(content, heading)
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.startsWith('|') && !line.includes('---'))
+        .slice(1)
+        .map(line => line.split('|').slice(1, -1).map(cell => cell.trim()));
+    }
+
+    function extractSection(content, heading) {
+      const start = content.indexOf(`## ${heading}`);
+      if (start < 0) return '';
+      const next = content.indexOf('\n## ', start + 4);
+      return content.slice(start, next > start ? next : content.length);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

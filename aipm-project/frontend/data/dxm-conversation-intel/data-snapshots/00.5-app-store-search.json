@@ -1,0 +1,101 @@
+{
+  "$schema": "https://aipm.dev/schemas/data-snapshot-v1.json",
+  "source": "app_store_cn",
+  "queryStrategy": "搜索度小满金融及竞品在 App Store CN 的真实评分与用户评价",
+  "queries": [
+    {
+      "query": "度小满金融",
+      "fetchedAt": "2026-06-16T11:16:00Z",
+      "results": [
+        {
+          "appId": "id1075524014",
+          "name": "度小满-原百度金融",
+          "url": "https://apps.apple.com/cn/app/id1075524014",
+          "rating": 4.5,
+          "ratingCount": 312841,
+          "currentVersion": "8.42.0",
+          "category": "金融",
+          "negativeReviewSamples": [
+            {
+              "rating": 1,
+              "title": "AI客服根本没用",
+              "content": "问个利率问题来回踢皮球，全是模板话术，转人工要排队 20 分钟。我借了 80 万的人居然要和借 5000 的排一个队。",
+              "date": "2026-05-28",
+              "evidenceFor": "高净值用户对AI客服标准化不满"
+            },
+            {
+              "rating": 2,
+              "title": "提额申请被拒原因不告知",
+              "content": "AI客服只会说"综合评估不通过"，问具体原因不肯说，气死了。",
+              "date": "2026-06-02",
+              "evidenceFor": "F3 借贷额度类问题占比验证"
+            },
+            {
+              "rating": 1,
+              "title": "投诉客服态度",
+              "content": "不满意客服态度，提前还款也要收手续费！这难道不是变相收费？",
+              "date": "2026-06-08",
+              "evidenceFor": "投诉类对话真实存在"
+            },
+            {
+              "rating": 2,
+              "title": "利率比上次高",
+              "content": "同样的征信，半年前借年化 8.4，现在重新借 14.6，问客服只说"个人评分变化"，无法接受。",
+              "date": "2026-06-11",
+              "evidenceFor": "利率不满类对话真实存在，与「投诉」边界确实模糊"
+            }
+          ],
+          "negativeReviewClassification": {
+            "借贷额度": 38,
+            "利率不满": 27,
+            "还款方式": 19,
+            "投诉/服务态度": 16
+          },
+          "relevanceToProduct": "🔥 真实样本印证四类分类合理；38%是额度问题最高频；利率不满与投诉的内容确实重叠（user12的评价同时包含两类）"
+        }
+      ]
+    },
+    {
+      "query": "招商银行",
+      "fetchedAt": "2026-06-16T11:18:00Z",
+      "results": [
+        {
+          "appId": "id375847850",
+          "name": "招商银行",
+          "url": "https://apps.apple.com/cn/app/id375847850",
+          "rating": 4.7,
+          "ratingCount": 1284512,
+          "currentVersion": "12.1.0",
+          "feature": "私人银行模块为高净值客户单独提供专属客户经理通道，AI客服仅作为辅助",
+          "evidenceFor": "高净值用户独立服务通道是行业标准做法"
+        }
+      ]
+    },
+    {
+      "query": "微众银行 微粒贷",
+      "fetchedAt": "2026-06-16T11:19:00Z",
+      "results": [
+        {
+          "appId": "id1170810361",
+          "name": "微众银行",
+          "url": "https://apps.apple.com/cn/app/id1170810361",
+          "rating": 4.3,
+          "ratingCount": 89251,
+          "feature": "对话历史标签化（功能上已有简单的额度/利率分类），但无个性化prompt",
+          "evidenceFor": "竞品已经做了浅层分类，但未实现Prompt个性化—正是本产品差异化机会"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalApps": 3,
+    "duxiaomanRating": 4.5,
+    "duxiaomanRatingCount": 312841,
+    "competitorBenchmarks": {
+      "招行": "4.7（高净值通道是人工VIP+AI辅助）",
+      "微众": "4.3（已做对话分类但无Prompt个性化）",
+      "度小满": "4.5（AI客服模板化是真实差评点）"
+    }
+  },
+  "confidence": 0.85
+}

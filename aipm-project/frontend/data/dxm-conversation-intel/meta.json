@@ -1,0 +1,160 @@
+{
+  "$schema": "https://aipm.dev/schemas/meta-v1.json",
+  "projectId": "dxm-conversation-intel",
+  "name": "度小满高净值客户对话智能分析平台",
+  "idea": "做一个度小满的借贷高净值用户与人工客服与AI客服的对话返回网站，给度小满员工使用，类似于一个tob的网站。功能一是对用户对话进行自动分类（借贷额度/利率不满/还款方式/投诉），方便员工按类型查看；功能二是根据对话总结生成用户画像；功能三是基于画像生成个性化的AI客服prompt。",
+  "userPersona": "b2b_decision_maker",
+  "createdAt": "2026-06-16T10:00:00Z",
+  "updatedAt": "2026-06-16T14:00:00Z",
+  "currentStage": "04",
+  "currentState": "done",
+  "globalState": "completed",
+  "blockedReason": null,
+  "stages": {
+    "00": {
+      "status": "done",
+      "startedAt": "2026-06-16T10:00:00Z",
+      "completedAt": "2026-06-16T11:10:00Z",
+      "artifactPath": "stages/00-需求头脑风暴设计.md",
+      "reviewPath": "reviews/00-review.json",
+      "decisions": ["decision-001", "decision-002", "decision-003"],
+      "needsRedo": false
+    },
+    "00.5": {
+      "status": "done",
+      "startedAt": "2026-06-16T11:10:00Z",
+      "completedAt": "2026-06-16T11:45:00Z",
+      "artifactPath": "stages/00.5-竞品分析报告.md",
+      "reviewPath": "reviews/00.5-review.json",
+      "decisions": ["decision-001", "decision-002"],
+      "needsRedo": false,
+      "dataSnapshots": [
+        "data-snapshots/00.5-app-store-search.json",
+        "data-snapshots/00.5-hn-search.json",
+        "data-snapshots/00.5-industry-reports.json"
+      ]
+    },
+    "01": {
+      "status": "done",
+      "startedAt": "2026-06-16T11:45:00Z",
+      "completedAt": "2026-06-16T12:00:00Z",
+      "artifactPath": "stages/01-增强提示词.md",
+      "reviewPath": "reviews/01-review.json",
+      "decisions": [],
+      "needsRedo": false
+    },
+    "02": {
+      "status": "done",
+      "startedAt": "2026-06-16T12:00:00Z",
+      "completedAt": "2026-06-16T12:40:00Z",
+      "artifactPath": "stages/02-产品需求文档.md",
+      "reviewPath": "reviews/02-review.json",
+      "decisions": [],
+      "needsRedo": false
+    },
+    "03": {
+      "status": "done",
+      "startedAt": "2026-06-16T12:40:00Z",
+      "completedAt": "2026-06-16T13:30:00Z",
+      "artifactPath": "stages/03-线框图与交互规范.md",
+      "reviewPath": "reviews/03-review.json",
+      "decisions": [],
+      "needsRedo": false
+    },
+    "04": {
+      "status": "done",
+      "startedAt": "2026-06-16T13:30:00Z",
+      "completedAt": "2026-06-16T14:00:00Z",
+      "artifactPath": "stages/04-UI交互原型.html",
+      "reviewPath": null,
+      "decisions": [],
+      "needsRedo": false
+    }
+  },
+  "decisionHistory": [
+    {
+      "id": "decision-001",
+      "stage": "00",
+      "question": "MVP 范围",
+      "userChoice": "A",
+      "userChoiceLabel": "一次做完 8 个 P0",
+      "rationale": "灵魂功能不砍",
+      "decidedAt": "2026-06-16T11:08:00Z",
+      "affectsStages": ["00.5", "01", "02", "03", "04"]
+    },
+    {
+      "id": "decision-002",
+      "stage": "00",
+      "question": "视觉风格",
+      "userChoice": "A",
+      "userChoiceLabel": "深色交易终端（点缀度小满蓝）",
+      "rationale": "员工 8 小时使用低疲劳",
+      "decidedAt": "2026-06-16T11:08:00Z",
+      "affectsStages": ["03", "04"]
+    },
+    {
+      "id": "decision-003",
+      "stage": "00",
+      "question": "分类标签颜色",
+      "userChoice": "B",
+      "userChoiceLabel": "紫色 #8B5CF6",
+      "rationale": "与红色拉开识别度",
+      "decidedAt": "2026-06-16T11:08:00Z",
+      "affectsStages": ["03", "04"]
+    },
+    {
+      "id": "decision-001",
+      "stage": "00.5",
+      "question": "差异化优先级",
+      "userChoice": "B",
+      "userChoiceLabel": "per-user 个性化优先",
+      "rationale": "灵魂功能不能弱化",
+      "decidedAt": "2026-06-16T11:42:00Z",
+      "affectsStages": ["01", "02", "03", "04"]
+    },
+    {
+      "id": "decision-002",
+      "stage": "00.5",
+      "question": "分类策略",
+      "userChoice": "A",
+      "userChoiceLabel": "维持 4 类单标签",
+      "rationale": "员工扫描简洁优先",
+      "decidedAt": "2026-06-16T11:42:00Z",
+      "affectsStages": ["02", "03", "04"]
+    }
+  ],
+  "eventLog": [
+    {"time": "2026-06-16T10:00:00Z", "event": "pipeline_started", "user": "default"},
+    {"time": "2026-06-16T10:00:00Z", "event": "stage_started", "stage": "00"},
+    {"time": "2026-06-16T10:42:00Z", "event": "artifact_generated", "stage": "00", "artifactPath": "stages/00-需求头脑风暴设计.md", "source": "skill-orchestrated-brainstorming"},
+    {"time": "2026-06-16T11:00:00Z", "event": "review_started", "stage": "00"},
+    {"time": "2026-06-16T11:07:00Z", "event": "review_completed", "stage": "00", "decisionCount": 3},
+    {"time": "2026-06-16T11:08:00Z", "event": "decision_made", "stage": "00", "decisionId": "decision-001", "choice": "A"},
+    {"time": "2026-06-16T11:08:00Z", "event": "decision_made", "stage": "00", "decisionId": "decision-002", "choice": "A"},
+    {"time": "2026-06-16T11:08:00Z", "event": "decision_made", "stage": "00", "decisionId": "decision-003", "choice": "B"},
+    {"time": "2026-06-16T11:10:00Z", "event": "stage_done", "stage": "00"},
+    {"time": "2026-06-16T11:10:00Z", "event": "stage_started", "stage": "00.5"},
+    {"time": "2026-06-16T11:25:00Z", "event": "artifact_generated", "stage": "00.5", "artifactPath": "stages/00.5-竞品分析报告.md", "source": "skill-orchestrated-competitive-analysis"},
+    {"time": "2026-06-16T11:35:00Z", "event": "review_started", "stage": "00.5"},
+    {"time": "2026-06-16T11:41:00Z", "event": "review_completed", "stage": "00.5", "decisionCount": 2},
+    {"time": "2026-06-16T11:42:00Z", "event": "decision_made", "stage": "00.5", "decisionId": "decision-001", "choice": "B"},
+    {"time": "2026-06-16T11:42:00Z", "event": "decision_made", "stage": "00.5", "decisionId": "decision-002", "choice": "A"},
+    {"time": "2026-06-16T11:45:00Z", "event": "stage_done", "stage": "00.5"},
+    {"time": "2026-06-16T11:45:00Z", "event": "stage_started", "stage": "01"},
+    {"time": "2026-06-16T11:55:00Z", "event": "artifact_generated", "stage": "01", "artifactPath": "stages/01-增强提示词.md", "source": "skill-orchestrated-enhance-prompt"},
+    {"time": "2026-06-16T12:00:00Z", "event": "stage_done", "stage": "01"},
+    {"time": "2026-06-16T12:00:00Z", "event": "stage_started", "stage": "02"},
+    {"time": "2026-06-16T12:30:00Z", "event": "artifact_generated", "stage": "02", "artifactPath": "stages/02-产品需求文档.md", "source": "skill-orchestrated-prd"},
+    {"time": "2026-06-16T12:35:00Z", "event": "review_started", "stage": "02"},
+    {"time": "2026-06-16T12:38:00Z", "event": "review_completed", "stage": "02", "decisionCount": 0},
+    {"time": "2026-06-16T12:40:00Z", "event": "stage_done", "stage": "02"},
+    {"time": "2026-06-16T12:40:00Z", "event": "stage_started", "stage": "03"},
+    {"time": "2026-06-16T13:10:00Z", "event": "artifact_generated", "stage": "03", "artifactPath": "stages/03-线框图与交互规范.md", "source": "skill-orchestrated-wireframe"},
+    {"time": "2026-06-16T13:25:00Z", "event": "review_completed", "stage": "03", "decisionCount": 0},
+    {"time": "2026-06-16T13:30:00Z", "event": "stage_done", "stage": "03"},
+    {"time": "2026-06-16T13:30:00Z", "event": "stage_started", "stage": "04"},
+    {"time": "2026-06-16T14:00:00Z", "event": "artifact_generated", "stage": "04", "artifactPath": "stages/04-UI交互原型.html", "source": "skill-orchestrated-frontend-prototype"},
+    {"time": "2026-06-16T14:00:00Z", "event": "stage_done", "stage": "04"},
+    {"time": "2026-06-16T14:00:00Z", "event": "pipeline_completed"}
+  ]
+}

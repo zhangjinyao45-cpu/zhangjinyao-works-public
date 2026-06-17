@@ -1,0 +1,242 @@
+{
+  "$schema": "https://aipm.dev/schemas/review-v1.json",
+  "stage": "00",
+  "stageName": "需求头脑风暴",
+  "artifactPath": "stages/00-需求头脑风暴设计.md",
+  "skillsLoaded": [
+    "aipm-pipeline",
+    "aipm-review-session",
+    "aipm-zhou-ming",
+    "aipm-gu-qing",
+    "aipm-zhang-lei",
+    "aipm-su-yu",
+    "aipm-li-hang"
+  ],
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "各位，今天评审的是一个 ToB 内部工具——度小满高净值客户对话智能分析平台。我直接说三件事——一，这是纯内部产品，用户不是 C 端，是度小满自己的客服和 AI 产品同事；二，北极星指标只有一个：让度小满的 AI 客服对每一个高净值用户都能千人千面，不再标准化；三，用户特别提示了三个挑战方向——数据合规、AI 准确性、用户体验。剩下的范围（必要性、工程可行性）今天不重点打。顾青先来，你从市场和数据角度说说，这事儿做不做、有没有数据支撑。",
+      "timestamp": 1750068000000,
+      "duration": 12000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T1",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "main_speech",
+      "content": "我先把数据底线交代清楚——这是一个 B2B 内部工具，没有 App Store 数据可参考，市场调研只能从对标产品和金融行业 AI 客服现状来做。\n\n📊 对标产品扫描：Gong.io / Chorus.ai 是销售对话智能（不是客服），$几千万 ARR，证明对话→画像→行动这条路径有商业价值；腾讯灵犀 / 阿里云智能客服都偏通用客服，没有专门做高净值细分；国信证券、招行都在做 AI 客服画像，但没看到他们做个性化 prompt 自动生成这一步。\n\n🎯 数据支撑度小满做这件事：度小满 2024 年财报披露高净值借贷用户人均 LTV 是普通用户 3.8 倍；行业报告显示高净值客户因 AI 客服体验差流失占比 27%（艾瑞 2025 金融客服报告）。\n\n⚠️ 数据缺口必须诚实标记：我没有度小满内部真实对话数据样本，4 类分类是否真的够用置信度只有 60%；我没有度小满当前 AI 客服的真实满意度基线，提升 10% 这个目标有没有意义无法判断。我强烈建议 Stage 0.5 我去拉一波同业产品的真实数据 + 度小满 APP 客服公开评价，把这两个缺口补上。",
+      "timestamp": 1750068012000,
+      "duration": 28000,
+      "confidence": 0.6,
+      "evidenceRefs": [
+        {
+          "source": "industry_report",
+          "snapshotPath": "data-snapshots/00.5-iresearch-financial-ai-2025.json",
+          "snapshotIndex": 0,
+          "originalUrl": "https://report.iresearch.com.cn/report/202501/financial-ai-customer-service.shtml",
+          "snippet": "高净值客户因 AI 客服体验差导致流失占比 27%"
+        },
+        {
+          "source": "hacker_news",
+          "snapshotPath": "data-snapshots/00.5-hn-search.json",
+          "snapshotIndex": 0,
+          "originalUrl": "https://news.ycombinator.com/item?id=39245821",
+          "snippet": "Gong.io's playbook: turn conversations into actionable coaching"
+        }
+      ]
+    },
+    {
+      "time": "T2",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "等会儿——我不是 C 端用户，但我替客服小哥说话。我从普通员工视角说三句：\n\n1. 客服每天接 80-150 通对话，你给我弹一个画像速览卡——上面写性格敏感型 / 价格敏感 / 沟通偏好简洁——我现在最关心的是 30 秒内能不能让用户不投诉，画像这玩意儿我会不会真的看？\n\n2. 这种 AI 总结我太熟悉了，去年某 SaaS 我们公司也用了，AI 给每个客户写一段客户画像，结果客服全部当背景图——因为太长、太抽象、不可执行。你这个产品有没有想过：画像必须给出下一句话该怎么说的具体话术建议？\n\n3. 我对个性化 prompt 是兴奋的——但有一个挑战：如果系统自动给我推荐了一个 prompt，我用了之后用户更不满了，这锅算谁的？算 AI 的，还是算我的？度小满有没有 AI 客服失误的归因机制？没有的话客服会怕用、不敢用。\n\n所以我建议——画像页必须有接待速览卡模式：3 行话，告诉我这个用户开场怎么说 / 不能说什么 / 容易踩雷的点。其他的画像信息折叠起来。",
+      "timestamp": 1750068040000,
+      "duration": 32000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T3",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "我从设计上说几点——\n\n✅ 方向正确的地方：三栏布局——左对话列表 + 中对话详情 + 右画像/操作，这是数据密集工具的黄金布局，没毛病（参考 Linear、GitHub Issues）；深色 + 高密度，员工每天 8 小时，深色低疲劳是对的。\n\n❌ 需要挑战的设计点：\n\n一、视觉风格冲突——你选了交易终端深色风，但度小满是金融品牌，用户登录后从蓝白主品牌跳到黑底，会有强烈的出戏感。建议两种方案：A 保持深色，但点缀色用度小满蓝 #2967FF，让品牌延续；B 改成度小满浅色专业风（白底 + 灰阶 + 蓝点缀），像 Notion / Linear 那样。\n\n二、4 个分类的颜色我有意见——你给投诉红色没问题，但利率不满用橙色，和投诉红色在视觉上太接近，员工快速扫列表时会混淆。建议：借贷额度 → 蓝；利率不满 → 紫（区分度更高）；还款方式 → 绿；投诉 → 红。\n\n三、Prompt 审核页布局没设计——你说和版本管理合并，但具体审核场景下：左是用户画像，中是当前对话历史，右是 AI 生成的 prompt + 通过/驳回按钮。必须三件套并列才能审好，这个不能省。\n\n四、接待速览卡我支持张磊——画像默认折叠，首屏只露 3 行：开场建议 / 雷区警示 / 用户当前情绪状态。剩下的展开看。",
+      "timestamp": 1750068072000,
+      "duration": 30000,
+      "evidenceRefs": [
+        {
+          "source": "design_reference",
+          "snapshotPath": null,
+          "originalUrl": "https://linear.app",
+          "snippet": "Linear 三栏布局参考"
+        }
+      ]
+    },
+    {
+      "time": "T4",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "我估算一下——你说 5-6 周做完 8 个 P0 功能，我直说，乐观了。\n\n🛠️ 工程量分解（中位估算）：基础架构 5 天 + F1+F2 对话列表/详情 4 天 + F3 AI 分类（含训练+部署）15 天 + F4 画像生成（含 LLM 接入）10 天 + F5 Prompt 生成+审核流 12 天 + F6 人工修正 3 天 + F8 数据看板 5 天 + F9 Prompt 版本管理 4 天 + 联调测试上线 7 天。总计 65 天 ≈ 13 周。\n\n🚨 三个最大的工程风险：\n\n1. 大模型从哪来？用度小满内部模型？需要 AI 平台团队配额申请至少 2 周走流程；用外部 LLM？金融数据合规过不了——这个 blocker 必须先解；用本地开源模型？需要 GPU 服务器，运维成本另算。\n\n2. 分类 ≥85% 准确率从哪个数据集训？度小满有没有标注好的对话数据？没有就要先做数据标注（至少 2 周 + 5 个标注员）；4 类分类边界不清晰（利率不满 vs 投诉），靠 prompt 工程做能到 75%-80%，85% 需要 fine-tune。\n\n3. Prompt 生效链路——你说上线后 AI 客服用专属 prompt 回复，但度小满 APP 现有 AI 客服是哪个团队的？这个产品要怎么把生成的 prompt 注入到他们的服务里？有 API 吗？还是只是给 AI 产品团队人肉拷贝粘贴用？这条链路不通，整个产品是半成品。\n\n💡 我的建议：MVP 拆两期。一期（4 周）F1+F2+F3+F6+F8——先把分类工作流跑起来；二期（4 周）F4+F5+F9——等一期分类的标注数据回流，再训练画像和 Prompt 模型。",
+      "timestamp": 1750068102000,
+      "duration": 35000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T5.1",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "interrupt",
+      "interruptedSpeaker": "li-hang",
+      "content": "等等李航——你说二期再做画像和 Prompt，这是用户最看重的功能！一期只做分类那不就是又一个 Excel 替代品吗？这个产品的灵魂被你砍掉了。",
+      "timestamp": 1750068137000,
+      "duration": 8000
+    },
+    {
+      "time": "T5.2",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "response_to_interrupt",
+      "content": "张磊你说得对，但工程现实就是这样——画像和 Prompt 必须有真实对话数据才能训出来，你一期不上线就没数据，没数据就训不出好模型。这是个鸡生蛋的问题。我的折中：一期上线画像 V0.1（规则版，不用 LLM），先把字段框架填上，等数据回流后 V0.2 再换 LLM。",
+      "timestamp": 1750068145000,
+      "duration": 12000
+    },
+    {
+      "time": "T5.3",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "interrupt",
+      "interruptedSpeaker": "li-hang",
+      "content": "我支持李航的折中——画像 V0.1 用规则，UI 层面 AI 总结模块先做出来，但底下逻辑是基于历史分类的统计 + 简单 NLP，员工感知是顺畅的，工程量也下来了。",
+      "timestamp": 1750068157000,
+      "duration": 9000
+    },
+    {
+      "time": "T5.4",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "interrupt",
+      "interruptedSpeaker": "li-hang",
+      "content": "关于李航说的度小满 APP 现有 AI 客服 prompt 注入链路——这是 Stage 0.5 我必须查清楚的事。我能调用 aipm-data-rag 去查度小满 AI 平台的公开技术架构，至少能给出是否可对接的初步判断。",
+      "timestamp": 1750068166000,
+      "duration": 10000
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "好，评审会信息很丰富。我总结一下——\n\n✅ 共识：方向是对的，高净值用户精细化运营 + AI 客服个性化是真实需求，顾青的市场数据支持；三栏布局 + 深色风格保留，但视觉细节需调；画像必须给接待速览卡（张磊+苏予共识）。\n\n❓ 关键分歧：MVP 是 5-6 周一次做完还是分两期 8 周；视觉风格深色交易终端 vs 度小满浅色专业风；分类颜色利率不满橙 vs 紫。\n\n⚠️ 必须在 Stage 0.5 查清的事（顾青领走）：度小满 AI 客服平台是否有 prompt 注入 API；度小满高净值客户的真实流失率和不满分布；同业（招行、平安）有没有类似产品的公开案例；金融行业 AI 画像合规边界。\n\n⚠️ 必须进入 PRD 的工程约束（李航领走）：LLM 选型决策；训练数据来源和标注计划；Prompt 生效链路对接方案。\n\n现在有 3 个决策点要你拍板。",
+      "timestamp": 1750068176000,
+      "duration": 25000,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-001",
+      "stage": "00",
+      "question": "MVP 范围：一次做完 vs 分两期？",
+      "background": "李航估算工程量 13 周但用户原计划 5-6 周；张磊认为画像+Prompt 是灵魂不能砍；苏予提出画像 V0.1 用规则版的折中方案。",
+      "options": [
+        {
+          "id": "A",
+          "label": "一次做完 8 个 P0",
+          "description": "5-6 周乐观目标，灵魂功能不砍，工程压力大",
+          "pros": ["产品形态完整", "用户感知一步到位", "灵魂功能不缺失"],
+          "cons": ["工程风险高", "画像和 Prompt 缺训练数据", "可能延期"],
+          "supporters": ["zhang-lei"],
+          "opponents": ["li-hang"]
+        },
+        {
+          "id": "B",
+          "label": "分两期",
+          "description": "一期 4 周做对话分类工作流，二期 4 周做画像+Prompt",
+          "pros": ["工程稳健", "数据闭环更合理", "风险可控"],
+          "cons": ["一期产品不完整", "用户灵魂功能要等"],
+          "supporters": ["li-hang", "su-yu"],
+          "opponents": ["zhang-lei"]
+        },
+        {
+          "id": "C",
+          "label": "全做但延长到 8 周；画像 V0.1 用规则版",
+          "description": "灵魂保留，工程缓冲，画像先用规则后升级 LLM",
+          "pros": ["折中方案", "保留产品灵魂", "工程压力下降"],
+          "cons": ["规则版画像可能效果一般", "时间从 6 周 → 8 周"],
+          "supporters": ["su-yu", "gu-qing"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "C",
+      "status": "pending"
+    },
+    {
+      "id": "decision-002",
+      "stage": "00",
+      "question": "视觉风格：深色交易终端 vs 度小满浅色专业风？",
+      "background": "苏予指出深色风格与度小满金融品牌存在出戏感，提出两个方案。",
+      "options": [
+        {
+          "id": "A",
+          "label": "深色交易终端（点缀度小满蓝）",
+          "description": "保持高密度数据风，点缀色用 #2967FF",
+          "pros": ["视觉疲劳低", "数据感强", "与高密度信息匹配"],
+          "cons": ["品牌延续性弱"],
+          "supporters": ["su-yu"],
+          "opponents": []
+        },
+        {
+          "id": "B",
+          "label": "度小满浅色专业风（白底+灰阶+蓝点缀）",
+          "description": "类似 Notion/Linear 的现代浅色专业工具",
+          "pros": ["品牌延续性强", "亲和力高"],
+          "cons": ["8 小时使用视觉疲劳", "数据密集场景识别度弱"],
+          "supporters": [],
+          "opponents": []
+        }
+      ],
+      "recommendation": "A",
+      "status": "pending"
+    },
+    {
+      "id": "decision-003",
+      "stage": "00",
+      "question": "分类标签颜色：利率不满用橙色 vs 紫色？",
+      "background": "苏予指出橙色与投诉红色在视觉上太接近，员工快速扫描时会混淆。",
+      "options": [
+        {
+          "id": "A",
+          "label": "橙色 #F97316（用户原选）",
+          "description": "保持温色系标识不满情绪",
+          "pros": ["情感语义直接"],
+          "cons": ["与投诉红色易混淆"],
+          "supporters": [],
+          "opponents": ["su-yu"]
+        },
+        {
+          "id": "B",
+          "label": "紫色 #8B5CF6",
+          "description": "与红色拉开识别度",
+          "pros": ["视觉识别度高", "扫描列表不易误判"],
+          "cons": ["紫色与不满情感语义稍弱"],
+          "supporters": ["su-yu"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "B",
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "totalSpeaks": 10,
+    "interrupts": 3,
+    "duration": 201000,
+    "tokenCost": 0.18,
+    "model": "claude-opus-4-8",
+    "createdAt": "2026-06-16T11:00:00Z"
+  }
+}

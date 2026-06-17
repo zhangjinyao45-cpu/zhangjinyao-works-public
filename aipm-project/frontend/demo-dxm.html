@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIPM 数字人圆桌会议 · 度小满案例演示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.container {
+  max-width: 1200px;
+  width: 90%;
+  background: rgba(255,255,255,0.95);
+  border-radius: 24px;
+  padding: 48px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  color: #1a202c;
+}
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 32px;
+}
+.header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.header p {
+  font-size: 16px;
+  color: #718096;
+  line-height: 1.6;
+}
+.project-card {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.project-card h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #2d3748;
+}
+.project-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.meta-item {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.meta-label {
+  font-size: 12px;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.meta-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #48bb78;
+  color: #fff;
+  margin-left: 8px;
+}
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.nav-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.nav-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+}
+.nav-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.nav-card p {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+.icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  opacity: 0.9;
+}
+.footer {
+  margin-top: 32px;
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+}
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.timeline-item {
+  background: #edf2f7;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #4a5568;
+  border-left: 3px solid #667eea;
+}
+.timeline-item.done {
+  background: #c6f6d5;
+  border-left-color: #48bb78;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎭 AIPM 数字人圆桌会议演示</h1>
+    <p>度小满高净值客户对话智能分析平台 · 完整 Mock 数据展示</p>
+  </div>
+
+  <div class="project-card">
+    <h2>项目：度小满高净值客户对话智能分析平台 <span class="badge">已完成</span></h2>
+    <p style="color: #718096; margin-bottom: 24px; line-height: 1.6;">
+      做一个度小满的借贷高净值用户与人工客服与AI客服的对话返回网站，给度小满员工使用，类似于一个tob的网站。功能一是对用户对话进行自动分类（借贷额度/利率不满/还款方式/投诉），方便员工按类型查看；功能二是根据对话总结生成用户画像；功能三是基于画像生成个性化的AI客服prompt。
+    </p>
+
+    <div class="project-meta">
+      <div class="meta-item">
+        <div class="meta-label">项目 ID</div>
+        <div class="meta-value">dxm-conversation-intel</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">用户角色</div>
+        <div class="meta-value">B2B 决策者</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">总决策数</div>
+        <div class="meta-value">5 个</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">流水线状态</div>
+        <div class="meta-value" style="color: #48bb78;">✓ 已完成</div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item done">Stage 00 · 需求头脑风暴</div>
+      <div class="timeline-item done">Stage 0.5 · 竞品分析（顾青）</div>
+      <div class="timeline-item done">Stage 01 · 提示词增强</div>
+      <div class="timeline-item done">Stage 02 · PRD</div>
+      <div class="timeline-item done">Stage 03 · 线框图</div>
+      <div class="timeline-item done">Stage 04 · 高保真原型</div>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom: 16px; color: #2d3748;">🎬 演示入口（选择一个场景）</h3>
+  <div class="nav-grid">
+    <a class="nav-card" href="http://localhost:3000/app/theatre.html?mode=review&project=dxm-conversation-intel&stage=00" target="_blank">
+      <div class="icon">🎭</div>
+      <h3>Stage 00 评审会</h3>
+      <p>五人圆桌 · 3 个决策点 · 周明主持 + 顾青数据 + 张磊情绪 + 苏予设计 + 李航工程</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/app/theatre.html?mode=review&project=dxm-conversation-intel&stage=00.5" target="_blank">
+      <div class="icon">🔬</div>
+      <h3>Stage 0.5 评审会</h3>
+      <p>顾青竞品分析 · 3 个数据快照 · CAC 合规 + 艾瑞白皮书 + HN 讨论</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/app/theatre.html?mode=review&project=dxm-conversation-intel&stage=02" target="_blank">
+      <div class="icon">📋</div>
+      <h3>Stage 02 PRD 评审</h3>
+      <p>PRD 文档质量验收 · 4 项修订合并</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/app/theatre.html?mode=review&project=dxm-conversation-intel&stage=03" target="_blank">
+      <div class="icon">📐</div>
+      <h3>Stage 03 线框评审</h3>
+      <p>设计令牌 + ASCII 线框 + 交互规范</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/app/decisions.html?project=dxm-conversation-intel" target="_blank">
+      <div class="icon">✅</div>
+      <h3>决策板</h3>
+      <p>5 个决策点完整追溯 · 用户选择 + 支持/反对者立场 + 下游影响</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/app/status.html?project=dxm-conversation-intel" target="_blank">
+      <div class="icon">📊</div>
+      <h3>项目总览</h3>
+      <p>流水线进度 · 阶段时间线 · 事件日志 · 30+ 条操作记录</p>
+    </a>
+
+    <a class="nav-card" href="../workspace/projects/dxm-conversation-intel/stages/04-UI交互原型.html" target="_blank">
+      <div class="icon">🎨</div>
+      <h3>最终原型（单文件）</h3>
+      <p>1534 行交互式 HTML · 7 个页面 · 12 条对话 · 5 个 Prompt · 键盘快捷键</p>
+    </a>
+
+    <a class="nav-card" href="http://localhost:3000/api/projects/dxm-conversation-intel/status" target="_blank">
+      <div class="icon">🔌</div>
+      <h3>API 数据接口</h3>
+      <p>JSON 格式 meta 数据 · 可被任何前端消费</p>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p><strong>数据位置</strong>：<code>C:\Users\zhangjinyao01_dxm\aipm-project\workspace\projects\dxm-conversation-intel\</code></p>
+    <p style="margin-top: 8px;">后端服务运行于 <code>localhost:3000</code> · 已运行 19+ 小时</p>
+    <p style="margin-top: 16px; color: #a0aec0;">🎭 演示时选择任意圆桌会议入口，展示五人数字人实时互动 + SSE 流式播放</p>
+  </div>
+</div>
+
+<script>
+// 预检后端可用性
+fetch('http://localhost:3000/api/health')
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      console.log('✅ AIPM 后端在线：', d.data);
+    }
+  })
+  .catch(() => {
+    const warn = document.createElement('div');
+    warn.style = 'position:fixed;top:20px;right:20px;background:#fed7d7;color:#c53030;padding:16px 24px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1);font-size:14px;max-width:300px;';
+    warn.innerHTML = '<strong>⚠️ 后端未响应</strong><br>请确认 <code>localhost:3000</code> 在运行';
+    document.body.appendChild(warn);
+  });
+</script>
+
+</body>
+</html>

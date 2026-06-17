@@ -1,0 +1,80 @@
+{
+  "stage": "00",
+  "artifact": "C:/Users/zhangjinyao01_dxm/aipm-test-workspace/projects/大学生兼职App/00-需求头脑风暴设计.md",
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "好，阶段0 的头脑风暴产出了基础定义——这是一个面向大学生的兼职信息 App。我们用一轮评审会挑战一下。**顾清，先从市场和数据说起。**"
+    },
+    {
+      "time": "T1",
+      "speaker": "gu-qing",
+      "speakerName": "顾清",
+      "type": "main_speech",
+      "content": "我看到的是这样的——基于 App Store CN 实时数据：青团社 ⭐3.7（8446 评分），兼职猫 ⭐3.9（7151 评分），远低于综合招聘 App（58同城 ⭐4.6）。⚠️ 数据缺口：评论 RSS 已失效，本次无法拿到差评原文。基于评分推断，\"信任\"是核心问题——置信度 60%。"
+    },
+    {
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "interrupt",
+      "content": "啊？这个我不会用啊——数字对我没用，我要看到具体的人。",
+      "interrupted": "gu-qing"
+    },
+    {
+      "speaker": "gu-qing",
+      "speakerName": "顾清",
+      "type": "response_to_interrupt",
+      "content": "好问题，我修正置信度——对大一/大二的市场验证，仅 50% 置信度。"
+    },
+    {
+      "time": "T2",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "我说我的第一反应——我大一找兼职靠学姐推荐、闲鱼、店里直接问。装你的 App 我得先卸一个别的。30 秒测试：你 App 第一眼如果不是\"我认识的学姐也在用\"，我大概率 30 秒内卸载。"
+    },
+    {
+      "time": "T3",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "基于顾清的数据和张磊的体感，我从设计层说几点——✅ 把\"靠谱\"作为关键词方向正确。❌ 首页信息架构有问题，\"已结算订单数\"对大学生太抽象，建议改成社交背书。⚠️ 想讨论：你选了橙色系，这要和青团社（也是橙色）正面刚，差异化不明显，要不要换色？"
+    },
+    {
+      "time": "T4",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "苏予提的社交背书，我说一下技术成本——10-20 天工时 + PIPL 隐私合规风险。建议 MVP 改成\"本校已有 XX 人用过\"，3 天能上。整体 MVP 工时：乐观 35 天 / 中位 50 天 / 悲观 70 天。建议砍掉 AI 智能推荐和积分体系。"
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "好，评审会结束。我听到了几个关键点——\n\n✅ **共识**：信任是这个赛道核心问题；MVP 不做资金托管。\n❓ **分歧**：首页第一屏放什么？大一/大二 vs 全体大学生？\n⚠️ **风险**：用户评价系统易被刷；社交背书有隐私合规风险。\n\n现在有 3 个决策点需要你拍板：\n\n**决策点1：目标用户是否收窄到大一/大二？**\n- 选项A：收窄\n- 选项B：扩大到全体大学生\n- 建议：选 B\n\n**决策点2：首页第一屏放什么？**\n- 选项A：已结算订单数 + 评分\n- 选项B：社交背书\n- 选项C：本校使用人数\n\n**决策点3：用户评价做到什么程度？**\n- 选项A：完整评价系统\n- 选项B：仅评分\n\n你选？"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-1",
+      "question": "目标用户是否收窄到大一/大二？"
+    },
+    {
+      "id": "decision-2",
+      "question": "首页第一屏放什么？"
+    },
+    {
+      "id": "decision-3",
+      "question": "用户评价做到什么程度？"
+    }
+  ],
+  "metadata": {
+    "totalSpeaks": 8,
+    "interrupts": 1,
+    "duration": null
+  }
+}

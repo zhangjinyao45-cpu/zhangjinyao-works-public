@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIPM · 阶段执行中</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wood-darkest: #1a0f08;
+      --wood-dark: #2a1a0f;
+      --brass: #c89943;
+      --brass-light: #d4af37;
+      --paper: #f4ecd8;
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      --font-serif-zh: 'Noto Serif SC', serif;
+      --font-sans-zh: 'Noto Sans SC', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans-zh);
+      background: linear-gradient(180deg, var(--wood-darkest), var(--wood-dark));
+      color: var(--paper);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
+      padding: 20px;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--brass-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .stage-label {
+      font-family: var(--font-display);
+      color: var(--brass);
+      letter-spacing: 0.3em;
+      font-size: 13px;
+    }
+    .message {
+      font-family: var(--font-serif-zh);
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .sub {
+      color: rgba(244, 236, 216, 0.6);
+      font-size: 14px;
+      text-align: center;
+    }
+    .error-box {
+      background: rgba(200, 50, 50, 0.15);
+      border: 1px solid rgba(200, 50, 50, 0.3);
+      border-radius: 6px;
+      padding: 16px 20px;
+      max-width: 500px;
+      text-align: center;
+      color: #ffcccc;
+      display: none;
+    }
+    .error-box.show { display: block; }
+    .btn-retry {
+      margin-top: 16px;
+      background: linear-gradient(180deg, var(--brass-light), var(--brass));
+      border: 0;
+      color: #20140c;
+      font-family: var(--font-serif-zh);
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.12em;
+    }
+  </style>
+</head>
+<body>
+  <div class="spinner" id="spinner"></div>
+  <div class="stage-label" id="stageLabel">STAGE --</div>
+  <div class="message" id="message">正在启动阶段...</div>
+  <div class="sub" id="sub">AI 生成文档通常需要 1-3 分钟，请耐心等待</div>
+  <div class="error-box" id="errorBox"></div>
+
+  <script>
+    const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin) + '/api';
+    const params = new URLSearchParams(location.search);
+    const projectId = params.get('project');
+    const stage = params.get('stage');
+    const skipReview = params.get('skipReview') === 'true';
+
+    const stageNames = {
+      '00': '需求头脑风暴', '00.5': '竞品分析', '01': '提示增强',
+      '02': 'PRD', '03': '线框图', '04': '高保真原型',
+    };
+    const stageRoles = {
+      '01': '周明正在整理增强提示词...',
+      '02': '周明正在撰写产品需求文档...',
+      '03': '苏予正在绘制线框图与交互规范...',
+      '04': '苏予正在生成高保真交互原型...',
+    };
+
+    document.getElementById('stageLabel').textContent = `STAGE ${stage || '--'}`;
+
+    if (!projectId || !stage) {
+      document.getElementById('message').textContent = '缺少参数';
+      document.getElementById('spinner').style.display = 'none';
+    } else {
+      runStage();
+    }
+
+    async function runStage() {
+      const msg = stageRoles[stage] || `正在执行阶段 ${stage}...`;
+      document.getElementById('message').textContent = msg;
+
+      // 根据阶段显示不同的耗时提示
+      const timeHints = {
+        '00.5': '顾清检索竞品数据通常需要 1-2 分钟',
+        '01': '周明整理增强提示词通常需要 1-2 分钟',
+        '02': '周明撰写 PRD 通常需要 1-3 分钟',
+        '03': '苏予绘制线框图通常需要 1-3 分钟',
+        '04': '苏予生成高保真原型通常需要 3-10 分钟，请耐心等待',
+      };
+      document.getElementById('sub').textContent = timeHints[stage] || 'AI 生成文档通常需要 1-3 分钟，请耐心等待';
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ useMock: false }),
+        });
+        const result = await res.json();
+
+        if (!result.success) {
+          throw new Error(result.error?.message || result.message || '阶段执行失败');
+        }
+
+        document.getElementById('message').textContent = '阶段产物已生成！';
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('sub').textContent = '即将进入评审会...';
+
+        // 根据阶段决定是否需要评审
+        // 只有 Stage 00 和 02 需要圆桌评审
+        const REVIEW_STAGES = ['00', '02'];
+        const needReview = !skipReview && REVIEW_STAGES.includes(stage);
+
+        // 短暂停顿后跳转
+        await new Promise(r => setTimeout(r, 800));
+
+        if (skipReview || !needReview) {
+          // 跳过评审，直接推进到下一阶段
+          document.getElementById('sub').textContent = '本阶段无需评审，自动推进到下一阶段...';
+          const advRes = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/advance`, {
+            method: 'POST',
+          });
+          const advResult = await advRes.json();
+          const nextStage = advResult.data?.nextStage;
+
+          if (nextStage) {
+            // 下一阶段是否需要评审
+            const nextNeedReview = REVIEW_STAGES.includes(nextStage);
+          if (nextStage === '00.5') {
+            location.href = `workbench.html?project=${encodeURIComponent(projectId)}&stage=00.5`;
+          } else if (nextNeedReview) {
+            location.href = `stage-run.html?project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(nextStage)}&skipReview=false`;
+          } else {
+            location.href = `workbench.html?project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(nextStage)}`;
+          }
+          } else {
+            location.href = `status.html?project=${encodeURIComponent(projectId)}`;
+          }
+        } else {
+          // 需要评审：进入圆桌
+          location.href = `theatre.html?mode=review&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(stage)}`;
+        }
+      } catch (err) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('message').textContent = '执行失败';
+        const errorBox = document.getElementById('errorBox');
+        errorBox.textContent = err.message;
+        errorBox.classList.add('show');
+        document.getElementById('sub').innerHTML = `
+          <button class="btn-retry" onclick="location.href='status.html?project=${encodeURIComponent(projectId)}'">返回状态页</button>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

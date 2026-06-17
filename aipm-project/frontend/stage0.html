@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIPM · 阶段 0 · 需求头脑风暴</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f08; --bg2: #2a1a0f; --brass: #c89943; --brass-l: #d4af37;
+      --paper: #f4ecd8; --paper-soft: rgba(244,236,216,.72); --line: rgba(212,175,55,.2);
+      --font-d: 'Cormorant Garamond','Noto Serif SC',serif;
+      --font-zh: 'Noto Serif SC',serif; --font-s: 'Noto Sans SC',sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:var(--font-s); background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--paper); min-height:100vh; display:flex; flex-direction:column; }
+    .header { padding:24px 24px 0; text-align:center; }
+    .eyebrow { font-family:var(--font-d); color:var(--brass); letter-spacing:.4em; font-size:12px; margin-bottom:8px; }
+    .title { font-family:var(--font-zh); font-size:clamp(22px,4vw,32px); font-weight:900; }
+    .rule { width:160px; height:1px; background:linear-gradient(90deg,transparent,var(--brass),transparent); margin:12px auto; }
+    .progress-bar { max-width:760px; width:100%; margin:0 auto; padding:0 20px; }
+    .progress-track { height:3px; background:rgba(212,175,55,.15); border-radius:2px; overflow:hidden; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--brass),var(--brass-l)); transition:width .5s ease; border-radius:2px; }
+    .progress-text { font-size:12px; color:var(--paper-soft); margin-top:6px; text-align:center; }
+
+    .main { flex:1; max-width:760px; width:100%; margin:0 auto; padding:20px; padding-bottom:120px; }
+
+    /* Dimension header */
+    .dim-header { margin-bottom:20px; animation:fadeIn .4s ease; }
+    .dim-id { font-family:var(--font-d); font-size:13px; color:var(--brass); letter-spacing:.3em; margin-bottom:4px; }
+    .dim-name { font-family:var(--font-zh); font-size:22px; font-weight:900; }
+
+    /* Intro card */
+    .intro-card { padding:20px 24px; background:rgba(244,236,216,.06); border:1px solid var(--line); border-left:3px solid var(--brass); border-radius:4px; margin-bottom:24px; line-height:1.8; font-size:15px; white-space:pre-line; }
+
+    /* Question area with animation */
+    .question-area { animation:fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .q-number { font-family:var(--font-d); font-size:12px; color:var(--brass); letter-spacing:.2em; margin-bottom:6px; }
+    .q-text { font-family:var(--font-zh); font-size:18px; font-weight:700; line-height:1.6; margin-bottom:16px; }
+
+    /* Previous answer summary */
+    .prev-answer { padding:12px 16px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.15); border-radius:4px; margin-bottom:18px; font-size:13px; }
+    .prev-label { color:var(--brass); font-weight:600; margin-bottom:4px; }
+    .prev-text { color:var(--paper); }
+
+    /* Options */
+    .options { display:flex; flex-direction:column; gap:10px; }
+    .opt-btn {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:14px 18px; background:rgba(244,236,216,.04);
+      border:1px solid rgba(212,175,55,.15); border-radius:6px;
+      cursor:pointer; transition:all .2s; text-align:left; width:100%;
+      font-family:var(--font-s); font-size:15px; color:var(--paper);
+    }
+    .opt-btn:hover { background:rgba(244,236,216,.08); border-color:rgba(212,175,55,.35); transform:translateX(4px); }
+    .opt-btn.selected { background:rgba(212,175,55,.14); border-color:var(--brass-l); }
+    .opt-btn.multi-selected { background:rgba(212,175,55,.14); border-color:var(--brass-l); }
+    .opt-check { width:20px; height:20px; min-width:20px; border:1.5px solid rgba(212,175,55,.4); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-top:1px; transition:all .2s; }
+    .opt-btn.multi .opt-check { border-radius:4px; }
+    .opt-btn.selected .opt-check, .opt-btn.multi-selected .opt-check { background:var(--brass-l); border-color:var(--brass-l); }
+    .opt-btn.selected .opt-check::after, .opt-btn.multi-selected .opt-check::after { content:'✓'; font-size:12px; color:#201408; font-weight:700; }
+    .opt-content { flex:1; }
+    .opt-label { font-weight:600; margin-bottom:2px; }
+    .opt-desc { font-size:13px; color:var(--paper-soft); }
+
+    /* Text input */
+    .text-input {
+      width:100%; min-height:100px; padding:14px 18px;
+      background:rgba(244,236,216,.06); border:1px solid rgba(212,175,55,.25);
+      color:var(--paper); font-family:var(--font-s); font-size:15px;
+      border-radius:6px; resize:vertical; line-height:1.7;
+    }
+    .text-input:focus { outline:none; border-color:var(--brass-l); }
+    .text-input::placeholder { color:rgba(244,236,216,.3); }
+    .multi-hint { font-size:12px; color:var(--paper-soft); margin-bottom:8px; }
+
+    /* Loading */
+    .loading { text-align:center; padding:40px 20px; }
+    .loading-dots::after { content:''; animation:dots 1.5s steps(4,end) infinite; }
+    @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
+
+    /* Review summary */
+    .review-dim { font-family:var(--font-zh); font-size:16px; font-weight:700; color:var(--brass-l); margin-bottom:8px; margin-top:16px; }
+    .review-a { font-size:14px; line-height:1.8; padding-left:16px; }
+    .review-a .q { color:var(--paper-soft); }
+    .review-a .a { color:var(--brass-l); font-weight:500; }
+
+    /* Bottom bar */
+    .bottom-bar { position:fixed; bottom:0; left:0; right:0; background:rgba(26,15,8,.96); border-top:1px solid var(--line); backdrop-filter:blur(14px); padding:16px 20px; }
+    .bottom-inner { max-width:760px; margin:0 auto; display:flex; gap:12px; align-items:center; }
+    .btn { border:0; border-radius:4px; padding:12px 24px; font-family:var(--font-zh); font-weight:700; letter-spacing:.12em; cursor:pointer; transition:transform .2s,opacity .2s; white-space:nowrap; font-size:14px; }
+    .btn:hover:not(:disabled) { transform:translateY(-1px); }
+    .btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+    .btn-prev { background:transparent; color:var(--paper-soft); border:1px solid rgba(212,175,55,.2); }
+    .btn-next { background:linear-gradient(180deg,var(--brass-l),var(--brass)); color:#201408; flex:1; }
+    .btn-finish { background:linear-gradient(180deg,#4ade80,#22c55e); color:#052e16; flex:1; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="eyebrow">PHASE · 00</div>
+    <h1 class="title">需求头脑风暴</h1>
+    <div class="rule"></div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">加载中...</div>
+  </div>
+  <div class="main" id="main"></div>
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <button class="btn btn-prev" id="btnPrev" disabled>上一题</button>
+      <button class="btn btn-next" id="btnNext" disabled>开始回答</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin) + '/api';
+    const params = new URLSearchParams(location.search);
+    const projectId = params.get('project');
+
+    const mainEl = document.getElementById('main');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    let currentQ = null;   // { id, question, type, options, dimId, dimName, totalQuestions, currentIndex }
+    let answerHistory = []; // [{ questionId, answer }]
+    let questionCache = {}; // idx -> question data (for back navigation)
+    let intro = '';
+
+    if (!projectId) {
+      mainEl.innerHTML = '<div class="intro-card">缺少项目参数，请从启动页重新进入。</div>';
+    } else {
+      loadFirstQuestion();
+    }
+
+    async function loadFirstQuestion() {
+      mainEl.innerHTML = '<div class="loading">周明正在准备<span class="loading-dots"></span></div>';
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00/first-question`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '获取问题失败');
+        currentQ = result.data;
+        intro = currentQ.intro || '';
+        questionCache[currentQ.currentIndex] = currentQ;
+        renderIntro();
+      } catch (err) {
+        mainEl.innerHTML = `<div class="intro-card">加载失败：${err.message}</div>`;
+      }
+    }
+
+    function renderIntro() {
+      progressText.textContent = '准备开始';
+      progressFill.style.width = '0%';
+      mainEl.innerHTML = `
+        <div class="dim-header"><div class="dim-id">周明 · LEAD PM</div><div class="dim-name">开始之前</div></div>
+        <div class="intro-card">${intro}</div>
+      `;
+      btnPrev.disabled = true;
+      btnNext.textContent = '开始回答';
+      btnNext.className = 'btn btn-next';
+      btnNext.disabled = false;
+      btnNext.onclick = () => { renderQuestion(currentQ); };
+    }
+
+    function renderQuestion(q) {
+      currentQ = q;
+      const total = q.totalQuestions;
+      const idx = q.currentIndex;
+      progressFill.style.width = ((idx + 1) / total * 100).toFixed(0) + '%';
+      progressText.textContent = `${idx + 1} / ${total} · ${q.dimName}`;
+
+      const isMulti = q.type === 'multi_choice';
+      const isText = q.type === 'text';
+      const currentAnswer = getAnswer(q.id);
+
+      let html = `<div class="question-area">`;
+      html += `<div class="dim-header"><div class="dim-id">DIMENSION ${q.dimId}</div><div class="dim-name">${q.dimName}</div></div>`;
+      html += `<div class="q-number">${q.id}</div>`;
+      html += `<div class="q-text">${q.question}</div>`;
+
+      if (isText) {
+        html += `<textarea class="text-input" id="textAnswer" placeholder="请输入你的回答...">${currentAnswer || ''}</textarea>`;
+      } else {
+        if (isMulti) html += `<div class="multi-hint">可多选，选完点「下一题」</div>`;
+        html += `<div class="options" id="optionsContainer">`;
+        for (const opt of q.options || []) {
+          const selected = isMulti
+            ? (Array.isArray(currentAnswer) && currentAnswer.includes(opt.id))
+            : (currentAnswer === opt.id);
+          html += `<button class="opt-btn ${isMulti ? 'multi' : ''} ${selected ? (isMulti ? 'multi-selected' : 'selected') : ''}" data-opt-id="${opt.id}">
+            <div class="opt-check"></div>
+            <div class="opt-content">
+              <div class="opt-label">${opt.label}</div>
+              ${opt.description ? `<div class="opt-desc">${opt.description}</div>` : ''}
+            </div>
+          </button>`;
+        }
+        html += `</div>`;
+      }
+      html += `</div>`;
+
+      mainEl.innerHTML = html;
+      bindQuestionEvents(q);
+      updateNavButtons();
+    }
+
+    function bindQuestionEvents(q) {
+      const isText = q.type === 'text';
+      const isMulti = q.type === 'multi_choice';
+
+      if (isText) {
+        const ta = document.getElementById('textAnswer');
+        if (ta) ta.addEventListener('input', () => { setAnswer(q.id, ta.value); updateNavButtons(); });
+      } else {
+        const container = document.getElementById('optionsContainer');
+        if (container) {
+          container.addEventListener('click', (e) => {
+            const btn = e.target.closest('.opt-btn');
+            if (!btn) return;
+            const optId = btn.dataset.optId;
+
+            if (isMulti) {
+              let arr = getAnswer(q.id) || [];
+              if (!Array.isArray(arr)) arr = [];
+              if (arr.includes(optId)) {
+                arr = arr.filter(x => x !== optId);
+                btn.classList.remove('multi-selected');
+              } else {
+                arr.push(optId);
+                btn.classList.add('multi-selected');
+              }
+              setAnswer(q.id, arr);
+            } else {
+              setAnswer(q.id, optId);
+              container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+              btn.classList.add('selected');
+              // 单选自动跳下一题（300ms 延迟让用户看到选中效果）
+              setTimeout(() => goNext(), 300);
+            }
+            updateNavButtons();
+          });
+        }
+      }
+    }
+
+    function getAnswer(qid) {
+      const entry = answerHistory.find(a => a.questionId === qid);
+      return entry ? entry.answer : undefined;
+    }
+
+    function setAnswer(qid, value) {
+      const idx = answerHistory.findIndex(a => a.questionId === qid);
+      if (idx >= 0) answerHistory[idx].answer = value;
+      else answerHistory.push({ questionId: qid, answer: value });
+    }
+
+    function updateNavButtons() {
+      if (!currentQ) return;
+      const hasAnswer = getAnswer(currentQ.id);
+      btnPrev.disabled = currentQ.currentIndex === 0;
+      btnNext.textContent = currentQ.type === 'text' ? '下一题' : (currentQ.type === 'single_choice' ? '下一题' : '确认并继续');
+      btnNext.className = 'btn btn-next';
+      btnNext.disabled = !hasAnswer;
+      btnNext.onclick = goNext;
+    }
+
+    async function goNext() {
+      // 保存文本输入
+      if (currentQ?.type === 'text') {
+        const ta = document.getElementById('textAnswer');
+        if (ta) setAnswer(currentQ.id, ta.value);
+      }
+
+      const nextIdx = currentQ.currentIndex + 1;
+
+      // 检查是否已到最后一题
+      if (nextIdx >= currentQ.totalQuestions) {
+        renderReview();
+        return;
+      }
+
+      // 如果缓存有下一题（回退过的），直接显示
+      if (questionCache[nextIdx]) {
+        renderQuestion(questionCache[nextIdx]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // 动态加载下一题
+      mainEl.innerHTML = `<div class="loading"><div class="dim-header"><div class="dim-id">周明正在分析你的回答</div></div><span class="loading-dots"></span></div>`;
+      btnNext.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00/next-question`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answerHistory, currentIndex: currentQ.currentIndex }),
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '获取问题失败');
+
+        if (result.data.done) {
+          renderReview();
+          return;
+        }
+
+        currentQ = result.data;
+        questionCache[currentQ.currentIndex] = currentQ;
+        renderQuestion(currentQ);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        mainEl.innerHTML = `<div class="intro-card">加载下一题失败：${err.message}\n\n请重试。</div>`;
+        btnNext.disabled = false;
+      }
+    }
+
+    function goPrev() {
+      if (!currentQ || currentQ.currentIndex <= 0) return;
+      const prevIdx = currentQ.currentIndex - 1;
+      if (questionCache[prevIdx]) {
+        renderQuestion(questionCache[prevIdx]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    btnPrev.addEventListener('click', goPrev);
+
+    function renderReview() {
+      progressFill.style.width = '100%';
+      progressText.textContent = '确认你的回答';
+
+      // Rebuild dimensions from answerHistory + cache
+      const dimMap = {};
+      for (const [idx, q] of Object.entries(questionCache)) {
+        if (!dimMap[q.dimId]) dimMap[q.dimId] = { id: q.dimId, name: q.dimName, items: [] };
+        const ans = getAnswer(q.id);
+        let ansText = '';
+        if (q.type === 'text') {
+          ansText = ans || '（未填写）';
+        } else if (q.type === 'multi_choice') {
+          const labels = (q.options || []).filter(o => Array.isArray(ans) && ans.includes(o.id)).map(o => o.label);
+          ansText = labels.length ? labels.join('、') : '（未选择）';
+        } else {
+          const opt = (q.options || []).find(o => o.id === ans);
+          ansText = opt ? opt.label : '（未选择）';
+        }
+        dimMap[q.dimId].items.push({ question: q.question, answer: ansText });
+      }
+
+      let html = `<div class="dim-header"><div class="dim-id">DIMENSION F</div><div class="dim-name">确认收敛</div></div>`;
+      html += `<div class="intro-card">我来总结一下已经确认的内容：</div>`;
+
+      for (const dim of Object.values(dimMap)) {
+        html += `<div class="review-dim">${dim.id}. ${dim.name}</div>`;
+        for (const item of dim.items) {
+          html += `<div class="review-a"><span class="q">${item.question}</span><br><span class="a">${item.answer}</span></div>`;
+        }
+      }
+
+      html += `<div class="intro-card" style="margin-top:20px">这些理解对吗？点「提交并生成文档」让周明整理成正式需求文档。</div>`;
+      mainEl.innerHTML = html;
+
+      btnPrev.disabled = false;
+      btnNext.textContent = '提交并生成文档';
+      btnNext.className = 'btn btn-finish';
+      btnNext.disabled = false;
+      btnNext.onclick = submitAnswers;
+    }
+
+    async function submitAnswers() {
+      btnNext.disabled = true;
+      btnPrev.disabled = true;
+      mainEl.innerHTML = '<div class="loading">周明正在整理需求文档，通常需要 1-3 分钟<span class="loading-dots"></span></div>';
+      progressText.textContent = '正在生成文档...';
+
+      try {
+        // Use AbortController for a 600s timeout (backend needs up to 10min for generation)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 600000);
+
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/00/answers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: answerHistory }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          const errBody = await res.text();
+          let errMsg = `服务器错误 (${res.status})`;
+          try { const ej = JSON.parse(errBody); errMsg = ej.error?.message || errMsg; } catch {}
+          throw new Error(errMsg);
+        }
+
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '生成失败');
+        progressText.textContent = '需求文档已生成，正在进入评审会...';
+        location.href = `theatre.html?mode=review&project=${encodeURIComponent(projectId)}&stage=00`;
+      } catch (err) {
+        const isTimeout = err.name === 'AbortError';
+        const msg = isTimeout
+          ? '生成超时（超过 200 秒），服务器可能仍在处理。请稍后刷新页面查看结果，或重试。'
+          : `生成失败：${err.message}\n\n请重试。`;
+        mainEl.innerHTML = `<div class="intro-card">${msg}</div>`;
+        btnNext.disabled = false;
+        btnPrev.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "decision-001": {
+    "stage": "00",
+    "choice": "A",
+    "rationale": "灵魂功能不砍",
+    "decidedAt": "2026-06-16T11:08:00Z"
+  },
+  "decision-002": {
+    "stage": "00",
+    "choice": "A",
+    "rationale": "员工 8 小时使用低疲劳",
+    "decidedAt": "2026-06-16T11:08:00Z"
+  },
+  "decision-003": {
+    "stage": "00",
+    "choice": "B",
+    "rationale": "与红色拉开识别度",
+    "decidedAt": "2026-06-16T11:08:00Z"
+  },
+  "00.5-decision-001": {
+    "stage": "00.5",
+    "choice": "B",
+    "rationale": "灵魂功能不能弱化",
+    "decidedAt": "2026-06-16T11:42:00Z"
+  },
+  "00.5-decision-002": {
+    "stage": "00.5",
+    "choice": "A",
+    "rationale": "员工扫描简洁优先",
+    "decidedAt": "2026-06-16T11:42:00Z"
+  }
+}

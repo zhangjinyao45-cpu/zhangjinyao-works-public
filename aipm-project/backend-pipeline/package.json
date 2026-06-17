@@ -1,0 +1,21 @@
+{
+  "name": "aipm-pipeline",
+  "version": "0.1.0",
+  "description": "AIPM 流水线总控服务器（D7）",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "@fastify/cors": "^9.0.1",
+    "@fastify/static": "^7.0.1",
+    "fastify": "^4.26.2",
+    "pino-pretty": "^13.1.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

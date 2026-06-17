@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\zhangjinyao01_dxm\\\\aipm-project\")",
+      "Bash(node *)",
+      "Bash(where node *)",
+      "Bash(where python *)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s --max-time 3 \"http://localhost:3000/api/health\")",
+      "Bash(curl -s --max-time 3 \"http://localhost:3000/\")",
+      "Bash(curl -s --max-time 5 \"http://localhost:3000/api/projects/dxm-conversation-intel/status\")",
+      "Bash(echo \"file:///C:/Users/zhangjinyao01_dxm/aipm-project/frontend/demo-dxm.html\")",
+      "Bash(curl *)",
+      "PowerShell(Start-Process -FilePath node -ArgumentList 'src/server.js' -WorkingDirectory 'C:\\\\Users\\\\zhangjinyao01_dxm\\\\aipm-project\\\\backend-pipeline' -WindowStyle Hidden; Start-Sleep -Seconds 4; Write-Host \"Started\")",
+      "PowerShell($body = '{\"history\":[],\"userMessage\":\"完全不相关的产品\"}'; $resp = Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest001/stage/00/chat\" -Method Post -Body $body -ContentType \"application/json\" -UseBasicParsing -TimeoutSec 15; $resp.Content.Substring\\(0, [Math]::Min\\(800, $resp.Content.Length\\)\\))",
+      "PowerShell($resp = Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest001/stage/00/chat/finish\" -Method Post -Body '{\"history\":[{\"role\":\"user\",\"content\":\"a\"},{\"role\":\"assistant\",\"content\":\"b\"},{\"role\":\"user\",\"content\":\"c\"},{\"role\":\"assistant\",\"content\":\"d\"},{\"role\":\"user\",\"content\":\"e\"},{\"role\":\"assistant\",\"content\":\"f\"},{\"role\":\"user\",\"content\":\"g\"}]}' -ContentType \"application/json\" -UseBasicParsing -TimeoutSec 15; $resp.Content)",
+      "PowerShell($resp = Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest001/review/00\" -Method Post -Body '{}' -ContentType \"application/json\" -UseBasicParsing -TimeoutSec 10; $resp.Content)",
+      "PowerShell($ProgressPreference = 'SilentlyContinue'; try { $resp = Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest001/review/00/stream\" -UseBasicParsing -TimeoutSec 60 } catch { Write-Host \"Timeout or done\" }; $resp.Content.Substring\\(0, [Math]::Min\\(600, $resp.Content.Length\\)\\))",
+      "Bash(cp -r frontend/data/dxm-conversation-intel/reviews/* workspace/projects/dxm-conversation-intel/reviews/)",
+      "Bash(cp -r frontend/data/dxm-conversation-intel/decisions/* workspace/projects/dxm-conversation-intel/decisions/)",
+      "Bash(cp frontend/data/dxm-conversation-intel/meta.json workspace/projects/dxm-conversation-intel/meta.json)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest002/stage/00/chat/finish\" -Method Post -Body '{\"history\":[{\"role\":\"user\",\"content\":\"a\"},{\"role\":\"assistant\",\"content\":\"b\"}]}' -ContentType \"application/json\" -UseBasicParsing -TimeoutSec 5)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000/api/projects/demoTest002/review/00\" -Method Post -Body '{}' -ContentType \"application/json\" -UseBasicParsing -TimeoutSec 5)"
+    ]
+  }
+}

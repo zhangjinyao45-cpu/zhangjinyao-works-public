@@ -1,0 +1,16 @@
+{
+  "answers": [
+    {"questionId":"A1","answer":"A1a"},{"questionId":"A2","answer":"A2a"},
+    {"questionId":"A3","answer":"A3a"},{"questionId":"A4","answer":"A4a"},
+    {"questionId":"B1","answer":"B1a"},{"questionId":"B2","answer":"B2b"},
+    {"questionId":"B3","answer":"B3b"},{"questionId":"B4","answer":"B4d"},
+    {"questionId":"B5","answer":"B5a"},{"questionId":"B6","answer":"B6a"},
+    {"questionId":"C1","answer":"C1a"},{"questionId":"C2","answer":"C2a"},
+    {"questionId":"C3","answer":"C3a"},{"questionId":"C4","answer":"C4a"},
+    {"questionId":"D1","answer":"D1a"},{"questionId":"D2","answer":"D2a"},
+    {"questionId":"D3","answer":"D3a"},{"questionId":"E1","answer":"E1a"},
+    {"questionId":"E2","answer":"E2a"},{"questionId":"E3","answer":"E3a"},
+    {"questionId":"E4","answer":"E4a"},
+    {"questionId":"F1","answer":"Focus on core book exchange for first version"}
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "stage": "00",
+  "pendingDecisions": [
+    {
+      "id": "decision-001",
+      "stage": "00",
+      "question": "MVP 范围：一次做完 vs 分两期？",
+      "background": "李航估算工程量 13 周但用户原计划 5-6 周；张磊认为画像+Prompt 是灵魂不能砍；苏予提出画像 V0.1 用规则版的折中方案。",
+      "options": [
+        {"id": "A", "label": "一次做完 8 个 P0", "description": "5-6 周乐观目标，灵魂功能不砍，工程压力大"},
+        {"id": "B", "label": "分两期", "description": "一期 4 周做对话分类工作流，二期 4 周做画像+Prompt"},
+        {"id": "C", "label": "全做但延长到 8 周；画像 V0.1 用规则版", "description": "灵魂保留，工程缓冲"}
+      ],
+      "recommendation": "C",
+      "status": "pending"
+    },
+    {
+      "id": "decision-002",
+      "stage": "00",
+      "question": "视觉风格：深色交易终端 vs 度小满浅色专业风？",
+      "options": [
+        {"id": "A", "label": "深色交易终端（点缀度小满蓝）"},
+        {"id": "B", "label": "度小满浅色专业风（白底+灰阶+蓝点缀）"}
+      ],
+      "recommendation": "A",
+      "status": "pending"
+    },
+    {
+      "id": "decision-003",
+      "stage": "00",
+      "question": "分类标签颜色：利率不满用橙色 vs 紫色？",
+      "options": [
+        {"id": "A", "label": "橙色 #F97316"},
+        {"id": "B", "label": "紫色 #8B5CF6"}
+      ],
+      "recommendation": "B",
+      "status": "pending"
+    }
+  ]
+}

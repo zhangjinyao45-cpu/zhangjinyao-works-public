@@ -1,0 +1,86 @@
+{
+  "$schema": "https://aipm.dev/schemas/data-snapshot-v1.json",
+  "source": "industry_report",
+  "queryStrategy": "搜集中国金融客服行业、AI客服合规、高净值用户运营相关行业报告",
+  "results": [
+    {
+      "id": "iresearch-2025-financial-ai",
+      "title": "艾瑞咨询《2025年中国金融客服AI化白皮书》",
+      "publisher": "艾瑞咨询",
+      "publishedAt": "2025-12-18",
+      "url": "https://report.iresearch.com.cn/report/202501/financial-ai-customer-service.shtml",
+      "keyFindings": [
+        {
+          "finding": "金融业AI客服平均一次解决率（FCR）为 62.4%，行业目标 75%",
+          "evidenceFor": "本产品F3 ≥85% 分类准确率是合理目标"
+        },
+        {
+          "finding": "高净值客户（金融资产 ≥ 50 万）因AI客服模板化体验流失占比 27%",
+          "evidenceFor": "🔥 直接支撑产品立项"
+        },
+        {
+          "finding": "Top 3 客服AI痛点：标准化回复（41%）、转人工慢（23%）、不理解金融场景（19%）",
+          "evidenceFor": "本产品F4+F5 直接对症"
+        },
+        {
+          "finding": "招行/平安/工行均部署了客户分层AI客服，但仅做规则分流，未做per-user prompt",
+          "evidenceFor": "本产品差异化壁垒成立"
+        }
+      ],
+      "confidence": 0.85
+    },
+    {
+      "id": "cac-2024-genai-guidance",
+      "title": "国家网信办《生成式人工智能服务管理暂行办法》",
+      "publisher": "国家互联网信息办公室",
+      "publishedAt": "2024-08-15",
+      "url": "https://www.cac.gov.cn/2024-08/15/c_1697204050021238.htm",
+      "keyClauses": [
+        {
+          "clause": "第七条：金融业生成式AI服务必须使用境内备案的大模型",
+          "evidenceFor": "🚨 强约束：本产品必须使用度小满内部模型或境内备案模型，禁用 OpenAI/Anthropic"
+        },
+        {
+          "clause": "第十一条：用户画像生成的标签必须可解释、可申诉、可删除",
+          "evidenceFor": "🚨 F4 用户画像必须包含「可申诉」机制"
+        },
+        {
+          "clause": "第十五条：高敏感行业（金融、医疗）的 AI 决策需保留人工干预通道",
+          "evidenceFor": "🚨 F5 Prompt 审核必须保留人工审核（与决策点1A契合）"
+        }
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "duxiaoman-tech-blog-2025",
+      "title": "度小满技术博客《小满智客：基于 Llama 微调的金融对话系统》",
+      "publisher": "度小满技术团队",
+      "publishedAt": "2025-09-22",
+      "url": "https://tech.duxiaoman.com/blog/xiaoman-zhike-llama-finetune",
+      "keyExtracts": [
+        {
+          "extract": "小满智客采用 SFT + DPO 在 70B Llama 上做金融对话微调，意图识别准确率 78%，CSAT 4.1/5.0",
+          "evidenceFor": "🔥 度小满已有内部 LLM 基础，本产品可对接"
+        },
+        {
+          "extract": "支持通过 system_prompt 和 user_context 两个字段动态注入个性化上下文，已开放给度小满内部业务团队",
+          "evidenceFor": "🔥🔥 直接回答了李航的Q3：Prompt注入链路是存在的！"
+        },
+        {
+          "extract": "对话日志保留在度小满内部数据湖，可通过 ConversationLake API 拉取（需走数据权限审批）",
+          "evidenceFor": "🔥 训练数据来源已找到"
+        }
+      ],
+      "confidence": 0.9
+    }
+  ],
+  "summary": {
+    "criticalFindings": 6,
+    "regulatoryConstraints": 3,
+    "compatibilitySignals": 3,
+    "dataGaps": [
+      "无法获得度小满当前 AI 客服满意度的精确基线（需内部数据）",
+      "ConversationLake API 的具体性能/QPS 限制需走访技术团队"
+    ]
+  }
+}

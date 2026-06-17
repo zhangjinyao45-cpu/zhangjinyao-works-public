@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品经理圆桌会议 · 工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night: #150d08;
+      --brown: #2b1c12;
+      --brass: #c89943;
+      --brass-light: #d4af37;
+      --mist: #f4ecd8;
+      --mist-soft: rgba(244, 236, 216, 0.76);
+      --line: rgba(212, 175, 55, 0.2);
+      --panel: rgba(244, 236, 216, 0.05);
+      --panel-strong: rgba(244, 236, 216, 0.08);
+      --green: #8dd8b0;
+      --orange: #f2bc6b;
+      --red: #f29b8d;
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      --font-serif-zh: 'Noto Serif SC', serif;
+      --font-sans-zh: 'Noto Sans SC', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-sans-zh);
+      color: var(--mist);
+      background:
+        radial-gradient(circle at top left, rgba(200, 153, 67, 0.08), transparent 30%),
+        linear-gradient(180deg, var(--night), var(--brown));
+      padding: 28px 20px 48px;
+    }
+    .shell { max-width: 1180px; margin: 0 auto; }
+
+    /* ── 顶栏 ── */
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+    .eyebrow {
+      font-family: var(--font-display);
+      color: var(--brass);
+      letter-spacing: 0.36em;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .title {
+      font-family: var(--font-serif-zh);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+    .subtitle {
+      max-width: 720px;
+      color: var(--mist-soft);
+      line-height: 1.8;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    /* ── 双栏网格 ── */
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* ── 面板 ── */
+    .panel {
+      background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+    }
+    .panel + .panel { margin-top: 18px; }
+    .panel-title {
+      font-family: var(--font-serif-zh);
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .muted { color: var(--mist-soft); line-height: 1.75; font-size: 14px; }
+
+    /* ── 元信息卡片 ── */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .meta-card {
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      padding: 14px;
+    }
+    .meta-k {
+      font-family: var(--font-display);
+      color: var(--brass);
+      letter-spacing: 0.24em;
+      font-size: 11px;
+      margin-bottom: 7px;
+    }
+    .meta-v { font-weight: 700; line-height: 1.55; }
+
+    /* ── 步骤进度 ── */
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      transition: border-color .3s, background .3s;
+    }
+    .step.active {
+      border-color: rgba(212, 175, 55, 0.45);
+      background: rgba(212, 175, 55, 0.06);
+    }
+    .step.done {
+      border-color: rgba(141, 216, 176, 0.3);
+      background: rgba(141, 216, 176, 0.04);
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      border: 1.5px solid var(--line);
+      color: var(--mist-soft);
+    }
+    .step.active .step-num {
+      border-color: var(--brass-light);
+      color: var(--brass-light);
+      background: rgba(212, 175, 55, 0.12);
+    }
+    .step.done .step-num {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(141, 216, 176, 0.12);
+    }
+    .step-label { font-weight: 600; line-height: 1.4; }
+    .step-desc { font-size: 12px; color: var(--mist-soft); }
+    .step-status {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .step-status.pending { color: var(--mist-soft); background: rgba(244, 236, 216, 0.06); }
+    .step-status.running { color: var(--brass-light); background: rgba(212, 175, 55, 0.12); }
+    .step-status.done { color: var(--green); background: rgba(141, 216, 176, 0.12); }
+    .step-status.error { color: var(--red); background: rgba(242, 155, 141, 0.12); }
+
+    /* ── 按钮 ── */
+    .button-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .primary-btn, .ghost-btn {
+      border-radius: 4px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-family: var(--font-serif-zh);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      transition: transform .2s, opacity .2s;
+    }
+    .primary-btn {
+      border: 0;
+      background: linear-gradient(180deg, var(--brass-light), var(--brass));
+      color: #20140c;
+    }
+    .ghost-btn {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--mist);
+    }
+    .primary-btn:hover, .ghost-btn:hover { transform: translateY(-1px); }
+    .primary-btn:disabled, .ghost-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── 状态条 ── */
+    .status-strip {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.14);
+      color: var(--mist-soft);
+      line-height: 1.75;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    .status-strip strong { color: var(--mist); }
+
+    /* ── 产物预览 ── */
+    .artifact-box {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.14);
+      white-space: pre-wrap;
+      line-height: 1.7;
+      max-height: 480px;
+      overflow: auto;
+      font-size: 13px;
+      color: var(--mist-soft);
+    }
+
+    /* ── 上一阶段摘要 ── */
+    .summary-box {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.14);
+      color: var(--mist-soft);
+      line-height: 1.75;
+      font-size: 14px;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    /* ── 加载动画 ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--brass-light);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .masthead, .grid { grid-template-columns: 1fr; }
+      .nav-actions { justify-content: flex-start; }
+      .meta-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="masthead">
+      <div>
+        <div class="eyebrow" id="eyebrow">STAGE -- · WORKBENCH</div>
+        <h1 class="title" id="title">工作台</h1>
+        <p class="subtitle" id="subtitle">正在加载...</p>
+      </div>
+      <div class="nav-actions">
+        <button class="ghost-btn" onclick="location.href='status.html?project='+encodeURIComponent(projectId)">返回状态页</button>
+        <button class="ghost-btn" onclick="location.href='start.html'">启动新项目</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- 左栏：上下文 + 步骤 -->
+      <div>
+        <div class="panel">
+          <h2 class="panel-title">项目上下文</h2>
+          <p class="muted" id="projectIdea">正在读取项目...</p>
+          <div class="meta-grid" id="metaGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">上一阶段摘要</h2>
+          <div class="summary-box" id="prevSummary">正在读取...</div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">执行步骤</h2>
+          <div class="steps" id="stepsContainer"></div>
+        </div>
+      </div>
+
+      <!-- 右栏：操作 + 产物 -->
+      <div>
+        <div class="panel">
+          <h2 class="panel-title">开始执行</h2>
+          <p class="muted" id="stageDesc">正在加载阶段信息...</p>
+          <div class="button-row" id="actionButtons"></div>
+          <div class="status-strip" id="runStatus">尚未启动。请点击上方按钮开始。</div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">阶段产物</h2>
+          <div class="artifact-box" id="artifactBox">产物尚未生成。</div>
+          <div class="button-row" id="nextButtons"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin) + '/api';
+    const params = new URLSearchParams(location.search);
+    const projectId = params.get('project');
+    const stage = params.get('stage');
+    const skipReview = params.get('skipReview') !== 'false'; // 默认跳过评审
+
+    // ── 阶段配置 ──
+    const STAGE_CONFIG = {
+      '00.5': {
+        eyebrow: 'STAGE 00.5 · GU QING WORKBENCH',
+        title: '顾清竞品数据工作台',
+        subtitle: '顾清会先把竞品、讨论和数据缺口铺出来，再交给圆桌评审。这里不是直接下结论，而是先把证据底盘做出来。',
+        owner: '顾清',
+        ownerRole: '数据分析师',
+        steps: [
+          { id: 'search', label: '检索竞品数据', desc: 'App Store / 应用市场竞品搜索' },
+          { id: 'scan', label: '扫描行业讨论', desc: 'Hacker News / 技术社区信号' },
+          { id: 'gaps', label: '标记数据缺口', desc: '识别需要补强的地方' },
+          { id: 'report', label: '生成竞品分析报告', desc: '结构化输出分析结论' },
+        ],
+        prevStage: '00',
+      },
+      '01': {
+        eyebrow: 'STAGE 01 · ZHOU MING WORKBENCH',
+        title: '周明提示增强工作台',
+        subtitle: '周明会把需求假设和竞品结论压缩成增强提示词，给下游的 PRD 和原型打好地基。',
+        owner: '周明',
+        ownerRole: 'Lead PM',
+        steps: [
+          { id: 'collect', label: '收集上游产出', desc: '读取需求文档 + 竞品报告' },
+          { id: 'extract', label: '提取核心约束', desc: '用户画像 / 差异化 / 功能范围' },
+          { id: 'compress', label: '压缩增强提示词', desc: '结构化 prompt 供下游使用' },
+        ],
+        prevStage: '00.5',
+      },
+      '02': {
+        eyebrow: 'STAGE 02 · ZHOU MING WORKBENCH',
+        title: '周明PRD工作台',
+        subtitle: '周明根据增强提示词撰写产品需求文档，明确功能范围、用户故事和验收标准。',
+        owner: '周明',
+        ownerRole: 'Lead PM',
+        steps: [
+          { id: 'prompt', label: '加载增强提示词', desc: '读取 Stage 01 产出' },
+          { id: 'structure', label: '搭建PRD骨架', desc: '功能模块 / 用户故事 / 信息架构' },
+          { id: 'detail', label: '填充需求细节', desc: '验收标准 / 状态定义 / 边界条件' },
+          { id: 'review', label: '生成PRD文档', desc: '结构化输出 PRD' },
+        ],
+        prevStage: '01',
+      },
+      '03': {
+        eyebrow: 'STAGE 03 · SU YU WORKBENCH',
+        title: '苏予线框图工作台',
+        subtitle: '苏予根据 PRD 绘制线框图与交互规范，定义页面布局、组件层级和状态流转。',
+        owner: '苏予',
+        ownerRole: '交互设计师',
+        steps: [
+          { id: 'prd', label: '解析PRD', desc: '提取页面清单 / 核心流程' },
+          { id: 'layout', label: '绘制页面线框', desc: 'ASCII 线框 + 组件层级' },
+          { id: 'interaction', label: '定义交互规范', desc: '状态 / 动效 / 边界情况' },
+          { id: 'document', label: '生成线框图文档', desc: '结构化输出线框规范' },
+        ],
+        prevStage: '02',
+      },
+      '04': {
+        eyebrow: 'STAGE 04 · SU YU WORKBENCH',
+        title: '苏予高保真原型工作台',
+        subtitle: '苏予根据线框规范生成高保真可交互 HTML 原型，这是流水线的最终产物。生成过程较长，预计需要 3-10 分钟。',
+        owner: '苏予',
+        ownerRole: '交互设计师',
+        steps: [
+          { id: 'wireframe', label: '读取线框规范', desc: '加载 Stage 03 产出' },
+          { id: 'framework', label: '搭建原型框架', desc: 'HTML/CSS 骨架 + 路由' },
+          { id: 'pages', label: '逐页填充内容', desc: '首页 / 列表 / 详情 / 个人中心' },
+          { id: 'prototype', label: '生成完整原型', desc: '单 HTML 可交互原型（约 3-10 分钟）' },
+        ],
+        prevStage: '03',
+      },
+    };
+
+    const stageNames = {
+      '00': '需求头脑风暴', '00.5': '竞品分析', '01': '提示增强',
+      '02': 'PRD', '03': '线框图', '04': '高保真原型',
+    };
+
+    let latestMeta = null;
+    let stepStates = {}; // stepId -> 'pending' | 'running' | 'done' | 'error'
+
+    if (!projectId || !stage || !STAGE_CONFIG[stage]) {
+      document.getElementById('projectIdea').textContent = '缺少参数或阶段不存在，请从状态页重新进入。';
+    } else {
+      init();
+    }
+
+    async function init() {
+      const cfg = STAGE_CONFIG[stage];
+      document.getElementById('eyebrow').textContent = cfg.eyebrow;
+      document.getElementById('title').textContent = cfg.title;
+      document.getElementById('subtitle').textContent = cfg.subtitle;
+      document.getElementById('stageDesc').textContent = `${cfg.owner}（${cfg.ownerRole}）将按步骤执行阶段 ${stage}「${stageNames[stage]}」。`;
+
+      // 初始化步骤状态
+      cfg.steps.forEach(s => stepStates[s.id] = 'pending');
+      renderSteps();
+      renderActionButtons();
+      renderNextButtons();
+
+      await loadStatus();
+      await loadPrevSummary();
+      await loadArtifact();
+    }
+
+    // ── 渲染步骤列表 ──
+    function renderSteps() {
+      const cfg = STAGE_CONFIG[stage];
+      const container = document.getElementById('stepsContainer');
+      container.innerHTML = cfg.steps.map((s, i) => {
+        const state = stepStates[s.id];
+        const stateClass = state === 'running' ? 'active' : state === 'done' ? 'done' : '';
+        const statusLabel = { pending: '等待', running: '执行中', done: '完成', error: '失败' }[state];
+        const statusClass = state;
+        return `<div class="step ${stateClass}">
+          <div class="step-num">${state === 'done' ? '✓' : i + 1}</div>
+          <div><div class="step-label">${s.label}</div><div class="step-desc">${s.desc}</div></div>
+          <div class="step-status ${statusClass}">${state === 'running' ? '<span class="spinner"></span>' : ''}${statusLabel}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderActionButtons() {
+      const container = document.getElementById('actionButtons');
+      container.innerHTML = `
+        <button class="primary-btn" id="runBtn" onclick="runStage()">开始执行</button>
+      `;
+    }
+
+    function renderNextButtons() {
+      const container = document.getElementById('nextButtons');
+      container.innerHTML = `
+        <button class="primary-btn" id="nextBtn" onclick="goNext()" disabled>继续下一阶段</button>
+      `;
+    }
+
+    // ── 加载状态 ──
+    async function loadStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/status`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message || '状态加载失败');
+        latestMeta = result.data;
+        renderMeta(latestMeta);
+      } catch (err) {
+        document.getElementById('projectIdea').textContent = `状态加载失败：${err.message}`;
+      }
+    }
+
+    function renderMeta(meta) {
+      document.getElementById('projectIdea').textContent = meta.idea || '暂无项目想法。';
+      const stageInfo = meta.stages?.[stage] || {};
+      document.getElementById('metaGrid').innerHTML = `
+        <div class="meta-card"><div class="meta-k">PROJECT</div><div class="meta-v">${escapeHtml(meta.name)}</div></div>
+        <div class="meta-card"><div class="meta-k">CURRENT</div><div class="meta-v">阶段 ${stage} · ${stageNames[stage]}</div></div>
+        <div class="meta-card"><div class="meta-k">OWNER</div><div class="meta-v">${STAGE_CONFIG[stage].owner} · ${STAGE_CONFIG[stage].ownerRole}</div></div>
+        <div class="meta-card"><div class="meta-k">STATUS</div><div class="meta-v">${stageInfo.status || '-'}</div></div>
+      `;
+    }
+
+    // ── 加载上一阶段摘要 ──
+    async function loadPrevSummary() {
+      const prevStage = STAGE_CONFIG[stage].prevStage;
+      if (!prevStage) {
+        document.getElementById('prevSummary').textContent = '没有上一阶段产出。';
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(prevStage)}/artifact?format=json`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message);
+        const content = result.data.content;
+        document.getElementById('prevSummary').textContent = content.substring(0, 600) + (content.length > 600 ? '...' : '');
+      } catch (err) {
+        document.getElementById('prevSummary').textContent = `上一阶段（${stageNames[prevStage]}）产出暂不可读：${err.message}`;
+      }
+    }
+
+    // ── 加载当前阶段产物 ──
+    async function loadArtifact() {
+      try {
+        const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/artifact?format=json`);
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error?.message);
+        const content = result.data.content;
+
+        if (stage === '04') {
+          document.getElementById('artifactBox').innerHTML = `
+            <div style="margin-bottom:12px;color:var(--brass-light);font-weight:700;">✅ 高保真交互原型已生成</div>
+            <div style="margin-bottom:12px;">单 HTML 原型，可直接在浏览器中打开查看效果。</div>
+            <button class="primary-btn" onclick="window.open('${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/04/artifact','_blank')" style="margin-top:8px;">打开交互原型</button>
+          `;
+        } else {
+          document.getElementById('artifactBox').textContent = content.substring(0, 2000) + (content.length > 2000 ? '\n\n... (内容已截断)' : '');
+        }
+
+        // 产物已存在，更新步骤为全部完成
+        STAGE_CONFIG[stage].steps.forEach(s => stepStates[s.id] = 'done');
+        renderSteps();
+        document.getElementById('nextBtn').disabled = false;
+        setStatus('done', '阶段产物已存在，可以直接进入下一阶段。');
+      } catch {
+        document.getElementById('artifactBox').textContent = '产物尚未生成。';
+      }
+    }
+
+    // ── 执行阶段 ──
+    async function runStage() {
+      const useMock = false;
+      const cfg = STAGE_CONFIG[stage];
+      document.getElementById('runBtn').disabled = true;
+
+      // 逐步更新步骤状态
+      for (let i = 0; i < cfg.steps.length; i++) {
+        const step = cfg.steps[i];
+
+        // 标记当前步骤为 running
+        stepStates[step.id] = 'running';
+        renderSteps();
+        setStatus('running', `${cfg.owner}正在${step.label}...（AI生成中，请耐心等待）`);
+
+        // 如果是最后一个步骤，真正执行 API 调用
+        if (i === cfg.steps.length - 1) {
+          try {
+            const res = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/run`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ useMock }),
+            });
+            const result = await res.json();
+            if (!result.success) throw new Error(result.error?.message || '执行失败');
+            stepStates[step.id] = 'done';
+          } catch (err) {
+            stepStates[step.id] = 'error';
+            setStatus('error', `执行失败：${err.message}。可点击开始执行重试`);
+            document.getElementById('runBtn').disabled = false;
+            renderSteps();
+            return;
+          }
+        } else {
+          // 前置步骤用延时模拟
+          await sleep(800 + Math.random() * 1200);
+          stepStates[step.id] = 'done';
+        }
+
+        renderSteps();
+      }
+
+      setStatus('done', `阶段 ${stage}「${stageNames[stage]}」已完成！`);
+      document.getElementById('nextBtn').disabled = false;
+      await loadArtifact();
+      await loadStatus();
+    }
+
+    // ── 进入下一阶段 ──
+    async function goNext() {
+      const REVIEW_STAGES = ['00', '02'];
+
+      // 先 advance 当前阶段
+      try {
+        const advRes = await fetch(`${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/${encodeURIComponent(stage)}/advance`, {
+          method: 'POST',
+        });
+        const advResult = await advRes.json();
+        if (!advResult.success) throw new Error(advResult.error?.message || '推进失败');
+
+        const nextStage = advResult.data?.nextStage;
+        if (!nextStage) {
+          location.href = `status.html?project=${encodeURIComponent(projectId)}`;
+          return;
+        }
+
+        // 如果下一阶段需要评审，跳转评审
+        if (REVIEW_STAGES.includes(nextStage)) {
+          location.href = `theatre.html?mode=review&project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(nextStage)}`;
+        } else if (nextStage === '00.5') {
+          location.href = `workbench.html?project=${encodeURIComponent(projectId)}&stage=00.5`;
+        } else {
+          // 下一阶段也用工作台
+          location.href = `workbench.html?project=${encodeURIComponent(projectId)}&stage=${encodeURIComponent(nextStage)}`;
+        }
+      } catch (err) {
+        setStatus('error', `推进失败：${err.message}`);
+      }
+    }
+
+    function setStatus(state, text) {
+      const el = document.getElementById('runStatus');
+      const icons = { running: '<span class="spinner"></span>', done: '✅ ', error: '❌ ' };
+      el.innerHTML = (icons[state] || '') + text;
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function escapeHtml(v) {
+      return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>

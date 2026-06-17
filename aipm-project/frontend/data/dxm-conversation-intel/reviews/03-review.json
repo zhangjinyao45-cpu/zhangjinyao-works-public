@@ -1,0 +1,86 @@
+{
+  "$schema": "https://aipm.dev/schemas/review-v1.json",
+  "stage": "03",
+  "stageName": "线框图与交互规范",
+  "artifactPath": "stages/03-线框图与交互规范.md",
+  "skillsLoaded": [
+    "aipm-pipeline",
+    "aipm-review-session",
+    "aipm-zhou-ming",
+    "aipm-su-yu",
+    "aipm-zhang-lei",
+    "aipm-li-hang",
+    "wireframe-prototyping"
+  ],
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "Stage 03 是给 Stage 04 做实现的最后蓝图。挑战三件事——视觉一致性、关键页面线框是否够细到能直接照着撸代码、有没有遗漏的状态/边缘场景。Stage 03 通常不产生用户决策，但今天如果发现重大问题，会回滚。",
+      "timestamp": 1750075800000,
+      "duration": 8000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T1",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "我自查一遍——\n\n✅ 设计令牌 9 类色板都有 CSS 变量名，可直接落代码；4 类徽章色 + 高净值金 + 接待速览三行描边都明确；\n✅ 三栏页面骨架 256/auto/360 + 顶部 64px，固定值已锁；\n✅ 7 个核心页面线框都给了 ASCII 线框图，重点在 Prompt 中心待审核 Tab 的三栏审核界面（与 Stage 00 共识对齐）；\n✅ 状态流转图给了对话和 Prompt 两套，Stage 04 实现时不会卡逻辑。\n\n我的两个自我修正：\n1. 「全局搜索框」放顶部导航栏中部，但 Stage 04 实现时容易做成纯装饰。建议加注「点击 / 唤起 + 真实 mock 搜索结果」；\n2. 数据看板 4 象限里的「Top 10 高频问题词云」，词云组件做起来麻烦——Stage 04 可以降级为「Top 10 列表 + 数字」，不影响信息传达。",
+      "timestamp": 1750075808000,
+      "duration": 24000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T2",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "我替员工把关 4 个核心页面——\n\n✅ 工作台首页：今日数据+待办+分布+动态，符合「我每天上班第一眼能看到什么」；\n✅ 对话列表：高密度行 + VIP 金竖条 + 4 类徽章，扫描友好；\n✅ 对话详情：左/中/右严格三栏，速览卡 + AI 总结紧凑放在右栏，没毛病；\n✅ 用户画像页：接待速览卡置顶，AI 总结+客服备注+申诉删除全在中区，员工不会迷路。\n\n⚠️ 一个隐患——「快捷键」只在 4.3 详情页提了，但 4.2 列表页 / 4.5 Prompt 中心都没列。员工换页就忘快捷键。建议在所有「数据密集型页面」底部加 1px 高度的快捷键提示条（和详情页同款）。\n\n再一个：4.7 数据看板没有「下载报表」入口。这是主管周报必备，建议右上角加个 [📥 导出 Excel]。",
+      "timestamp": 1750075832000,
+      "duration": 24000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T3",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "工程视角看可实现性——\n\n✅ Design Tokens 完整可直接转 CSS Variables；\n✅ 组件库 7 个核心组件给了盒子模型、变体、状态，Stage 04 单文件 HTML 可以直接 inline 实现；\n✅ Prompt 编辑区的语法高亮颜色都点名了，Stage 04 用 highlight.js 或纯 regex 都能实现；\n✅ 状态机图清晰，对话和 Prompt 的状态枚举都列全了。\n\n⚠️ 两点需在 Stage 04 实现时注意：\n1. 「骨架屏」要求和最终内容形态一致——Stage 04 单文件原型如果不做骨架屏，至少要做一个 200ms 内出现的 Loading 占位（避免空白闪烁）；\n2. 接待速览卡三行内描边各异（蓝/红/黄）——Stage 04 实现这个细节如果用 border 会增加 3px 内边距，建议改用 box-shadow inset 或 border-left + 透明 border-right 来对齐宽度，不然会出现「速览卡里三行不等宽」的视觉问题。\n\n这些都是实现 tip，不是 Stage 03 文档级修订。",
+      "timestamp": 1750075856000,
+      "duration": 24000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T4",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "main_speech",
+      "content": "我看 Stage 03 的合规体现——\n\n✅ 4.4 用户画像页底部的「申诉画像 / 删除画像」操作明确（[依据 CAC 第 11 条]）；\n✅ 4.5 Prompt 中心三栏（画像+对话+Prompt）保留人工干预通道（[依据 CAC 第 15 条]）；\n✅ Prompt 状态机包含「驳回」「回滚」分支，操作可逆。\n\n建议补一点——画像页的 AI 总结每条都标了「置信度 88%」之类的数字，但「申诉画像内容」按钮的位置在右上角偏小。如果用户对画像内容不满，应该让申诉按钮在画像内容的右下，触手可及。Stage 04 实现时可以微调位置，不必现在改文档。",
+      "timestamp": 1750075880000,
+      "duration": 18000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "Stage 03 评审通过，三项文档级修订纳入：\n1. 全局搜索框的「点击/唤起 + 真实 mock 搜索结果」要求；\n2. 列表页 + Prompt 中心底部加快捷键提示条；\n3. 数据看板加「导出 Excel」按钮；\n4. Top 10 词云降级为列表+数字（Stage 04 实现简化）；\n\n李航和顾青的实现 tips 已纳入 Stage 04 的实现强约束。\n\nStage 03 不产生用户决策点。直接进 Stage 04 高保真交互原型。",
+      "timestamp": 1750075898000,
+      "duration": 16000,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [],
+  "metadata": {
+    "totalSpeaks": 6,
+    "interrupts": 0,
+    "duration": 114000,
+    "tokenCost": 0.13,
+    "model": "claude-opus-4-8",
+    "createdAt": "2026-06-16T13:25:00Z"
+  }
+}

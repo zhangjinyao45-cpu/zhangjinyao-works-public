@@ -1,0 +1,106 @@
+{
+  "$schema": "https://aipm.dev/schemas/review-v1.json",
+  "stage": "02",
+  "stageName": "产品需求文档（PRD）",
+  "artifactPath": "stages/02-产品需求文档.md",
+  "skillsLoaded": [
+    "aipm-pipeline",
+    "aipm-review-session",
+    "aipm-zhou-ming",
+    "aipm-gu-qing",
+    "aipm-zhang-lei",
+    "aipm-su-yu",
+    "aipm-li-hang",
+    "prd"
+  ],
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "PRD 是给设计和工程交付物的最厚一份。今天评审挑战四件事——决策追溯是否完整、合规章节是否成立、风险登记是否可执行、北极星指标是否可量化。如果其中任何一件不成立，PRD 退回修订。",
+      "timestamp": 1750073400000,
+      "duration": 8000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T1",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "main_speech",
+      "content": "决策追溯：5 个决策点全部带 [依据 decision-XXX] 引用，且在第十一节给了完整附录 A 表格。我打 9 分。\n\n合规章节：CAC 三条强约束都进了 §6.4 数据合规表，并且映射到具体功能（F4 申诉/删除按钮、F5 单人审核、全链路境内大模型）。我打 9 分。\n\n北极星指标：⚠️ 一个 P0 阻塞项——「度小满当前 AI 客服 CSAT 基线缺失」。这个我在 §8 和 §9 都标了，但 PRD 必须明确「上线前必须采集 1 周基线数据」是 W0 任务，不能挤进 W1。建议 §10 里加一行 W0 准备项。",
+      "timestamp": 1750073408000,
+      "duration": 22000,
+      "confidence": 0.85,
+      "evidenceRefs": [
+        {
+          "source": "industry_report",
+          "snapshotPath": "data-snapshots/00.5-industry-reports.json",
+          "snapshotIndex": 1,
+          "originalUrl": "https://www.cac.gov.cn/2024-08/15/c_1697204050021238.htm",
+          "snippet": "CAC 第七条：金融业生成式AI服务必须使用境内备案的大模型"
+        }
+      ]
+    },
+    {
+      "time": "T2",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "我替员工把关——\n\n✅ 接待速览卡进 F4 顶部 132px 高度卡，且雷区行红描边、上一位客服备注小字这两个评审会修订都被吸收了，我满意。\n\n⚠️ 一个隐患——F5 待审核 Prompt 是「单人审核」，但 PRD 没明确「同一个 prompt 同一个审核员一天最多审多少」。如果我是审核员一天有 50 个待办，我会粗审、然后大批量按通过——这破坏了合规初衷。建议加：「同一审核员单日 prompt 审核量上限 30；超出排到次日队列」。\n\n另外，§5 用户流程「流程 1 客服日常处理」缺一步——当客服处理完一通对话，是否要主动写客服备注？还是等系统自动催？建议明确「处理完后，系统弹出 7 秒可关闭的备注引导，不强制」。",
+      "timestamp": 1750073430000,
+      "duration": 26000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T3",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "PRD 已经把 Stage 00 / 00.5 / 01 的视觉决策悉数吸收，且 F4/F5 的三栏布局描述足够细。我有两个补充：\n\n1. 「F4 接待速览卡的雷区行红描边」我注意到 PRD 写的是边框描红，但 Stage 01 评审会我说的是「整行红描边」。如果只描第二行（雷区），其他两行（开场建议/情绪）都不描，视觉上会不平衡。建议三行都给个细描边（不同色），整张卡形成矩阵感。\n\n2. 第十一节 Stage 03 待解决问题里，「Prompt 编辑区的语法高亮配色」我建议提到第十二节「下一步」前，作为强约束 token 放进 Stage 03 的输入。如果 Stage 03 漏掉这个，Stage 04 实现的时候 Prompt 文本块就是一团灰文字。",
+      "timestamp": 1750073456000,
+      "duration": 24000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T4",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "工程视角看 PRD——\n\n✅ 风险登记很全（6 项），缓解方案具体，特别是「ConvLake 数据权限审批」和「小满智客 API QPS」这两个阻塞项被列为 PRD 通过当天发起，操作可执行。\n\n✅ §6 技术架构图清晰，与小满智客的接口契约（fetch_user_prompt + fallback_prompt）已经画出来——这块直接可以给我做技术设计输入。\n\n⚠️ 三处工程细节需要在 PRD 里加强：\n\n1. F3 分类 Worker「异步队列」——队列实现选型（Kafka / RocketMQ / SQS）必须在 PRD 里点名一个，不然每个工程师有自己的偏好，联调时会扯皮。建议「采用度小满已有的 RocketMQ」。\n\n2. F5 fetch_user_prompt API 的 SLA：高峰期 1s 内必返；如果本平台不可用，小满智客必须降级到 fallback_prompt（通用 prompt）。这个降级策略在 §6.2 里没说清楚，建议加一段「降级与熔断」。\n\n3. 部署：PRD 没说部署方案——是 K8s？是物理机？这个会影响运维 SOP。建议「沿用度小满现有 K8s 集群，独立 namespace」。",
+      "timestamp": 1750073480000,
+      "duration": 28000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T5.1",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "interrupt",
+      "interruptedSpeaker": "li-hang",
+      "content": "李航你点了三个工程细节，张磊点了审核量上限，顾青点了 W0 基线采集，苏予点了三行细描边——这些都不构成决策点，是 PRD 文档级修订。我直接合并。",
+      "timestamp": 1750073508000,
+      "duration": 8000
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "PRD 评审通过，4 项修订纳入文档：\n\n1. §10 增加 W0 准备项：CSAT 基线采集 + ConvLake 申请 + 小满智客 API 联调；\n2. §4.F5 加「单审核员单日上限 30 个」；\n3. §4.F4 接待速览卡三行各自描边；\n4. §6 技术架构补「采用 RocketMQ」+「降级熔断」+「K8s 独立 namespace」。\n\nStage 02 不产生用户决策点。直接进 Stage 03。",
+      "timestamp": 1750073516000,
+      "duration": 18000,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [],
+  "metadata": {
+    "totalSpeaks": 7,
+    "interrupts": 1,
+    "duration": 134000,
+    "tokenCost": 0.16,
+    "model": "claude-opus-4-8",
+    "createdAt": "2026-06-16T12:35:00Z"
+  }
+}

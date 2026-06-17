@@ -1,0 +1,194 @@
+{
+  "$schema": "https://aipm.dev/schemas/review-v1.json",
+  "stage": "00.5",
+  "stageName": "竞品分析",
+  "artifactPath": "stages/00.5-竞品分析报告.md",
+  "skillsLoaded": [
+    "aipm-pipeline",
+    "aipm-review-session",
+    "aipm-zhou-ming",
+    "aipm-gu-qing",
+    "aipm-zhang-lei",
+    "aipm-su-yu",
+    "aipm-li-hang"
+  ],
+  "transcript": [
+    {
+      "time": "T0",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "opening",
+      "content": "顾青刚才把四件事查清楚了——三个回答带数据、一个有缺口但已标明。今天评审的核心不是质疑顾青的数据（数据该是什么样就是什么样），而是问：基于这些数据，差异化路径选哪条、第一版押哪边。开始。",
+      "timestamp": 1750070700000,
+      "duration": 8000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T1",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "main_speech",
+      "content": "我把数据再总结一次便于决策——\n\n三大利好：\n1. 度小满已有「小满智客」LLM 平台，提供 system_prompt + user_context 字段注入接口——李航 Q3 的工程链路问题，答案是「可以打通」；\n2. CAC 强制境内大模型，正好与「集成小满智客」契合，合规即护城河；\n3. 高净值客户人均 LTV 3.8 倍 + 行业流失率 27%，业务价值确认。\n\n三大短板：\n1. 度小满当前 AI 客服 CSAT 基线缺失，「+10%」目标暂时没法量化；\n2. App Store 真实差评显示「利率不满」和「投诉」边界模糊（同一条评价跨两类）；\n3. HN 有声音「per-user 太贵，应先聚类」。\n\n我的判断：第一版应该押「信任闭环 + 与小满智客深度集成」。per-user 完整体可以放到 V1.1，先用「聚类 + per-user 增量」。",
+      "timestamp": 1750070708000,
+      "duration": 28000,
+      "confidence": 0.75,
+      "evidenceRefs": [
+        {
+          "source": "industry_report",
+          "snapshotPath": "data-snapshots/00.5-industry-reports.json",
+          "snapshotIndex": 0,
+          "originalUrl": "https://report.iresearch.com.cn/report/202501/financial-ai-customer-service.shtml",
+          "snippet": "高净值客户因AI客服模板化体验流失占比 27%"
+        },
+        {
+          "source": "duxiaoman_tech",
+          "snapshotPath": "data-snapshots/00.5-industry-reports.json",
+          "snapshotIndex": 2,
+          "originalUrl": "https://tech.duxiaoman.com/blog/xiaoman-zhike-llama-finetune",
+          "snippet": "支持通过 system_prompt 和 user_context 两个字段动态注入个性化上下文"
+        },
+        {
+          "source": "hacker_news",
+          "snapshotPath": "data-snapshots/00.5-hn-search.json",
+          "snapshotIndex": 1,
+          "originalUrl": "https://news.ycombinator.com/item?id=37984512",
+          "snippet": "VIP用户per-user prompt提升CSAT 14%"
+        }
+      ]
+    },
+    {
+      "time": "T2",
+      "speaker": "zhang-lei",
+      "speakerName": "张磊",
+      "type": "main_speech",
+      "content": "我替员工说话——\n\n顾青你把「per-user 太贵改聚类」当成一个选项，我有不同看法。\n\n做这个产品的原始动力是什么？是「AI 客服太标准化」。如果你第一版又退回到「5-7 个 persona」，那本质上还是「分群标准化」，只是更细的标准化而已——员工和用户依然感知不到「为我个人定制」的体验。这个产品的灵魂还是会被打折。\n\n但是我也理解 per-user 的成本问题——所以我建议折中：第一版只对「真正高净值」（比如 top 20% 的 100-500 个用户）做 per-user 完整 prompt，剩下的高净值走聚类 prompt。\n\n这样：（1）灵魂保住——核心客户真有「千人千面」感；（2）成本可控——一期审核量级是 100-500 个，不是几千；（3）可推广——下个版本扩容只是增加用户数，不改架构。\n\n顾青刚才说「利率不满 vs 投诉」边界模糊——这个我特别有感觉。用户写差评的时候本来就是带情绪的，「利率高」和「我要投诉」常常是同一句话说出来。所以我支持升级成「多标签」，不要为了简洁牺牲真实。",
+      "timestamp": 1750070736000,
+      "duration": 36000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T3",
+      "speaker": "su-yu",
+      "speakerName": "苏予",
+      "type": "main_speech",
+      "content": "我从设计层和数据层叠两件事——\n\n一、关于多标签：我支持张磊。如果一条对话同时属于「利率不满」和「投诉」，UI 上有两种处理：A 标签并排显示（占空间）；B 主标签 + 次标签（主大次小）。我倾向 B——主标签是 AI 置信度最高的那个，次标签是辅助。视觉上不乱，员工扫描时候第一眼仍然清晰。\n\n二、关于 per-user vs 聚类：我支持张磊的「分层方案」——\n• Top 20% 高净值（约 100-500 用户）→ per-user prompt\n• 剩余高净值 → 聚类 prompt（5-7 个 persona）\n• 普通用户 → 通用 prompt（不在本产品范围）\n\n这个分层在 UI 上需要明确——画像页要有「服务模式」标识：「VIP 个性化」/「分群个性化」/「通用」。员工一眼知道该用什么级别的接待逻辑。\n\n三、给顾青的反馈——你的报告里没有提「画像页接待速览卡」，但这是 Stage 00 评审会的共识。请补到 Stage 02 PRD 的强制章节里，不能漏。",
+      "timestamp": 1750070772000,
+      "duration": 30000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T4",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "main_speech",
+      "content": "顾青回答了我 Stage 00 的三个工程问题，我更新一下风险评估——\n\n1. LLM：用「小满智客」的 system_prompt 注入接口，工程量从原估的 15 天 → 5 天（不用自己训模型，调 API 就行）；\n\n2. 训练数据：ConversationLake API 可拉，但「需走数据权限审批」——这个流程时间是黑箱，乐观 1 周悲观 1 个月，必须并行启动；\n\n3. 合规：CAC 三条已锁定，F4 必须加「申诉/删除」按钮，F5 必须人工审核——这两个原本就在用户决策范围内，工程量不变。\n\n更新后中位估算：65 天 → 50 天 ≈ 10 周。还是比用户的 5-6 周长，但已经收敛。如果数据权限审批走得快，能压到 8 周。\n\n关于张磊+苏予的「分层方案」我支持——这个方案对工程友好：\n• Top 20% per-user：每天审核 5-15 个 prompt，工作量可控；\n• 剩余聚类：训练 5-7 个 persona prompt，做一次更新一次，运维轻；\n• 这两条路用不同的代码路径，不混在一起。\n\n关于多标签——工程上多标签比单标签复杂度+30%（数据库 schema、UI 渲染、统计看板都要改），但收益是分类准确率会从 75% 提升到可能 88%（不同类不再硬切）。我的建议是：第一版上多标签，但 UI 默认只展示主标签，次标签悬浮显示。这样 UI 复杂度可控。",
+      "timestamp": 1750070802000,
+      "duration": 38000,
+      "evidenceRefs": []
+    },
+    {
+      "time": "T5.1",
+      "speaker": "gu-qing",
+      "speakerName": "顾青",
+      "type": "interrupt",
+      "interruptedSpeaker": "li-hang",
+      "content": "李航我补充——你说的「ConversationLake API 数据权限审批」我建议 Stage 02 PRD 里就发起申请单（哪怕只是预申请），不要等到工程开发开始才走流程。",
+      "timestamp": 1750070840000,
+      "duration": 8000
+    },
+    {
+      "time": "T5.2",
+      "speaker": "li-hang",
+      "speakerName": "李航",
+      "type": "response_to_interrupt",
+      "content": "同意。我会在 PRD 里把这个写成「P0 阻塞项」，PRD 评审通过当天就发起。",
+      "timestamp": 1750070848000,
+      "duration": 5000
+    },
+    {
+      "time": "T6",
+      "speaker": "zhou-ming",
+      "speakerName": "周明",
+      "type": "closing",
+      "content": "好，Stage 0.5 收敛——\n\n✅ 共识：\n1. 与「小满智客」LLM 平台深度集成是首版核心架构（不重训模型）；\n2. 合规设计为功能（人工审核 + 申诉/删除）；\n3. 分层服务策略：Top 20% 高净值 per-user，剩余 persona 聚类；\n4. 分类升级为多标签（主+次），UI 上默认只显主；\n5. ConversationLake 数据权限申请是 P0 阻塞项；\n6. 画像页「接待速览卡」必须进 PRD。\n\n❓ 待你拍板 2 个决策点。",
+      "timestamp": 1750070853000,
+      "duration": 22000,
+      "evidenceRefs": []
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-001",
+      "stage": "00.5",
+      "question": "差异化优先级：第一版押哪条路径？",
+      "background": "本产品有三条差异化路径——信任闭环（合规+可审核）、per-user 个性化、与小满智客深度集成。Stage 02 PRD 必须以一条为主轴。",
+      "options": [
+        {
+          "id": "A",
+          "label": "信任闭环优先（合规 + 人工审核 + 申诉机制）",
+          "description": "把合规和可审核当成核心卖点，per-user 是手段不是目标",
+          "pros": ["金融行业护城河", "对内说服力强", "工程风险低"],
+          "cons": ["创新感弱"],
+          "supporters": ["gu-qing", "li-hang"],
+          "opponents": []
+        },
+        {
+          "id": "B",
+          "label": "per-user 个性化优先（技术驱动差异化）",
+          "description": "把'千人千面'当首要卖点",
+          "pros": ["差异化最明显", "用户感知强"],
+          "cons": ["成本/审核工作量风险"],
+          "supporters": ["zhang-lei"],
+          "opponents": []
+        },
+        {
+          "id": "C",
+          "label": "深度集成优先（与小满智客技术整合）",
+          "description": "强调'底座 + 上层 prompt 工程平台'的产品定位",
+          "pros": ["内部协同好", "工程经济性高"],
+          "cons": ["对外讲故事弱"],
+          "supporters": ["su-yu"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "A",
+      "status": "pending"
+    },
+    {
+      "id": "decision-002",
+      "stage": "00.5",
+      "question": "分类策略：单标签 vs 多标签？",
+      "background": "App Store 真实差评显示「利率不满」和「投诉」常常重叠（同一条评价跨两类）。Stage 00 用户原选 A 单标签，但评审会有强烈声音建议升级。",
+      "options": [
+        {
+          "id": "A",
+          "label": "维持 4 类单标签（保持简洁）",
+          "description": "Stage 00 原选方案",
+          "pros": ["UI 简单", "工程轻"],
+          "cons": ["真实数据反映边界模糊", "准确率天花板 80%"],
+          "supporters": [],
+          "opponents": ["zhang-lei", "su-yu", "li-hang"]
+        },
+        {
+          "id": "B",
+          "label": "升级为多标签：主标签 + 次标签",
+          "description": "一条对话可同时属多类，UI 默认只显主，悬浮显次",
+          "pros": ["反映真实边界", "准确率上限到 88%", "员工扫描视图仍简洁"],
+          "cons": ["工程量+30%", "数据库 schema 调整"],
+          "supporters": ["zhang-lei", "su-yu", "li-hang"],
+          "opponents": []
+        }
+      ],
+      "recommendation": "B",
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "totalSpeaks": 8,
+    "interrupts": 2,
+    "duration": 200000,
+    "tokenCost": 0.21,
+    "model": "claude-opus-4-8",
+    "createdAt": "2026-06-16T11:35:00Z"
+  }
+}

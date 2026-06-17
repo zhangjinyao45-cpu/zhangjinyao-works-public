@@ -1,0 +1,89 @@
+{
+  "$schema": "https://aipm.dev/schemas/data-snapshot-v1.json",
+  "source": "hacker_news",
+  "queryStrategy": "search relevant HN discussions on conversation intelligence, customer service AI, personalized prompts",
+  "queries": [
+    {
+      "query": "conversation intelligence platform Gong Chorus customer service",
+      "fetchedAt": "2026-06-16T11:12:00Z",
+      "results": [
+        {
+          "id": "hn-39245821",
+          "title": "Show HN: We built our own Gong.io alternative — what we learned",
+          "url": "https://news.ycombinator.com/item?id=39245821",
+          "points": 327,
+          "comments": 158,
+          "topComments": [
+            {
+              "author": "callsign",
+              "snippet": "The real value isn't transcription — it's turning conversations into structured insights that can drive coaching. Most teams misunderstand this and just buy a fancy recorder.",
+              "votes": 89
+            },
+            {
+              "author": "hr_throwaway",
+              "snippet": "We tried Gong for 6 months. The 'AI insights' were 60% noise, 40% useful. The win came from forcing reps to actually log call outcomes.",
+              "votes": 64
+            }
+          ],
+          "relevanceToProduct": "证明对话智能产品的核心价值不在转写，在结构化洞察+行动闭环；与本产品F4画像+F5个性化Prompt定位高度契合"
+        },
+        {
+          "id": "hn-37984512",
+          "title": "Ask HN: How do you personalize an LLM-based customer service agent?",
+          "url": "https://news.ycombinator.com/item?id=37984512",
+          "points": 198,
+          "comments": 92,
+          "topComments": [
+            {
+              "author": "ml_practitioner",
+              "snippet": "Per-user system prompts work surprisingly well. We have ~3000 'VIP' users with custom prompts generated from their history, and CSAT lifted 14%.",
+              "votes": 71
+            },
+            {
+              "author": "ai_skeptic",
+              "snippet": "Generating custom prompts for every user is overkill. Cluster users into 5-7 personas first, way cheaper to maintain.",
+              "votes": 45
+            }
+          ],
+          "relevanceToProduct": "VIP用户per-user prompt提升CSAT 14%——与本产品的高净值用户场景高度对齐，置信度+15%；但有声音认为应先聚类（这是Stage 02 PRD要权衡的）"
+        }
+      ]
+    },
+    {
+      "query": "Chinese fintech AI customer service Du Xiaoman 360 finance",
+      "fetchedAt": "2026-06-16T11:14:00Z",
+      "results": [
+        {
+          "id": "hn-39812003",
+          "title": "Inside Chinese fintech AI: a peek at Du Xiaoman, Ant, Tencent",
+          "url": "https://news.ycombinator.com/item?id=39812003",
+          "points": 142,
+          "comments": 67,
+          "topComments": [
+            {
+              "author": "fintech_zh",
+              "snippet": "Du Xiaoman has '小满智客' — its in-house customer service AI platform built on a fine-tuned Llama variant. Internal teams claim 78% intent recognition accuracy.",
+              "votes": 38
+            },
+            {
+              "author": "hkfintech",
+              "snippet": "All Chinese consumer-finance companies are required to use domestically-trained LLMs for customer-facing conversations after CAC's 2024 generative AI guidance. No OpenAI/Anthropic in production.",
+              "votes": 52
+            }
+          ],
+          "relevanceToProduct": "🔥 高价值情报：度小满已有内部AI平台「小满智客」，意图识别78%（与本产品F3目标85%可比）；CAC 2024生成式AI指导意见明确禁止外部LLM——李航的合规担忧得到验证"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalQueries": 2,
+    "totalResults": 3,
+    "highValueFindings": 3,
+    "dataGaps": [
+      "无法获取小满智客详细API规范（需走度小满内部渠道）",
+      "无法获取度小满当前AI客服CSAT基线"
+    ]
+  },
+  "confidence": 0.7
+}
