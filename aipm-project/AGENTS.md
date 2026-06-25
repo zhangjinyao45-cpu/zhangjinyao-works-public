@@ -1,4 +1,4 @@
-# AIPM Agent Handoff Guide
+# 蒸馏分身，替我开会！Agent Handoff Guide
 
 This file is the required first-read document for any AI coding agent working on this repository.
 
@@ -12,7 +12,7 @@ Do not redesign the project from scratch unless the user explicitly asks for a r
 
 ## Product Summary
 
-AIPM is an AI product manager pipeline theatre.
+蒸馏分身，替我开会！is an AI product manager pipeline theatre.
 
 The user enters one product idea. A five-person AI product team turns it into product artifacts through staged work, theatre-style review meetings, explicit user decisions, and traceable outputs.
 

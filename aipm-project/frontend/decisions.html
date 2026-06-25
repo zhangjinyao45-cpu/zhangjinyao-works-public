@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AIPM · 决策拍板</title>
+  <title>蒸馏分身，替我开会！· 决策拍板</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -427,7 +427,7 @@
         const nextStage = meta.currentStage;
 
         if (isComplete) {
-          const message = '好，最终方向已经拍板。AIPM 流水线到此完成，最终原型和导出清单都已经准备好。';
+          const message = '好，最终方向已经拍板。蒸馏分身，替我开会！流水线到此完成，最终原型和导出清单都已经准备好。';
           setTimeout(() => {
             location.href =
               `theatre.html?mode=solo&speaker=zhou-ming&project=${encodeURIComponent(projectId)}&stage=04&message=${encodeURIComponent(message)}&next=${encodeURIComponent('status.html?project=' + encodeURIComponent(projectId))}`;

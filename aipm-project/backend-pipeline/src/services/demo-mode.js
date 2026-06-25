@@ -184,131 +184,239 @@ export function shouldDemoChatFinish(userTurnIndex) {
 // ============== 渐进式选择题演示数据 ==============
 
 /**
- * 度小满项目演示用的 12 道结构化选择题
- * 严格按照 brainstorming-service 的 6 维度框架，每维 2 题
- * 选项内容紧贴度小满高净值客户对话智能分析平台
+ * 度小满项目演示用的 21 道结构化选择题
+ * 按 6 个头脑风暴维度组织，内容来自当前演示项目的完整问答脚本
  */
 export const DEMO_BRAINSTORMING_QUESTIONS = [
-  // 维度 A 产品定位
+  // 第一维度：产品意图校准
   {
-    id: 'A1', dimId: 'A', dimName: '产品定位', type: 'single_choice',
-    question: '如果用一句话描述，这个产品是什么？最核心解决什么问题？',
+    id: 'Q1', dimId: 'A', dimName: '产品意图校准', type: 'single_choice',
+    question: '先确认产品定位。这个系统是什么？',
     options: [
-      { id: 'A1a', label: '客服质检工具', description: '检查客服表现、合规性' },
-      { id: 'A1b', label: '用户运营工具', description: '理解用户、提升转化/留存' },
-      { id: 'A1c', label: 'AI客服训练平台', description: '优化AI客服回复质量' },
-      { id: 'A1d', label: '用户运营+AI客服训练', description: '画像分析+per-user prompt' },
+      { id: 'Q1a', label: '客服质检工具', description: '重点检查客服表现与合规性' },
+      { id: 'Q1b', label: '用户运营工具', description: '重点理解用户并提升转化、留存' },
+      { id: 'Q1c', label: 'AI 客服训练平台', description: '重点优化 AI 客服回复质量' },
+      { id: 'Q1d', label: '综合客服工作台', description: '兼顾质检、运营与 AI 客服训练' },
     ],
   },
   {
-    id: 'A2', dimId: 'A', dimName: '产品定位', type: 'multi_choice',
-    question: '主要给度小满内部哪些角色用？',
+    id: 'Q2', dimId: 'A', dimName: '产品意图校准', type: 'multi_choice',
+    question: '目标用户是度小满内部的哪些角色？',
     options: [
-      { id: 'A2a', label: '人工客服团队', description: '一线客服人员，需要快速响应' },
-      { id: 'A2b', label: '客服质检/培训团队', description: '需要分析对话质量' },
-      { id: 'A2c', label: '用户运营/风控团队', description: '需要理解用户画像' },
-      { id: 'A2d', label: 'AI 产品团队', description: '需要优化 AI 客服 prompt' },
-    ],
-  },
-  // 维度 B 用户与场景
-  {
-    id: 'B1', dimId: 'B', dimName: '用户与场景', type: 'multi_choice',
-    question: '人工客服的典型工作流是哪几种？',
-    options: [
-      { id: 'B1a', label: '接入对话前查画像', description: '快速看用户历史和分类' },
-      { id: 'B1b', label: '对话结束后自动分类', description: '系统识别投诉/不满' },
-      { id: 'B1c', label: '主管按类别筛选对话', description: '发现共性问题' },
-      { id: 'B1d', label: '同时全部', description: '三种工作流都要支持' },
+      { id: 'Q2a', label: '人工客服团队', description: '一线客服人员，需要快速理解并响应用户' },
+      { id: 'Q2b', label: '客服质检/培训团队', description: '需要分析对话质量与培训机会' },
+      { id: 'Q2c', label: '用户运营/风控团队', description: '需要理解用户画像与风险信号' },
+      { id: 'Q2d', label: 'AI 产品团队', description: '需要优化 AI 客服 Prompt' },
+      { id: 'Q2e', label: '以上都是', description: '同时服务多个团队' },
     ],
   },
   {
-    id: 'B2', dimId: 'B', dimName: '用户与场景', type: 'single_choice',
-    question: 'AI 产品团队使用这个系统的核心场景？',
+    id: 'Q3', dimId: 'A', dimName: '产品意图校准', type: 'multi_choice',
+    question: '系统上线后，最希望解决哪些核心痛点？',
     options: [
-      { id: 'B2a', label: '每周批量调 prompt', description: '人工选用户后调模板' },
-      { id: 'B2b', label: '系统检测后审核生成的 prompt', description: '实时 HITL 流程' },
-      { id: 'B2c', label: '投诉触发后临时查询', description: '只有问题用户才看' },
+      { id: 'Q3a', label: '快速筛选重点对话', description: '对话量太大，人工客服看不过来' },
+      { id: 'Q3b', label: '改善标准化回复', description: 'AI 客服对高净值用户不够个性化' },
+      { id: 'Q3c', label: '及时发现投诉与不满', description: '避免问题用户被遗漏' },
+      { id: 'Q3d', label: '精细理解高净值用户', description: '形成更完整的个人画像与服务策略' },
+      { id: 'Q3e', label: '其他痛点', description: '还有未被覆盖的核心问题' },
     ],
   },
-  // 维度 C 功能范围
+
+  // 第二维度：用户场景与任务流
   {
-    id: 'C1', dimId: 'C', dimName: '功能范围', type: 'single_choice',
-    question: '第一版只能做好一个功能，最想先做哪个？',
+    id: 'Q4', dimId: 'B', dimName: '用户场景与任务流', type: 'multi_choice',
+    question: '哪些使用场景需要被系统覆盖？',
     options: [
-      { id: 'C1a', label: 'AI 自动分类', description: '4类对话自动归类' },
-      { id: 'C1b', label: '用户画像生成', description: '基础信息+AI总结' },
-      { id: 'C1c', label: '个性化 Prompt 生成审核', description: 'per-user prompt闭环' },
-      { id: 'C1d', label: '三件套一起做', description: '分类+画像+Prompt一体' },
-    ],
-  },
-  {
-    id: 'C2', dimId: 'C', dimName: '功能范围', type: 'multi_choice',
-    question: '首版还必须有哪些 P0 功能？',
-    options: [
-      { id: 'C2a', label: '对话列表 + 详情页', description: '基础查看' },
-      { id: 'C2b', label: '人工修正分类', description: '错了能改' },
-      { id: 'C2c', label: 'Prompt 版本管理', description: '可对比/回滚' },
-      { id: 'C2d', label: '数据看板', description: '准确率/通过率监控' },
-      { id: 'C2e', label: '投诉自动告警工单', description: '降为 P1' },
-      { id: 'C2f', label: '多客服协同备注', description: '降为 P1' },
-    ],
-  },
-  // 维度 D 页面与信息架构
-  {
-    id: 'D1', dimId: 'D', dimName: '页面与信息架构', type: 'multi_choice',
-    question: '至少需要哪些核心页面？',
-    options: [
-      { id: 'D1a', label: '工作台首页（KPI+待办）', description: '员工首屏' },
-      { id: 'D1b', label: '对话列表 + 对话详情', description: '主入口' },
-      { id: 'D1c', label: '用户画像页', description: '完整画像' },
-      { id: 'D1d', label: 'Prompt 中心（审核+版本管理）', description: '合并为一个' },
-      { id: 'D1e', label: '数据看板', description: '分析趋势' },
+      { id: 'Q4a', label: '每周批量分析', description: '查看某类用户画像与对话，手动调整 Prompt 模板' },
+      { id: 'Q4b', label: '实时/准实时优化', description: '检测高净值用户后生成个性化 Prompt 并人工审核' },
+      { id: 'Q4c', label: '投诉后按需查询', description: '临时查看用户画像和历史对话，生成针对性 Prompt' },
     ],
   },
   {
-    id: 'D2', dimId: 'D', dimName: '页面与信息架构', type: 'single_choice',
-    question: '员工最常走的核心导航路径？',
+    id: 'Q5', dimId: 'B', dimName: '用户场景与任务流', type: 'single_choice',
+    question: 'AI 产品团队最核心的工作流是什么？',
     options: [
-      { id: 'D2a', label: '对话驱动型', description: '从对话进入，看画像和prompt' },
-      { id: 'D2b', label: '用户驱动型', description: '从用户搜索进入，看历史对话' },
-      { id: 'D2c', label: '任务驱动型', description: '从待审核prompt一站式处理' },
-    ],
-  },
-  // 维度 E 交互与视觉
-  {
-    id: 'E1', dimId: 'E', dimName: '交互与视觉', type: 'single_choice',
-    question: '整体视觉风格倾向？',
-    options: [
-      { id: 'E1a', label: '度小满官方风格', description: '白底+品牌蓝+金融严谨感' },
-      { id: 'E1b', label: '极简专业风格', description: '类似 Linear/Notion' },
-      { id: 'E1c', label: '数据密集型工具风', description: '深色+高密度，类似交易终端' },
-      { id: 'E1d', label: '卡片式现代风格', description: '类似飞书/钉钉后台' },
+      { id: 'Q5a', label: '每周批量调 Prompt', description: '人工选择用户后调整模板' },
+      { id: 'Q5b', label: '检测、生成、审核、启用', description: '系统实时检测并通过 HITL 流程启用 Prompt' },
+      { id: 'Q5c', label: '投诉触发后临时处理', description: '针对单个问题用户临时生成 Prompt' },
     ],
   },
   {
-    id: 'E2', dimId: 'E', dimName: '交互与视觉', type: 'multi_choice',
-    question: '对话详情页布局和分类标签展示？',
+    id: 'Q6', dimId: 'B', dimName: '用户场景与任务流', type: 'single_choice',
+    question: '高净值用户应该如何定义？',
     options: [
-      { id: 'E2a', label: '三栏布局（列表/详情/侧栏）', description: '黄金布局' },
-      { id: 'E2b', label: '彩色徽章分类（4 类）', description: '蓝/紫/绿/红' },
-      { id: 'E2c', label: '高密度信息（30+条/屏）', description: '员工8小时使用' },
-      { id: 'E2d', label: '键盘快捷键支持', description: 'J/K/L/R 切换' },
+      { id: 'Q6a', label: '系统自动识别', description: '基于借贷额度、历史还款等规则与数据判断' },
+      { id: 'Q6b', label: '人工标记', description: '由客服或运营手动打标签' },
+      { id: 'Q6c', label: '外部系统同步', description: '从现有用户分层系统导入' },
+      { id: 'Q6d', label: '暂不区分', description: '所有用户使用相同处理逻辑' },
     ],
   },
-  // 维度 F 确认收敛
+
+  // 第三维度：功能范围收敛
   {
-    id: 'F1', dimId: 'F', dimName: '确认收敛', type: 'text',
-    question: '还有什么硬性要求或特别看重的？（如合规、模型选型、集成约束等）',
-    options: [],
+    id: 'Q7', dimId: 'C', dimName: '功能范围收敛', type: 'multi_choice',
+    question: '请选择应降为 P1 的功能；未选择的功能默认归为 P0。',
+    options: [
+      { id: 'Q7a', label: 'F1 对话列表页', description: '按用户、分类筛选对话' },
+      { id: 'Q7b', label: 'F2 对话详情页', description: '查看完整对话' },
+      { id: 'Q7c', label: 'F3 AI 自动分类', description: '额度、利率、还款、投诉四类' },
+      { id: 'Q7d', label: 'F4 用户画像生成页', description: '基础信息、性格特征、诉求总结' },
+      { id: 'Q7e', label: 'F5 个性化 AI Prompt', description: '生成与审核' },
+      { id: 'Q7f', label: 'F6 分类标签人工修正', description: '员工可修正 AI 分类结果' },
+      { id: 'Q7g', label: 'F7 投诉自动告警/工单', description: '投诉触发处理流程' },
+      { id: 'Q7h', label: 'F8 数据看板', description: '分类统计与热点问题' },
+      { id: 'Q7i', label: 'F9 Prompt 版本管理', description: '历史版本对比与回滚' },
+      { id: 'Q7j', label: 'F10 多客服协同备注', description: '记录该用户的服务建议' },
+    ],
   },
   {
-    id: 'F2', dimId: 'F', dimName: '确认收敛', type: 'multi_choice',
-    question: '第一版上线 1 个月内最希望验证什么？',
+    id: 'Q8', dimId: 'C', dimName: '功能范围收敛', type: 'multi_choice',
+    question: 'AI 对话分类需要做到什么颗粒度？',
     options: [
-      { id: 'F2a', label: '分类准确率 ≥ 80%', description: '基础能力达标' },
-      { id: 'F2b', label: 'Prompt 通过率 ≥ 70%', description: 'AI生成质量' },
-      { id: 'F2c', label: '客服效率提升', description: '处理时长缩短' },
-      { id: 'F2d', label: '高净值用户满意度 +10%', description: '业务价值验证' },
+      { id: 'Q8a', label: '保留 4 类', description: '借贷额度、利率不满、还款方式、投诉' },
+      { id: 'Q8b', label: '增加二级分类', description: '在四类下继续细分具体原因' },
+      { id: 'Q8c', label: '支持多标签', description: '一通对话可同时属于多个类别' },
+      { id: 'Q8d', label: '允许管理员配置', description: '后续可自行增加或调整类别' },
+    ],
+  },
+  {
+    id: 'Q9', dimId: 'C', dimName: '功能范围收敛', type: 'multi_choice',
+    question: '用户画像页需要展示哪些信息？',
+    options: [
+      { id: 'Q9a', label: '身份与会员信息', description: '姓名、手机号、会员等级，脱敏展示' },
+      { id: 'Q9b', label: '借贷额度', description: '当前额度与相关金融信息' },
+      { id: 'Q9c', label: '历史对话统计', description: '对话总数与分类分布' },
+      { id: 'Q9d', label: '最近对话', description: '最近一次对话时间与分类' },
+      { id: 'Q9e', label: '性格特征', description: '情绪敏感、理性决策、价格敏感等' },
+      { id: 'Q9f', label: '核心诉求', description: '用户最关心的问题与目标' },
+      { id: 'Q9g', label: '沟通偏好', description: '回复长度、解释深度等偏好' },
+      { id: 'Q9h', label: '风险标签', description: '流失风险、投诉倾向等' },
+      { id: 'Q9i', label: '专属服务建议', description: '如何接待该用户的一句话建议' },
+    ],
+  },
+
+  // 第四维度：页面与信息架构
+  {
+    id: 'Q10', dimId: 'D', dimName: '页面与信息架构', type: 'single_choice',
+    question: '核心页面范围应该如何处理？',
+    options: [
+      { id: 'Q10a', label: '完整保留 8 个页面', description: '登录、工作台、对话列表、对话详情、画像、审核、版本、看板' },
+      { id: 'Q10b', label: '合并 Prompt 相关页面', description: 'Prompt 审核与版本管理合并为 Prompt 中心' },
+      { id: 'Q10c', label: '继续合并更多页面', description: '进一步减少独立页面数量' },
+      { id: 'Q10d', label: '补充新页面', description: '现有页面仍未覆盖完整工作流' },
+    ],
+  },
+  {
+    id: 'Q11', dimId: 'D', dimName: '页面与信息架构', type: 'single_choice',
+    question: '员工最常走的核心导航路径是哪一条？',
+    options: [
+      { id: 'Q11a', label: '对话驱动型', description: '工作台 → 对话列表 → 对话详情 → 用户画像 → Prompt 历史' },
+      { id: 'Q11b', label: '用户驱动型', description: '工作台 → 搜索用户 → 用户画像 → 关联对话 → Prompt 调整' },
+      { id: 'Q11c', label: '任务驱动型', description: '工作台 → 待审核 Prompt → 一站式审核详情' },
+      { id: 'Q11d', label: '三条都支持', description: '不同角色可从各自任务入口进入' },
+    ],
+  },
+  {
+    id: 'Q12', dimId: 'D', dimName: '页面与信息架构', type: 'single_choice',
+    question: '用户画像页应该具备怎样的可编辑性？',
+    options: [
+      { id: 'Q12a', label: '完全只读', description: '全部由 AI 自动生成，保证数据一致性' },
+      { id: 'Q12b', label: '允许补充备注', description: 'AI 生成内容只读，客服可增加独立备注' },
+      { id: 'Q12c', label: '允许批注', description: '可批注但不能修改 AI 原始总结' },
+    ],
+  },
+  {
+    id: 'Q13', dimId: 'D', dimName: '页面与信息架构', type: 'single_choice',
+    question: 'AI Prompt 生成后采用哪种审核流程？',
+    options: [
+      { id: 'Q13a', label: '单人审核', description: '一名 AI 产品同事审核后生效' },
+      { id: 'Q13b', label: '双人审核', description: '一人提交，另一人确认' },
+      { id: 'Q13c', label: '直接生效、事后抽检', description: '优先保证速度' },
+      { id: 'Q13d', label: '按 AI 自评分流', description: '高分自动生效，低分人工审核' },
+    ],
+  },
+
+  // 第五维度：交互与视觉确认
+  {
+    id: 'Q14', dimId: 'E', dimName: '交互与视觉确认', type: 'single_choice',
+    question: '整体视觉风格倾向哪一种？',
+    options: [
+      { id: 'Q14a', label: '度小满官方风格', description: '白底、品牌蓝与金融严谨感' },
+      { id: 'Q14b', label: '极简专业风格', description: '白、深灰与少量强调色，类似 Linear/Notion' },
+      { id: 'Q14c', label: '数据密集型工具风格', description: '深色背景、高密度信息，类似交易终端' },
+      { id: 'Q14d', label: '卡片式现代风格', description: '白底、卡片与柔和阴影，类似飞书/钉钉后台' },
+    ],
+  },
+  {
+    id: 'Q15', dimId: 'E', dimName: '交互与视觉确认', type: 'single_choice',
+    question: '员工日常使用时偏好哪种信息密度？',
+    options: [
+      { id: 'Q15a', label: '高密度', description: '一屏尽量展示更多对话，接近表格工具' },
+      { id: 'Q15b', label: '中等密度', description: '每条带摘要，一屏约 10-15 条' },
+      { id: 'Q15c', label: '低密度', description: '每条信息更丰富，一屏约 5-8 条' },
+    ],
+  },
+  {
+    id: 'Q16', dimId: 'E', dimName: '交互与视觉确认', type: 'single_choice',
+    question: 'AI 分类标签采用哪种展示方式？',
+    options: [
+      { id: 'Q16a', label: '彩色徽章', description: '用不同颜色区分投诉、利率、额度与还款' },
+      { id: 'Q16b', label: '统一文字标签', description: '不染色，统一使用灰色样式' },
+      { id: 'Q16c', label: '图标 + 文字', description: '每类配置图标，不使用背景色' },
+      { id: 'Q16d', label: '彩色徽章 + 置信度', description: '同时显示分类名称和 AI 置信度' },
+    ],
+  },
+  {
+    id: 'Q17', dimId: 'E', dimName: '交互与视觉确认', type: 'single_choice',
+    question: '对话详情页采用哪种布局？',
+    options: [
+      { id: 'Q17a', label: '左对话 + 右画像/分类', description: '左侧约 70%，右侧约 30%' },
+      { id: 'Q17b', label: '上对话 + 下分析', description: '对话占主体，分析信息放在下方' },
+      { id: 'Q17c', label: '三栏布局', description: '左侧对话列表，中间当前对话，右侧画像、分类与操作' },
+    ],
+  },
+
+  // 第六维度：确认收敛
+  {
+    id: 'Q18', dimId: 'F', dimName: '确认收敛', type: 'single_choice',
+    question: 'MVP（首版）的范围想做多大？',
+    options: [
+      { id: 'Q18a', label: '极简 MVP', description: '对话列表、对话详情、AI 分类、用户画像，约 2-3 周' },
+      { id: 'Q18b', label: '完整 P0', description: '8 个 P0 功能一次完成，约 5-6 周' },
+      { id: 'Q18c', label: '分两期', description: '一期做对话、分类、画像；二期做 Prompt 生成与审核，各约 3 周' },
+    ],
+  },
+  {
+    id: 'Q19', dimId: 'F', dimName: '确认收敛', type: 'multi_choice',
+    question: '第一版上线 1 个月内，最关键的成功指标是什么？',
+    options: [
+      { id: 'Q19a', label: '分类覆盖率与准确率', description: '100% 对话自动分类，准确率不低于 85%' },
+      { id: 'Q19b', label: '客服准备效率', description: '显著缩短客服理解用户与准备回复的时间' },
+      { id: 'Q19c', label: '个性化 Prompt 质量', description: '审核通过率不低于 70%' },
+      { id: 'Q19d', label: '高净值用户满意度', description: '客服服务满意度提升不低于 10%' },
+    ],
+  },
+  {
+    id: 'Q20', dimId: 'F', dimName: '确认收敛', type: 'multi_choice',
+    question: '哪些硬约束或底线要求必须遵守？',
+    options: [
+      { id: 'Q20a', label: '数据合规', description: '对话原文不得发送到外部 LLM' },
+      { id: 'Q20b', label: '响应时间', description: '分类与画像生成必须在 3 秒内完成' },
+      { id: 'Q20c', label: '分级权限', description: '不同角色看到不同字段并进行脱敏' },
+      { id: 'Q20d', label: '全量审计', description: '所有 AI 修改必须留痕并可追溯' },
+      { id: 'Q20e', label: '现有系统集成', description: '对接度小满现有 CRM 或工单系统' },
+      { id: 'Q20f', label: '暂无额外硬约束', description: '当前阶段没有必须补充的底线要求' },
+    ],
+  },
+  {
+    id: 'Q21', dimId: 'F', dimName: '确认收敛', type: 'multi_choice',
+    question: '希望五人评审会重点挑战产品的哪些方面？',
+    options: [
+      { id: 'Q21a', label: '产品必要性', description: '是否是真需求，是否真的有人使用' },
+      { id: 'Q21b', label: '数据合规与安全', description: '金融数据和 AI 内容的合规风险' },
+      { id: 'Q21c', label: 'AI 准确性', description: '分类与画像出错时如何处理' },
+      { id: 'Q21d', label: '用户体验', description: '员工是否真正好用，会不会嫌麻烦' },
+      { id: 'Q21e', label: '工程可行性', description: '开发周期、成本与技术风险' },
     ],
   },
 ];

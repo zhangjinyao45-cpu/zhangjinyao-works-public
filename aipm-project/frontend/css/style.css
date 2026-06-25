@@ -103,17 +103,17 @@ html, body {
 }
 
 .brand-mark {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 700;
+  font-family: var(--font-serif-zh);
+  font-size: 19px; font-weight: 900;
   color: var(--brass-light);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
 }
 
 .brand-tagline {
   font-family: var(--font-display);
   font-style: italic; font-size: 11px;
   color: var(--paper-edge);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
 }
 
 .masthead-center {
@@ -448,10 +448,20 @@ html, body {
 .character-role {
   font-family: var(--font-display);
   font-size: 9px;
-  color: var(--paper-edge);
-  letter-spacing: 0.25em;
+  font-weight: 700;
+  color: var(--brass-light);
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  margin-top: 2px;
+  line-height: 1;
+  margin-top: 6px;
+  padding: 4px 8px 3px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 2px;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  display: inline-block;
 }
 
 /* 发言态：铜牌发光 + 名字变白金色 */
@@ -473,7 +483,13 @@ html, body {
 }
 
 .character.speaking .character-role {
-  color: var(--wood-dark);
+  color: var(--brass-light);
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 230, 170, 0.85);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(255, 220, 150, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* 发言时角色周围光环 */
@@ -1097,6 +1113,12 @@ html, body {
   animation: letter-pulse 1.6s ease-in-out infinite;
 }
 
+.loading-mark.loading-mark-zh span {
+  font-family: var(--font-serif-zh);
+  font-size: 42px;
+  letter-spacing: 0.05em;
+}
+
 .loading-mark span:nth-child(1) { animation-delay: 0s; }
 .loading-mark span:nth-child(2) { animation-delay: 0.15s; }
 .loading-mark span:nth-child(3) { animation-delay: 0.3s; }
@@ -1549,12 +1571,11 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 14px 22px;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 220, 170, 0.18);
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
 }
 .cine-portrait-name {
   font-family: 'Noto Serif SC', serif;
@@ -1562,15 +1583,26 @@ html, body {
   font-weight: 900;
   color: #fff;
   letter-spacing: 0.1em;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+  text-shadow:
+    0 2px 12px rgba(0,0,0,0.85),
+    0 0 24px rgba(0,0,0,0.6);
 }
 .cine-portrait-role {
   font-family: 'Cormorant Garamond', serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.4em;
-  color: rgba(255, 230, 180, 0.92);
+  color: rgba(255, 240, 200, 1);
   text-transform: uppercase;
+  padding: 6px 14px 5px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 220, 170, 0.55);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: inline-block;
+  line-height: 1;
 }
 .cine-portrait-stripe {
   position: absolute;

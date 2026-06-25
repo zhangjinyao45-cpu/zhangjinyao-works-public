@@ -4,14 +4,14 @@
     {
       "id": "decision-001",
       "stage": "00",
-      "question": "MVP 范围：一次做完 vs 分两期？",
-      "background": "李航估算工程量 13 周但用户原计划 5-6 周；张磊认为画像+Prompt 是灵魂不能砍；苏予提出画像 V0.1 用规则版的折中方案。",
+      "question": "三周排期：完整 P0 并行推进，还是优先核心链路？",
+      "background": "固定大模型和信息上下文已具备。李航将完整 P0 重排为 15 个工作日，并提出接口冻结、前后端并行和每周验收；张磊强调画像与 Prompt 不能后置。",
       "options": [
-        {"id": "A", "label": "一次做完 8 个 P0", "description": "5-6 周乐观目标，灵魂功能不砍，工程压力大"},
-        {"id": "B", "label": "分两期", "description": "一期 4 周做对话分类工作流，二期 4 周做画像+Prompt"},
-        {"id": "C", "label": "全做但延长到 8 周；画像 V0.1 用规则版", "description": "灵魂保留，工程缓冲"}
+        {"id": "A", "label": "3 周完成完整 P0", "description": "按 15 个工作日并行推进全部 8 个 P0，需求和字段第一周冻结"},
+        {"id": "B", "label": "3 周核心链路优先", "description": "优先完成对话、分类、画像和 Prompt 审核，数据看板与版本增强压缩处理"},
+        {"id": "C", "label": "3 周完成核心，非核心顺延", "description": "三周交付完整主链路，数据看板和版本管理在上线后补齐"}
       ],
-      "recommendation": "C",
+      "recommendation": "A",
       "status": "pending"
     },
     {

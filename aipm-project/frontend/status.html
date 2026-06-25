@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AIPM · 阶段状态</title>
+  <title>蒸馏分身，替我开会！· 阶段状态</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -532,7 +532,7 @@
       const actions = document.getElementById('actions');
 
       if (meta.globalState === 'completed' || meta.currentState === 'completed') {
-        actionNote.textContent = 'AIPM 流水线已完成。最终原型、阶段产物、评审记录和决策追溯都已经沉淀在项目工作区。';
+        actionNote.textContent = '蒸馏分身，替我开会！流水线已完成。最终原型、阶段产物、评审记录和决策追溯都已经沉淀在项目工作区。';
         const prototypeUrl = `${API_BASE}/projects/${encodeURIComponent(projectId)}/stage/04/artifact`;
         actions.innerHTML = `
           <button class="primary-btn" onclick="window.open('${prototypeUrl}', '_blank')">打开最终原型</button>
